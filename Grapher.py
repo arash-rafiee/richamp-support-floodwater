@@ -13,7 +13,7 @@ import gc
 
 class Grapher:
     DATE_FORMAT = "%m/%d/%y-%HZ"
-    TITLE_PREFIX = "Sandy: "
+    TITLE_PREFIX = "1938 1m: "
     
         
     def extractLatitudeIndex(self, nodeIndex):
@@ -32,7 +32,13 @@ class Grapher:
         return degrees
     
     def unixTimeToDeltaHours(self, timestamp, startDate):
+        startDateTimestamp = datetime.timestamp(startDate)
+#         Difference in timestamp between startDate and 1938 date
+        timestampDelta = timestamp - startDateTimestamp
+#         startDateTimestamp - (-987120000.0)
 #         return datetime.fromtimestamp(timestamp, timezone.utc)
+        timestamp = (-987120000.0) + timestampDelta
+        return datetime.fromtimestamp(timestamp, timezone.utc)
         delta = datetime.fromtimestamp(timestamp, timezone.utc) - startDate
         return delta.total_seconds()/3600
     
@@ -1042,8 +1048,8 @@ class Grapher:
         if(len(self.mapWaterTimes) > 0):
             vmin = -1
             vminSwath = 0
-            vmax = math.ceil(self.maxWater)
-            vmax = 3
+#             vmax = math.ceil(self.maxWater)
+            vmax = 5
 #             vmax = 20
             levels = 100
             levelBoundaries = np.linspace(vmin, vmax, levels + 1)
@@ -1078,7 +1084,11 @@ class Grapher:
 #                 contourset = ax.tripcolor(self.mapWaterPointsLongitudes, self.mapWaterPointsLatitudes, self.mapWaters[index], shading='gouraud', cmap="jet", vmin=vmin, vmax=vmax, zorder=1)
                 plt.axis(plotAxis)
                 plt.title(self.TITLE_PREFIX + "Water Elevation")
-                plt.xlabel(datetime.fromtimestamp(int(self.mapWaterTimes[index]),timezone.utc))
+                timestampDelta = int(self.mapWaterTimes[index]) - datetime.timestamp(self.waterStartDate)
+        #         startDateTimestamp - (-987120000.0)
+        #         return datetime.fromtimestamp(timestamp, timezone.utc)
+                timestamp = (-987120000.0) + timestampDelta
+                plt.xlabel(datetime.fromtimestamp(timestamp, timezone.utc))
     #             plt.gca().invert_yaxis()
                 plt.colorbar(
                     ScalarMappable(norm=contourset.norm, cmap=contourset.cmap),
@@ -1309,7 +1319,7 @@ class Grapher:
                 stationName = self.tideLabels[index]
                 maxElevation = str(round(max(self.datapointsWaters[index]), 2))
                 plt.title(self.TITLE_PREFIX + stationName + " station water elevation max: " + maxElevation, fontsize=18)
-                plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
+#                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
                 plt.ylabel("elevation (meters)", fontsize=14)
                 plt.savefig(graph_directory + stationName + '_water.png')
                 plt.close()
