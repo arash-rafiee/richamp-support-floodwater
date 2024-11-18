@@ -143,3 +143,8 @@ Gulf Yucatan
 Florida
 "lat long of north east", "(30.383786045108156, -79.2041015625)"
 "lat long of south west", "(24.538640329845318, -85.7958984375)"
+
+Charlestown
+"lat long of center", "(41.364999999999995, -71.64500000000001)"
+"lat long of north east", "(41.38432229342453, -71.61925079345704)"
+"lat long of south west", "(41.34567196713463, -71.67074920654298)"

@@ -850,7 +850,12 @@ class Grapher:
                 plt.axis(plotAxis)
 #                 plt.axis([-76.59179620444773, -63.41595750651321, 36.92061410517965, 46.70943547053439])
                 plt.title("Wind Speed")
-                plt.xlabel(datetime.fromtimestamp(int(self.mapWindTimes[index]), timezone.utc))
+                timestampDelta = int(self.mapWindTimes[index]) - datetime.timestamp(self.windStartDate)
+        #         startDateTimestamp - (-987120000.0)
+        #         return datetime.fromtimestamp(timestamp, timezone.utc)
+                timestamp = (-987120000.0) + timestampDelta
+                plt.xlabel(datetime.fromtimestamp(timestamp, timezone.utc))
+#                 plt.xlabel(datetime.fromtimestamp(timestamp, timezone.utc))
     #             graphs up to 10 m/s, ~20 knots
                 plt.colorbar(
                     ScalarMappable(norm=contourset.norm, cmap=contourset.cmap),

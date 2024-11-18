@@ -72,6 +72,9 @@ FLORIDA_MAP = "Florida.png"
 FLORIDA_OUTLINE_MAP = "FloridaOutline.png"
 FLORIDA_AXIS = [-85.7958984375, -79.2041015625, 30.383786045108156, 24.538640329845318]
 
+CHARLESTOWN_MAP = "Charlestown.png"
+CHARLESTOWN_OUTLINE_MAP = "CharlestownOutline.png"
+CHARLESTOWN_AXIS = [-71.67074920654298, -71.61925079345704, 41.38432229342453, 41.34567196713463]
 def main():
     p = argparse.ArgumentParser(description="Make a request to generate graphs")
     p.add_argument(

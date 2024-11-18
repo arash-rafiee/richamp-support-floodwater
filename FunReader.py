@@ -604,3 +604,169 @@ class EtaReader:
         else:
             self.reader.generateDataFiles(rainDataset, "rain", timesRain, self.GFS_RAIN_DATA_FILE)
         return (datetime.fromtimestamp(timesEta[0], timezone.utc), datetime.fromtimestamp(timesEta[-1], timezone.utc))
+      
+# This class houses the spectrum data. It is a dictionary that has 
+# structure
+# values[timeKey][pointKey] = directional 2D spectrum data
+# The frequenciy and direction bins for the spectrum data are in a seperate array.
+# To get the times and points, a values.keys() works best.
+# The values still need to be converted from wave action density to energy,
+# Also, each spectrum data will need a calculated amplitude.
+class SpectrumValues:
+    def __init__(self, frequencies=[], directions=[]):
+        self.values = {}
+        self.frequencies = frequencies
+        self.directions = directions
+#         print("SPECTRUM VALUE")
+    def appendSpectrum(self, time=None, point=None, spectrum=[]):
+        energySpectrum = []
+        if not (time in self.values.keys()):
+            self.values[time] = {}
+        if not (point in self.values[time].keys()):
+            self.values[time][point] = []
+        for frequencyIndex, frequencyRow in enumerate(spectrum):
+            energySpectrum.append([])
+            for directionIndex, value in enumerate(frequencyRow):
+                energySpectrum[frequencyIndex].append(value * self.frequencies[frequencyIndex])
+        self.values[time][point].extend(energySpectrum)
+    def writeFile(self, DATA_FILE):
+        print("Writing data to", DATA_FILE, flush=True)
+        with open(DATA_FILE, "w") as outfile:
+            data = {}
+#             print(len(self.frequencies))
+#             print(len(self.directions))
+#             quit()
+            data["frequencies"] = self.frequencies
+            data["directions"] = self.directions
+            data["values"] = self.values
+            json.dump(data, outfile, cls=NumpyEncoder)
+        
+            
+class SpectrumReader:
+    def __init__(self, INPUT_FOLDER="", STATIONS_FILE="", SPECTRUM_DATA_FILE="", BACKGROUND_AXIS=[]):
+        temp_directory =  SPECTRUM_DATA_FILE[0:SPECTRUM_DATA_FILE.rfind("/") + 1]
+        
+        self.INPUT_FOLDER = INPUT_FOLDER
+        self.STATIONS_FILE = STATIONS_FILE
+        self.STATION_TO_NODE_DISTANCES_FILE = temp_directory + "Spectrum_Station_To_Node_Distances.json"
+        self.SPECTRUM_NODES_FILE = temp_directory + "Spectrum_Nodes.json"
+        self.SPECTRUM_DATA_FILE = SPECTRUM_DATA_FILE
+        self.BACKGROUND_AXIS = BACKGROUND_AXIS
+        print("Generating Spectrum Data!")
+        
+    def generateSpectrumDataForStations(self):
+        times = []
+        spectrumValues = None
+        for file in os.listdir(self.INPUT_FOLDER):
+            frequencies = []
+            directions = []
+            if("swan" in file):
+                filename = self.INPUT_FOLDER + file
+                with open(filename) as file:
+                    lines = file.readlines()
+                    if(len(lines) > 0):
+#                         First read coordinate location points of data\
+                        points = []
+                        numberOfLocations = lines[4][4::]
+                        numberOfLocations = int(numberOfLocations[0:numberOfLocations.index(" ")])
+                        startIndex = 5
+                        endIndex = startIndex + numberOfLocations
+                        for line in lines[startIndex:endIndex]:
+                            data = line[2:][:-1].split("   ")
+                            latitude = float(data[1])
+                            longitude = float(data[0])
+                            points.append(str((longitude, latitude)))
+#                             print(len(points))
+#                             print(points[-1])
+                        numberOfFrequencies = lines[endIndex + 1][4::]
+                        numberOfFrequencies = int(numberOfFrequencies[0:numberOfFrequencies.index(" ")])
+#                         print(numberOfFrequencies)
+                        startIndex = endIndex + 2
+                        endIndex = startIndex + numberOfFrequencies
+                        for line in lines[startIndex:endIndex]:
+                            data = line.strip()
+                            frequency = float(data)
+                            frequencies.append(frequency)
+                        numberOfDirections = lines[endIndex + 1][4::]
+                        numberOfDirections = int(numberOfDirections[0:numberOfDirections.index(" ")])
+#                         print(numberOfDirections)
+                        startIndex = endIndex + 2
+                        endIndex = startIndex + numberOfDirections
+                        for line in lines[startIndex:endIndex]:
+                            data = line.strip()
+                            direction = float(data)
+                            directions.append(direction)
+                        if(spectrumValues == None):
+                            spectrumValues = SpectrumValues(frequencies=frequencies, directions=directions)
+                        numberOfQuantities = lines[endIndex + 1][5::]
+                        numberOfQuantities = int(numberOfQuantities[0:numberOfQuantities.index(" ")])
+#                         print(numberOfQuantities)
+                        startIndex = endIndex + 2
+#                         endIndex = startIndex + (numberOfQuantities * 
+                        for quantityIndex in range(numberOfQuantities):
+                            nameOfQuantity = lines[startIndex]
+                            nameOfQuantity = nameOfQuantity[0:nameOfQuantity.index(" ")]
+                            startIndex = startIndex + 1
+                            unitsOfQuantity = lines[startIndex]
+                            unitsOfQuantity = unitsOfQuantity[0:unitsOfQuantity.index(" ")]
+                            startIndex = startIndex + 1
+                            exceptionValueQuantity = lines[startIndex]
+                            exceptionValueQuantity = exceptionValueQuantity[0:exceptionValueQuantity.index(" ")]
+                            startIndex = startIndex + 1
+                        timeString = lines[startIndex]
+                        timeString = timeString[0:timeString.index(" ")]
+                        time = datetime.strptime(timeString, "%Y%m%d.%H%M%S")
+                        time = time.replace(tzinfo=timezone.utc).timestamp()
+                        times.append(time)
+#                         print(time)
+                        startIndex = startIndex + 1
+                        pointIndex = 0
+                        factor = 1
+                        inSpectrum = False
+                        spectrumLine = -1
+                        spectrum = []
+                        for line in lines[startIndex:]:
+                            if("ZERO" in line):
+                                spectrum = np.zeros([numberOfFrequencies, numberOfDirections], dtype = float)
+                                spectrumValues.appendSpectrum(time=time, point=points[pointIndex], spectrum=spectrum)
+                                pointIndex = pointIndex + 1
+                            elif("FACTOR" in line):
+
+                                inSpectrum = True
+                                spectrumLine = -1
+                                spectrum = []
+                            elif(inSpectrum):
+                                if(spectrumLine == -1):
+                                    factor = float(line.strip())
+#                                     print(factor)
+                                else:
+                                    data = line[:-1].split()
+#                                     print(data)
+                                    data = np.array(data, dtype=float)
+                                    data = data * factor
+                                    spectrum.append(data)
+                                    if(spectrumLine >= numberOfFrequencies - 1):
+                                        spectrumValues.appendSpectrum(time=time, point=points[pointIndex], spectrum=spectrum)
+                                        inSpectrum = False
+                                        pointIndex = pointIndex + 1
+#                                     print(data)
+#                                     quit()
+                                spectrumLine = spectrumLine + 1
+#                         print("ended on index", pointIndex)
+#         print(spectrumValues.values[times[0]]["(-75.523369, 39.551201)"])
+        times = list(spectrumValues.values.keys())
+#         points = list(spectrumValues.values[times[0]].keys())
+#         print("len(times):", len(times))
+#         print("len(points)", len(points))
+        
+        for time in times:
+            for point in points:
+#                 print(len(spectrumValues.values[time]))
+                spectrum = spectrumValues.values[time][point]
+#                 print(len(spectrum))
+#                 print(len(spectrum[0]))
+#                         quit()
+#                         print(numberOfLocations)
+        spectrumValues.writeFile(self.SPECTRUM_DATA_FILE)
+        return 1, 2
+#         self.reader = FunReader(STATIONS_FILE=STATIONS_FILE, STATION_TO_NODE_DISTANCES_FILE=self.STATION_TO_NODE_DISTANCES_FILE, NODES_FILE=self.FUN_NODES_FILE, BACKGROUND_AXIS=self.BACKGROUND_AXIS)
