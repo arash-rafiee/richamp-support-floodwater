@@ -12,9 +12,7 @@ import imageio
 import gc
 
 class Grapher:
-    DATE_FORMAT = "%m/%d/%y-%HZ"
-    TITLE_PREFIX = "1938 1m: "
-    
+    DATE_FORMAT = "%m/%d/%y-%HZ"    
         
     def extractLatitudeIndex(self, nodeIndex):
         return int(nodeIndex[1: nodeIndex.find(",")])
@@ -47,7 +45,7 @@ class Grapher:
     #     WIND_PROFILE_EXPONENT = 0.11
     #     return windVelocity * ((10.0/altitude)**WIND_PROFILE_EXPONENT)
 
-    def __init__(self, dataToGraph={}, STATIONS_FILE="", backgroundMap="", backgroundAxis=[]):
+    def __init__(self, dataToGraph={}, STATIONS_FILE="", backgroundMap="", backgroundAxis=[], titlePrefix=""):
         print("Initializing grapher", flush=True)
         self.obsExists = False
         self.gaugeExists = False
@@ -71,6 +69,8 @@ class Grapher:
         
         self.backgroundMap = backgroundMap
         self.backgroundAxis = backgroundAxis
+        
+        self.titlePrefix=titlePrefix
         
         if("OBS" in dataToGraph):
             self.obsExists = True
@@ -1088,7 +1088,7 @@ class Grapher:
 #               Todo: Fix triangulation errors
 #                 contourset = ax.tripcolor(self.mapWaterPointsLongitudes, self.mapWaterPointsLatitudes, self.mapWaters[index], shading='gouraud', cmap="jet", vmin=vmin, vmax=vmax, zorder=1)
                 plt.axis(plotAxis)
-                plt.title(self.TITLE_PREFIX + "Water Elevation")
+                plt.title(self.titlePrefix + "Water Elevation")
                 timestampDelta = int(self.mapWaterTimes[index]) - datetime.timestamp(self.waterStartDate)
         #         startDateTimestamp - (-987120000.0)
         #         return datetime.fromtimestamp(timestamp, timezone.utc)
@@ -1141,7 +1141,7 @@ class Grapher:
                 ax.scatter(self.assetLongitudes, self.assetLatitudes, label="Assets", zorder=4, alpha=0.7, marker=".", s=40, color="black")
 
             plt.axis(plotAxis)
-            plt.title(self.TITLE_PREFIX + "Water Swath")
+            plt.title(self.titlePrefix + "Water Swath")
 #             plt.xlabel(datetime.fromtimestamp(int(self.mapWindTimes[index]), timezone.utc))
 #             graphs up to 10 m/s, ~20 knots
             plt.colorbar(
@@ -1323,7 +1323,7 @@ class Grapher:
                 plt.yticks(fontsize=12)
                 stationName = self.tideLabels[index]
                 maxElevation = str(round(max(self.datapointsWaters[index]), 2))
-                plt.title(self.TITLE_PREFIX + stationName + " station water elevation max: " + maxElevation, fontsize=18)
+                plt.title(self.titlePrefix + stationName + " station water elevation max: " + maxElevation, fontsize=18)
 #                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
                 plt.ylabel("elevation (meters)", fontsize=14)
                 plt.savefig(graph_directory + stationName + '_water.png')

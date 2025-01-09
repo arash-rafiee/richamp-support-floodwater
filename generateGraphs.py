@@ -142,6 +142,9 @@ def main():
     p.add_argument(
         "--tempDir", type=str, help="Temp json data file directory"
     )
+    p.add_argument(
+        "--prefix", type=str, help="Prefix for title of graphs"
+    )
     args = p.parse_args()
     args.epsg = 4326
     print("Generating Wind Graphs!", flush=True)
@@ -166,6 +169,11 @@ def main():
         backgroundChoice = "RHODE_ISLAND"
     else:
         backgroundChoice = args.backgroundChoice
+        
+    if(not args.prefix):
+        titlePrefix = ""
+    else:
+        titlePrefix = args.prefix
         
     backgroundMap = None
     backgroundAxis = None
@@ -407,7 +415,8 @@ def main():
         dataToGraph=dataToGraph, 
         STATIONS_FILE=STATIONS_FILE, 
         backgroundMap=backgroundMap,
-        backgroundAxis=backgroundAxis).generateGraphs()
+        backgroundAxis=backgroundAxis,
+        titlePrefix=titlePrefix).generateGraphs()
 
 if __name__ == "__main__":
     main()
