@@ -148,3 +148,8 @@ Charlestown
 "lat long of center", "(41.364999999999995, -71.64500000000001)"
 "lat long of north east", "(41.38432229342453, -71.61925079345704)"
 "lat long of south west", "(41.34567196713463, -71.67074920654298)"
+
+Galilee
+"lat long of center", "(41.39499999999999, -71.525)"
+"lat long of north east", "(41.43362102050805, -71.47350158691407)"
+"lat long of south west", "(41.35635601867699, -71.57649841308594)"

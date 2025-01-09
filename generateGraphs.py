@@ -75,6 +75,10 @@ FLORIDA_AXIS = [-85.7958984375, -79.2041015625, 30.383786045108156, 24.538640329
 CHARLESTOWN_MAP = "Charlestown.png"
 CHARLESTOWN_OUTLINE_MAP = "CharlestownOutline.png"
 CHARLESTOWN_AXIS = [-71.67074920654298, -71.61925079345704, 41.38432229342453, 41.34567196713463]
+
+GALILEE_MAP="Galilee.png"
+GALILEE_OUTLINE_MAP="GalileeOutline.png"
+GALILEE_AXIS=[-71.57649841308594, -71.47350158691407, 41.43362102050805, 41.35635601867699]
 def main():
     p = argparse.ArgumentParser(description="Make a request to generate graphs")
     p.add_argument(
@@ -258,6 +262,12 @@ def main():
     elif(backgroundChoice == "FLORIDA_OUTLINE"):
         backgroundMap = FLORIDA_OUTLINE_MAP     
         backgroundAxis = FLORIDA_AXIS
+    elif(backgroundChoice == "GALILEE"):
+        backgroundMap = GALILEE_MAP
+        backgroundAxis = GALILEE_AXIS
+    elif(backgroundChoice == "GALILEE_OUTLINE"):
+        backgroundMap = GALILEE_OUTLINE_MAP
+        backgroundAxis = GALILEE_AXIS
         
     print("args.adcircExists", args.adcircExists, flush=True)
     if(args.adcircExists):
