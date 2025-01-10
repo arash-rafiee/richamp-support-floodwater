@@ -35,8 +35,8 @@ class Grapher:
         timestampDelta = timestamp - startDateTimestamp
 #         startDateTimestamp - (-987120000.0)
 #         return datetime.fromtimestamp(timestamp, timezone.utc)
-        timestamp = (-987120000.0) + timestampDelta
-        return datetime.fromtimestamp(timestamp, timezone.utc)
+#         timestamp = (-987120000.0) + timestampDelta
+#         return datetime.fromtimestamp(timestamp, timezone.utc)
         delta = datetime.fromtimestamp(timestamp, timezone.utc) - startDate
         return delta.total_seconds()/3600
     
@@ -850,11 +850,7 @@ class Grapher:
                 plt.axis(plotAxis)
 #                 plt.axis([-76.59179620444773, -63.41595750651321, 36.92061410517965, 46.70943547053439])
                 plt.title("Wind Speed")
-                timestampDelta = int(self.mapWindTimes[index]) - datetime.timestamp(self.windStartDate)
-        #         startDateTimestamp - (-987120000.0)
-        #         return datetime.fromtimestamp(timestamp, timezone.utc)
-                timestamp = (-987120000.0) + timestampDelta
-                plt.xlabel(datetime.fromtimestamp(timestamp, timezone.utc))
+                plt.xlabel(datetime.fromtimestamp(int(self.mapWindTimes[index]), timezone.utc))
 #                 plt.xlabel(datetime.fromtimestamp(timestamp, timezone.utc))
     #             graphs up to 10 m/s, ~20 knots
                 plt.colorbar(
@@ -1089,11 +1085,7 @@ class Grapher:
 #                 contourset = ax.tripcolor(self.mapWaterPointsLongitudes, self.mapWaterPointsLatitudes, self.mapWaters[index], shading='gouraud', cmap="jet", vmin=vmin, vmax=vmax, zorder=1)
                 plt.axis(plotAxis)
                 plt.title(self.titlePrefix + "Water Elevation")
-                timestampDelta = int(self.mapWaterTimes[index]) - datetime.timestamp(self.waterStartDate)
-        #         startDateTimestamp - (-987120000.0)
-        #         return datetime.fromtimestamp(timestamp, timezone.utc)
-                timestamp = (-987120000.0) + timestampDelta
-                plt.xlabel(datetime.fromtimestamp(timestamp, timezone.utc))
+                plt.xlabel(datetime.fromtimestamp(self.mapWaterTimes[index], timezone.utc))
     #             plt.gca().invert_yaxis()
                 plt.colorbar(
                     ScalarMappable(norm=contourset.norm, cmap=contourset.cmap),
