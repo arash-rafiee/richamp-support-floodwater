@@ -6,6 +6,7 @@ from GetBuoyWater import GetBuoyWater
 from GetBuoyWaves import GetBuoyWaves
 from GetObsRain import GetObsRain
 from GetObsElevation import GetObsElevation
+from GetRunup import GetRunup
 import datetime
 import argparse
 import os
@@ -144,6 +145,9 @@ def main():
     )
     p.add_argument(
         "--prefix", type=str, help="Prefix for title of graphs"
+    )
+    p.add_argument(
+        "--runup", type=str, help="Runup helper file specifying where to make predictions"
     )
     args = p.parse_args()
     args.epsg = 4326
@@ -407,6 +411,18 @@ def main():
 #             This wave observational file will contain the observational data in correct format for three types of observational data,
 #           significant wave height, mean wave direction, and mean wave period
             dataToGraph["BUOY"] = OBS_WAVE_DATA_FILE
+            
+        if(args.runup):
+            if(args.waterExists and args.wavesExist and args.meshExists):
+                GetRunup(
+                    ADCIRC_WATER_DATA_FILE=dataToGraph["WATER"], 
+                    WAVE_SWH_DATA_FILE=dataToGraph["SWH"],
+                    WAVE_MWD_DATA_FILE=dataToGraph["MWD"],
+                    WAVE_MWP_DATA_FILE=dataToGraph["MWP"],
+                    ADCIRC_MESH_DATA_FILE=dataToGraph["MESH"]
+                )
+            else:
+                print("Missing one or more data files needed for runup calculation!")
 #             
 #     Grapher(graphObs=args.obs, graphRain=False, WIND_TYPE="POST", OBS_WIND_DATA_FILE=OBS_WIND_DATA_FILE, STATIONS_FILE=STATIONS_FILE, WIND_DATA_FILE=POST_WIND_DATA_FILE, RAIN_DATA_FILE=GFS_RAIN_DATA_FILE).generateGraphs()
         
