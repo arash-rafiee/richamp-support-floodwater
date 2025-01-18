@@ -30,11 +30,18 @@ class GetRunup:
         runupDict = {}
 
         for key in stationsDict["RUNUP"].keys():
+#             The RUNUP stations should correspond to a node on the ADCIRC mesh
+#               The RUNUP stations can also include an offshore node in the json, bypassing the need to find the offshore node index.
             stationDict = stationsDict["RUNUP"][key]
             stationId = stationDict["id"]
             stationName = stationDict["name"]
             latitude = stationDict["latitude"]
             longitude = stationDict["longitude"]
+#             First, calculate offshore node index from given runup station location (Can be hardcoded to a specific v18 node index)
+#               Next, generate cross shore transect from station to offshore
+#               Next, extract depth profile along transect from mesh data file
+#               Next, extract wave data for offshore point
+#               Finally, loop through each time and calculate the runup using the extracted values and a selected formula
             runupDict[key] = {}
             runupDict[key]["times"] = [100, 200, 300]
             runupDict[key]["runup"] = [2, 3, 1.4]

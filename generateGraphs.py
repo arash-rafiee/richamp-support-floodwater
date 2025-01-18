@@ -147,7 +147,7 @@ def main():
         "--prefix", type=str, help="Prefix for title of graphs"
     )
     p.add_argument(
-        "--runup", type=str, help="Runup helper file specifying where to make predictions"
+        "--generateRunup", type=bool, help="Generate runup predictions from runup stations"
     )
     args = p.parse_args()
     args.epsg = 4326
@@ -412,7 +412,7 @@ def main():
 #           significant wave height, mean wave direction, and mean wave period
             dataToGraph["BUOY"] = OBS_WAVE_DATA_FILE
             
-        if(args.runup):
+        if(args.generateRunup):
             if(args.waterExists and args.wavesExist and args.meshExists):
                 GetRunup(
                     STATIONS_FILE = STATIONS_FILE,
