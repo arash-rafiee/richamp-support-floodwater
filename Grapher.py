@@ -1462,7 +1462,6 @@ class Grapher:
                     plt.ylabel("Rad stress direction (degrees)")
                     plt.savefig(graph_directory + stationName + '_wave_radstress_dir.png')
                     plt.close()
-                    for index in range(numberOfWaterDatapoints):
         for index in range(numberOfRunupDatapoints):
             if(len(self.datapointsRunup) > 0):
                 fig, ax = plt.subplots(figsize=(16,9))
