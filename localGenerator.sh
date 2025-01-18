@@ -98,4 +98,14 @@
 
 # python generateGraphs.py --stations HAWAII_STATIONS.json --gfsExists true --wind hone_wind_gfs.nc --tempDir temp/ --backgroundChoice HAWAII
 
-python generateGraphs.py --stations OBS_STATIONS.json --wavesExists true --args.waverad /project/pi_iginis_uri_edu/pranav_sai_uri_edu/AdcircManualRuns/ScenarioRuns/v18SandyRun/forecast/rads.64.nc --args.waveswh /project/pi_iginis_uri_edu/pranav_sai_uri_edu/AdcircManualRuns/ScenarioRuns/v18SandyRun/forecast/swan_HS.63.nc --args.wavemwd /project/pi_iginis_uri_edu/pranav_sai_uri_edu/AdcircManualRuns/ScenarioRuns/v18SandyRun/forecast/swan_DIR.63.nc --args.wavemwp /project/pi_iginis_uri_edu/pranav_sai_uri_edu/AdcircManualRuns/ScenarioRuns/v18SandyRun/forecast/swan_TMM10.63.nc --args.wavepwp /project/pi_iginis_uri_edu/pranav_sai_uri_edu/AdcircManualRuns/ScenarioRuns/v18SandyRun/forecast/swan_TPS.63.nc --waterExists true --water /project/pi_iginis_uri_edu/pranav_sai_uri_edu/AdcircManualRuns/ScenarioRuns/v18SandyRun/forecast/fort.63.nc --meshExists true --mesh /project/pi_iginis_uri_edu/pranav_sai_uri_edu/AdcircManualRuns/ScenarioRuns/v18SandyRun/forecast/fort.14 --runup CHARLESTOWN_RUNUP.txt --tempDir /scratch3/workspace/pranav_sai_uri_edu-manrun/temp/ --backgroundChoice RHODE_ISLAND_CHAMP
+python generateGraphs.py --stations OBS_STATIONS.json\
+--wavesExists true \
+--waverad /project/pi_iginis_uri_edu/pranav_sai_uri_edu/AdcircManualRuns/ScenarioRuns/v18SandyRun/forecast/rads.64.nc \
+--waveswh /project/pi_iginis_uri_edu/pranav_sai_uri_edu/AdcircManualRuns/ScenarioRuns/v18SandyRun/forecast/swan_HS.63.nc \
+--wavemwd /project/pi_iginis_uri_edu/pranav_sai_uri_edu/AdcircManualRuns/ScenarioRuns/v18SandyRun/forecast/swan_DIR.63.nc \
+--wavemwp /project/pi_iginis_uri_edu/pranav_sai_uri_edu/AdcircManualRuns/ScenarioRuns/v18SandyRun/forecast/swan_TMM10.63.nc \
+--wavepwp /project/pi_iginis_uri_edu/pranav_sai_uri_edu/AdcircManualRuns/ScenarioRuns/v18SandyRun/forecast/swan_TPS.63.nc \
+--waterExists true --water /project/pi_iginis_uri_edu/pranav_sai_uri_edu/AdcircManualRuns/ScenarioRuns/v18SandyRun/forecast/fort.63.nc \
+--meshExists true --mesh /project/pi_iginis_uri_edu/pranav_sai_uri_edu/AdcircManualRuns/ScenarioRuns/v18SandyRun/forecast/fort.14 \
+--runup CHARLESTOWN_RUNUP.txt \
+--tempDir /scratch3/workspace/pranav_sai_uri_edu-manrun/temp/ --backgroundChoice RHODE_ISLAND_CHAMP
