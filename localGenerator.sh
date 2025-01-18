@@ -107,5 +107,5 @@ python generateGraphs.py --stations OBS_STATIONS.json \
 --wavepwp /project/pi_iginis_uri_edu/pranav_sai_uri_edu/AdcircManualRuns/ScenarioRuns/v18SandyRun/forecast/swan_TPS.63.nc \
 --waterExists true --water /project/pi_iginis_uri_edu/pranav_sai_uri_edu/AdcircManualRuns/ScenarioRuns/v18SandyRun/forecast/fort.63.nc \
 --meshExists true --mesh /project/pi_iginis_uri_edu/pranav_sai_uri_edu/AdcircManualRuns/ScenarioRuns/v18SandyRun/forecast/fort.14 \
---runup CHARLESTOWN_RUNUP.txt \
+--generateRunup true \
 --tempDir /scratch3/workspace/pranav_sai_uri_edu-manrun/temp/ --backgroundChoice RHODE_ISLAND_CHAMP
