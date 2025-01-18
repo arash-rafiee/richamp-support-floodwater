@@ -98,7 +98,7 @@
 
 # python generateGraphs.py --stations HAWAII_STATIONS.json --gfsExists true --wind hone_wind_gfs.nc --tempDir temp/ --backgroundChoice HAWAII
 
-python generateGraphs.py --stations OBS_STATIONS.json\
+python generateGraphs.py --stations OBS_STATIONS.json \
 --wavesExists true \
 --waverad /project/pi_iginis_uri_edu/pranav_sai_uri_edu/AdcircManualRuns/ScenarioRuns/v18SandyRun/forecast/rads.64.nc \
 --waveswh /project/pi_iginis_uri_edu/pranav_sai_uri_edu/AdcircManualRuns/ScenarioRuns/v18SandyRun/forecast/swan_HS.63.nc \
