@@ -6,13 +6,14 @@ import json
         
 class GetRunup:
     def __init__(self, 
+        STATIONS_FILE="",
         ADCIRC_WATER_DATA_FILE="", 
         WAVE_SWH_DATA_FILE="", 
         WAVE_MWD_DATA_FILE="",
         WAVE_MWP_DATA_FILE="",
         ADCIRC_MESH_DATA_FILE="",
         RUNUP_DATA_FILE=""):
-        temp_directory = ADCIRC_WATER_DATA_FILE[0:ADCIRC_WATER_DATA_FILE.rfind("/") + 1]
+        temp_directory = RUNUP_DATA_FILE[0:RUNUP_DATA_FILE.rfind("/") + 1]
         with open(STATIONS_FILE) as stations_file:
             stationsDict = json.load(stations_file)
             

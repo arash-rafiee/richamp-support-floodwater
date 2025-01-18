@@ -58,12 +58,14 @@ class Grapher:
         self.waterExists = False
         self.etaExists = False
         self.meshExists = False
+        self.runupExists = False
         
         self.windStartDate = None
         self.waveStartDate = None
         self.rainStartDate = None
         self.waterStartDate = None
         self.etaStartDate = None
+        self.runupStartDate = None
         
         self.windType = ""
         
@@ -94,6 +96,8 @@ class Grapher:
             self.meshExists = True
         if("ASSET" in dataToGraph):
             self.assetExists = True
+        if("RUNUP" in dataToGraph):
+            self.runupExists = True
         with open(STATIONS_FILE) as outfile:
             self.obsMetadata = json.load(outfile)
             
@@ -260,6 +264,14 @@ class Grapher:
         self.mapElevationTriangles = []
         self.mapElevationMaskedTriangles = []
         self.mapElevation = []
+        
+        self.maxRunup = 1
+        self.runupLongitudes = []
+        self.runupLatitudes = []
+        self.runupLabels = []
+        
+        self.runupTimes = []
+        self.datapointsRunup = []
     
 
 #        So loading obs, wind, and waves should be able to cover and set all available data
@@ -295,6 +307,7 @@ class Grapher:
         if("ETA" in dataToGraph):
             with open(dataToGraph["ETA"]) as outfile:
                 etaDataset = json.load(outfile)
+
                   
         if(self.windExists):
             windTimestampsInitialized = False
@@ -725,7 +738,28 @@ class Grapher:
                         self.buoyDatapointsMWP.append(buoyMWP)
                         self.buoyDatapointsPWP.append(buoyPWP)
    
-            buoyLabelsInitialized = True              
+            buoyLabelsInitialized = True     
+            
+        if(self.runupExists):
+            with open(dataToGraph["RUNUP"]) as outfile:
+                runupDataset = json.load(outfile)
+                
+            runupTimestampsInitialized = False
+            for stationKey in runupDataset.keys():
+                nodeIndex = runupDataset[stationKey]["nodeIndex"]
+                self.runupLabels.append(nodeIndex)
+                self.runupLatitudes.append(runupDataset[stationKey]["latitude"])
+                self.runupLongitudes.append(runupDataset[stationKey]["longitude"])
+                
+                datapointRunup = []
+                for index in range(len(runupDataset[stationKey]["times"])):
+                    if(self.runupStartDate == None):
+                        self.runupStartDate = datetime.fromtimestamp(int(runupDataset[stationKey]["times"][index]), timezone.utc)
+                    if(not runupTimestampsInitialized):
+                        self.runupTimes.append(self.unixTimeToDeltaHours(runupDataset[stationKey]["times"][index], self.runupStartDate))
+                    datapointRunup.append(runupDataset[stationKey]["runup"][index])
+                runupTimestampsInitialized = True
+                self.datapointsRunup.append(datapointRunup)                     
 
     def generateGraphs(self):
         graph_directory = "graphs/"
@@ -736,6 +770,7 @@ class Grapher:
         numberOfEtaDatapoints = 0
         numberOfWaveDatapoints = 0
         numberOfElevationDatapoints = 0
+        numberOfRunupDatapoints = 0
 #         TODO: Currently, when graphing multiple products with obs on, OBS_STATIONS must contain the same number of station 
 #           entries for each type of product
         if(self.windExists):
@@ -760,9 +795,11 @@ class Grapher:
             numberOfElevationDatapoints = len(self.assetDatapointsElevation)
         if(self.obsExists):
             numberOfWindDatapoints = len(self.obsDatapointsTimes)
-        print("numberOfDatapoints Wind, Rain, Water, Wave, Eta, Elevation", numberOfWindDatapoints, numberOfRainDatapoints, numberOfWaterDatapoints, numberOfWaveDatapoints, numberOfEtaDatapoints, numberOfElevationDatapoints, flush=True)
+        if(self.runupExists):
+            numberOfRunupDatapoints = len(self.runupTimes)
+        print("numberOfDatapoints Wind, Rain, Water, Wave, Eta, Elevation, Runup", numberOfWindDatapoints, numberOfRainDatapoints, numberOfWaterDatapoints, numberOfWaveDatapoints, numberOfEtaDatapoints, numberOfElevationDatapoints, numberOfRunupDatapoints, flush=True)
         fig, ax = plt.subplots()
-        print("maxWind", self.maxWind, "maxRain", self.maxRain, "maxWave", self.maxSWH, "maxWater", self.maxWater, "maxEta", self.maxEta, "maxElevation", self.maxElevation, flush=True)
+        print("maxWind", self.maxWind, "maxRain", self.maxRain, "maxWave", self.maxSWH, "maxWater", self.maxWater, "maxEta", self.maxEta, "maxElevation", self.maxElevation, flush=True, "maxRunup", self.maxRunup)
         
         if(self.windExists):
             ax.scatter(self.obsLongitudes, self.obsLatitudes, label="Obs")
@@ -781,6 +818,8 @@ class Grapher:
             ax.scatter(self.elevationLongitudes, self.elevationLatitudes, label="Mesh")
         if(self.etaExists):
             ax.scatter(self.etaLongitudes, self.etaLatitudes, label="Eta")
+        if(self.runupExists):
+            ax.scatter(self.runupLongiudes, self.runupLatitudes)
         ax.legend(loc="lower right")
 
         for index, label in enumerate(self.obsLabels):
@@ -807,6 +846,8 @@ class Grapher:
                 ax.annotate(self.elevationLabels[index], (self.elevationLongitudes[index], self.elevationLatitudes[index]))
             if(self.etaExists):
                 ax.annotate(self.etaLabels[index], (self.etaLongitudes[index], self.etaLatitudes[index]))
+        for index, label in enumerate(self.runupLabels):
+            ax.annotate(label, (self.runupLongitudes[index], self.runupLatitudes[index]))
             
         plt.title("location of datapoints by data type")
         plt.xlabel("longitude")
@@ -1421,5 +1462,21 @@ class Grapher:
                     plt.ylabel("Rad stress direction (degrees)")
                     plt.savefig(graph_directory + stationName + '_wave_radstress_dir.png')
                     plt.close()
+                    for index in range(numberOfWaterDatapoints):
+        for index in range(numberOfRunupDatapoints):
+            if(len(self.datapointsRunup) > 0):
+                fig, ax = plt.subplots(figsize=(16,9))
+                ax.plot(self.runupTimes, self.datapointsRunup[index], label="Forecast")
+                ax.legend(loc="upper left")
+                ax.format_xdata = mdates.DateFormatter('%d')
+                plt.xticks(fontsize=12)
+                plt.yticks(fontsize=12)
+                stationName = self.runupLabels[index]
+                maxRunup = str(round(max(self.datapointsRunup[index]), 2))
+                plt.title(self.titlePrefix + stationName + " station runup max: " + maxRunup, fontsize=18)
+#                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
+                plt.ylabel("runup (meters)", fontsize=14)
+                plt.savefig(graph_directory + stationName + '_runup.png')
+                plt.close()
                 
            

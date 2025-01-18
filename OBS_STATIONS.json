@@ -314,4 +314,30 @@
       "elevation": "6.15100002288818"
     }
   }
+  "RUNUP": {
+    "60": {
+      "id": "8454000",
+      "source": "NOS",
+      "name": "Providence, RI",
+      "latitude": "41.8068",
+      "longitude": "-71.3988",
+      "altitude": "21.0\n"
+    },
+    "61": {
+      "id": "8452660",
+      "source": "NOS",
+      "name": "Newport, RI",
+      "latitude": "41.505",
+      "longitude": "-71.326667",
+      "altitude": "10.6\n"
+    },
+    "62": {
+      "id": "8454049",
+      "source": "NOS",
+      "name": "Quonset Pt, RI",
+      "latitude": "41.58667",
+      "longitude": "-71.40500",
+      "altitude": "9.13\n"
+    }
+  }
 }
