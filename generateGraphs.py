@@ -413,7 +413,7 @@ def main():
             dataToGraph["BUOY"] = OBS_WAVE_DATA_FILE
             
     if(args.generateRunup):
-        if(args.waterExists and args.wavesExist and args.meshExists):
+        if(args.waterExists and args.wavesExists and args.meshExists):
             GetRunup(
                 STATIONS_FILE = STATIONS_FILE,
                 ADCIRC_WATER_DATA_FILE=dataToGraph["WATER"], 
