@@ -13,6 +13,7 @@ class GetRunup:
         WAVE_MWP_DATA_FILE="",
         ADCIRC_MESH_DATA_FILE="",
         RUNUP_DATA_FILE=""):
+        print("Generating Runup!", flush=True)
         temp_directory = RUNUP_DATA_FILE[0:RUNUP_DATA_FILE.rfind("/") + 1]
         with open(STATIONS_FILE) as stations_file:
             stationsDict = json.load(stations_file)
