@@ -412,19 +412,19 @@ def main():
 #           significant wave height, mean wave direction, and mean wave period
             dataToGraph["BUOY"] = OBS_WAVE_DATA_FILE
             
-        if(args.generateRunup):
-            if(args.waterExists and args.wavesExist and args.meshExists):
-                GetRunup(
-                    STATIONS_FILE = STATIONS_FILE,
-                    ADCIRC_WATER_DATA_FILE=dataToGraph["WATER"], 
-                    WAVE_SWH_DATA_FILE=dataToGraph["SWH"],
-                    WAVE_MWD_DATA_FILE=dataToGraph["MWD"],
-                    WAVE_MWP_DATA_FILE=dataToGraph["MWP"],
-                    ADCIRC_MESH_DATA_FILE=dataToGraph["MESH"],
-                    RUNUP_DATA_FILE = wind_temp_directory + "runup_data_file.json"
-                )
-            else:
-                print("Missing one or more data files needed for runup calculation!")
+    if(args.generateRunup):
+        if(args.waterExists and args.wavesExist and args.meshExists):
+            GetRunup(
+                STATIONS_FILE = STATIONS_FILE,
+                ADCIRC_WATER_DATA_FILE=dataToGraph["WATER"], 
+                WAVE_SWH_DATA_FILE=dataToGraph["SWH"],
+                WAVE_MWD_DATA_FILE=dataToGraph["MWD"],
+                WAVE_MWP_DATA_FILE=dataToGraph["MWP"],
+                ADCIRC_MESH_DATA_FILE=dataToGraph["MESH"],
+                RUNUP_DATA_FILE = wind_temp_directory + "runup_data_file.json"
+            )
+        else:
+            print("Missing one or more data files needed for runup calculation!")
 #             
 #     Grapher(graphObs=args.obs, graphRain=False, WIND_TYPE="POST", OBS_WIND_DATA_FILE=OBS_WIND_DATA_FILE, STATIONS_FILE=STATIONS_FILE, WIND_DATA_FILE=POST_WIND_DATA_FILE, RAIN_DATA_FILE=GFS_RAIN_DATA_FILE).generateGraphs()
         
