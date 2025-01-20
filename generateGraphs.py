@@ -377,8 +377,8 @@ def main():
         dataToGraph["SWH"] = WAVE_SWH_DATA_FILE
         dataToGraph["MWD"] = WAVE_MWD_DATA_FILE
         dataToGraph["MWP"] = WAVE_MWP_DATA_FILE
-        dataToGraph["PWP"] = WAVE_PWP_DATA_FILE
-        dataToGraph["RAD"] = WAVE_RAD_DATA_FILE
+#         dataToGraph["PWP"] = WAVE_PWP_DATA_FILE
+#         dataToGraph["RAD"] = WAVE_RAD_DATA_FILE
         
     print("args.obsExists", args.obsExists, flush=True)
     if(args.obsExists):
