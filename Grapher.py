@@ -1190,7 +1190,7 @@ class Grapher:
             gc.collect()
         if(len(self.mapWaveTimes) > 0):
             vmin = 0
-            vmax = math.ceil(self.maxWave)
+            vmax = math.ceil(self.maxSWH)
             levels = 100
             levelBoundaries = np.linspace(vmin, vmax, levels + 1)
             # waveTriangulation = Triangulation(self.mapWavePointsLongitudes, self.mapWavePointsLatitudes, triangles=self.mapWaveTriangles, mask=self.mapWaveMaskedTriangles)
