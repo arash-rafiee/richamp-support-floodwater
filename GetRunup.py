@@ -57,6 +57,7 @@ class GetRunup:
             offshoreMwp = mwpDict[offshoreKey]["mwp"]
             shorelineElevation = meshDict[key]["elevation"]
             offshoreElevation = meshDict[offshoreKey]["elevation"]
+            print(offshoreWater, offshoreSwh, offshoreMwd, offshoreMwp, shorelineElevation, offshoreElevation)
             print("max time, water, swg, mwd, mwp, and elevation shoreline offshore", max(offshoreWater), max(offshoreSwh), max(offshoreMwd), max(offshoreMwp), shorelineElevation, offshoreElevation)
 #             First, calculate offshore node index from given runup station location (Can be hardcoded to a specific v18 node index)
 #               A way to find the shoreline and offshore point elevation, water level, and wave parameters,
