@@ -39,6 +39,9 @@ class GetRunup:
             latitude = stationDict["latitude"]
             longitude = stationDict["longitude"]
 #             First, calculate offshore node index from given runup station location (Can be hardcoded to a specific v18 node index)
+#               A way to find the shoreline and offshore point elevation, water level, and wave parameters,
+#               Observational stations can be set for the shoreline and offshore point. Then the values will be interpolated onto the points as
+#               a timeseries
 #               Next, generate cross shore transect from station to offshore
 #               Next, extract depth profile along transect from mesh data file
 #               Next, extract wave data for offshore point
