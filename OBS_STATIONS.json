@@ -9,14 +9,14 @@
     }
   },
   "ASSET": {
-    "20": {
+    "70": {
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Charlestown Shoreline",
       "latitude": "41.3557",
       "longitude": "-71.64224"
     },
-    "21": {
+    "71": {
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Charlestown Offshore",
@@ -53,14 +53,14 @@
       "latitude": "41.372",
       "longitude": "-72.096"
     },
-    "14": {
+    "70": {
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Charlestown Shoreline",
       "latitude": "41.3557",
       "longitude": "-71.64224"
     },
-    "15": {
+    "71": {
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Charlestown Offshore",
@@ -125,14 +125,14 @@
       "longitude": "-72.044303894043",
       "elevation": "6.15100002288818"
     },
-    "59": {
+    "70": {
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Charlestown Shoreline",
       "latitude": "41.3557",
       "longitude": "-71.64224"
     },
-    "60": {
+    "71": {
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Charlestown Offshore",
@@ -144,6 +144,7 @@
     "70": {
       "id": "RUNUP",
       "source": "RUNUP",
+      "offshoreKey": "71"
       "name": "Charlestown Shoreline",
       "latitude": "41.3557",
       "longitude": "-71.64224"

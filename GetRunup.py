@@ -17,6 +17,16 @@ class GetRunup:
         temp_directory = RUNUP_DATA_FILE[0:RUNUP_DATA_FILE.rfind("/") + 1]
         with open(STATIONS_FILE) as stations_file:
             stationsDict = json.load(stations_file)
+        with open(ADCIRC_WATER_DATA_FILE) as datafile:
+            waterDict = json.load(datafile)
+        with open(WAVE_SWH_DATA_FILE) as datafile:
+            swhDict = json.load(datafile)
+        with open(WAVE_MWD_DATA_FILE) as datafile:
+            mwdDict = json.load(datafile)
+        with open(WAVE_MWP_DATA_FILE) as datafile:
+            mwpDict = json.load(datafile)
+        with open(ADCIRC_MESH_DATA_FILE) as datafile:
+            meshDict = json.load(datafile)
             
 
 
@@ -38,6 +48,16 @@ class GetRunup:
             stationName = stationDict["name"]
             latitude = stationDict["latitude"]
             longitude = stationDict["longitude"]
+            offshoreKey = stationDict["offshoreKey"]
+            
+            runupTimes = waterDict[offshoreKey]["times"]
+            offshoreWater = waterDict[offshoreKey]["water"]
+            offshoreSwh = swhDict[offshoreKey]["swh"]
+            offshoreMwd = mwdDict[offshoreKey]["mwd"]
+            offshoreMwp = mwpDict[offshoreKey]["mwp"]
+            shorelineElevation = meshDict[key]["elevation"]
+            offshoreElevation = meshDict[offshoreKey]["elevation"]
+            print("max time, water, swg, mwd, mwp, and elevation shoreline offshore", max(offshoreWater), max(offshoreSwh), max(offshoreMwd), max(offshoreMwp), shorelineElevation, offshoreElevation)
 #             First, calculate offshore node index from given runup station location (Can be hardcoded to a specific v18 node index)
 #               A way to find the shoreline and offshore point elevation, water level, and wave parameters,
 #               Observational stations can be set for the shoreline and offshore point. Then the values will be interpolated onto the points as
@@ -47,8 +67,8 @@ class GetRunup:
 #               Next, extract wave data for offshore point
 #               Finally, loop through each time and calculate the runup using the extracted values and a selected formula
             runupDict[key] = {}
-            runupDict[key]["times"] = [100, 200, 300]
-            runupDict[key]["runup"] = [2, 3, 1.4]
+            runupDict[key]["times"] = runupTimes
+            runupDict[key]["runup"] = offshoreWater
         
         # print(windDict)
         with open(RUNUP_DATA_FILE, "w") as outfile:
