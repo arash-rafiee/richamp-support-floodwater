@@ -70,7 +70,6 @@ class GetRunup:
             runupDict[key] = {}
             runupDict[key]["times"] = runupTimes
             runupDict[key]["runup"] = offshoreWater
-            quit()
         
         # print(windDict)
         with open(RUNUP_DATA_FILE, "w") as outfile:
