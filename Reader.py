@@ -961,7 +961,7 @@ class Reader:
             stationsDict = json.load(stations_file)
             
         data = {}
-        data = self.getMap(dataset, dataType, times, spaceSparseness, timeSparseness, data)
+#         data = self.getMap(dataset, dataType, times, spaceSparseness, timeSparseness, data)
                 
         print("Interpolating", dataType, flush=True)
         nodesIndex = []
@@ -1063,7 +1063,7 @@ class Reader:
             stationsDict = json.load(stations_file)
             
         data = {}
-        data = self.getMapWithPoints(points, triangles, maskedTriangles, elevations, dataType, data)
+#         data = self.getMapWithPoints(points, triangles, maskedTriangles, elevations, dataType, data)
 #                 
         print("Interpolating", dataType, flush=True)
         closestPoints = []
