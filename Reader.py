@@ -1235,8 +1235,8 @@ class Fort63Reader:
         waterDataset, timesWater = self.reader.getNetcdfProperties(self.ADCIRC_WATER_FILE, "water")
         initializeClosestWaterNodes = True
         if(initializeClosestWaterNodes):
-#             thresholdDistance = 10
-            thresholdDistance = 1
+            thresholdDistance = 10
+#             thresholdDistance = 1
             self.reader.initializeClosestNodes(waterDataset, thresholdDistance, "water")
         spaceSparseness = 1
 #         spaceSparseness = 10
@@ -1346,8 +1346,8 @@ class Fort14Reader:
 #         Interpolates elevation data according to available stations for below dataType
         dataType = "elevation"
         if(initializeClosestMeshNodes):
-#             thresholdDistance = 10
-            thresholdDistance = 1
+            thresholdDistance = 10
+#             thresholdDistance = 1
             self.reader.initializeClosestNodesForPoints(points, thresholdDistance, dataType)
         self.reader.generateDataFilesWithInterpolationForPoints(points, triangles, maskedTriangles, elevations, dataType, self.ADCIRC_MESH_DATA_FILE)
 
@@ -1432,8 +1432,8 @@ class WaveReader:
         timeSparseness = 1
         initializeClosestWaveNodes = True
         if(initializeClosestWaveNodes):
-            thresholdDistance = 1
-#             thresholdDistance = 10
+#             thresholdDistance = 1
+            thresholdDistance = 10
             self.reader.initializeClosestNodes(swhDataset, thresholdDistance, "swh")
         interpolateValues = True
         if(interpolateValues):
