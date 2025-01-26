@@ -25,13 +25,6 @@
     }
   },
   "NDBC": {
-    "70": {
-      "id": "RUNUP",
-      "source": "RUNUP",
-      "name": "Charlestown Shoreline",
-      "latitude": "41.3557",
-      "longitude": "-71.64224"
-    },
     "71": {
       "id": "RUNUP",
       "source": "RUNUP",
@@ -41,13 +34,6 @@
     }
   },
   "NOS": {
-    "70": {
-      "id": "RUNUP",
-      "source": "RUNUP",
-      "name": "Charlestown Shoreline",
-      "latitude": "41.3557",
-      "longitude": "-71.64224"
-    },
     "71": {
       "id": "RUNUP",
       "source": "RUNUP",
