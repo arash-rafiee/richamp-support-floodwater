@@ -461,6 +461,7 @@ def main():
                 ADCIRC_MESH_DATA_FILE=dataToGraph["MESH"],
                 RUNUP_DATA_FILE = wind_temp_directory + "runup_data_file.json"
             )
+            dataToGraph["RUNUP"] = RUNUP_DATA_FILE
         else:
             print("Missing one or more data files needed for runup calculation!")
 #             
