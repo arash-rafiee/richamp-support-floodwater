@@ -4,6 +4,7 @@
 from datetime import datetime, timedelta, timezone
 import json
 import haversine
+import math
         
 class GetRunup:
     def __init__(self, 
@@ -66,7 +67,8 @@ class GetRunup:
     #                             distance and threshold in kilometers
             distance = haversine.haversine(offshoreCoordinates, shorelineCoordinates) * 1000
             print("distance between offshore and shoreline", distance)
-            averageSlope = (offshoreElevation - shorelineElevation) / distance
+#             Calculate average slope in radians
+            averageSlope = math.atan((offshoreElevation - shorelineElevation) / distance)
             print("average slope", averageSlope)
 #             First, calculate offshore node index from given runup station location (Can be hardcoded to a specific v18 node index)
 #               A way to find the shoreline and offshore point elevation, water level, and wave parameters,
