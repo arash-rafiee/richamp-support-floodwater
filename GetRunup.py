@@ -73,7 +73,7 @@ class GetRunup:
             
             g = 9.81
 #             Convert mean wave period to deepwater wavelength
-            offshoreWavelength = (g * offshoreMwp**2) / (2 * math.pi)
+            offshoreWavelength = (g * np.array(offshoreMwp)**2) / (2 * math.pi)
             print("offshoreWavelength", offshoreWavelength)
 #             First, calculate offshore node index from given runup station location (Can be hardcoded to a specific v18 node index)
 #               A way to find the shoreline and offshore point elevation, water level, and wave parameters,
