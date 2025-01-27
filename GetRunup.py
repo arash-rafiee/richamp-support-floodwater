@@ -62,14 +62,19 @@ class GetRunup:
             offshoreMwp = mwpDict[offshoreKey]["mwp"]
             shorelineElevation = float(meshDict[key]["elevation"])
             offshoreElevation = float(meshDict[offshoreKey]["elevation"])
-            print(offshoreWater, offshoreSwh, offshoreMwd, offshoreMwp, shorelineElevation, offshoreElevation)
-            print("max time, water, swg, mwd, mwp, and elevation shoreline offshore", max(offshoreWater), max(offshoreSwh), max(offshoreMwd), max(offshoreMwp), shorelineElevation, offshoreElevation)
+#             print(offshoreWater, offshoreSwh, offshoreMwd, offshoreMwp, shorelineElevation, offshoreElevation)
+#             print("max time, water, swg, mwd, mwp, and elevation shoreline offshore", max(offshoreWater), max(offshoreSwh), max(offshoreMwd), max(offshoreMwp), shorelineElevation, offshoreElevation)
     #                             distance and threshold in kilometers
             distance = haversine.haversine(offshoreCoordinates, shorelineCoordinates) * 1000
             print("distance between offshore and shoreline", distance)
 #             Calculate average slope in radians
             averageSlope = math.atan((offshoreElevation - shorelineElevation) / distance)
             print("average slope", averageSlope)
+            
+            f = 9.81
+#             Convert mean wave period to deepwater wavelength
+            offshoreWavelength = (g * offshoreMwp**2) / (2 * math.pi)
+            print("offshoreWavelength", offshoreWavelength)
 #             First, calculate offshore node index from given runup station location (Can be hardcoded to a specific v18 node index)
 #               A way to find the shoreline and offshore point elevation, water level, and wave parameters,
 #               Observational stations can be set for the shoreline and offshore point. Then the values will be interpolated onto the points as
