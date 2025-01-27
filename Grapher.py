@@ -757,6 +757,7 @@ class Grapher:
                         self.runupStartDate = datetime.fromtimestamp(int(runupDataset[stationKey]["times"][index]), timezone.utc)
                     if(not runupTimestampsInitialized):
                         self.runupTimes.append(self.unixTimeToDeltaHours(runupDataset[stationKey]["times"][index], self.runupStartDate))
+                        print("APPENDING RUNUP TIME")
                     datapointRunup.append(runupDataset[stationKey]["runup"][index])
                 runupTimestampsInitialized = True
                 self.datapointsRunup.append(datapointRunup)                     
