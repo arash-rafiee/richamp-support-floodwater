@@ -819,7 +819,7 @@ class Grapher:
         if(self.etaExists):
             ax.scatter(self.etaLongitudes, self.etaLatitudes, label="Eta")
         if(self.runupExists):
-            ax.scatter(self.runupLongiudes, self.runupLatitudes)
+            ax.scatter(self.runupLongitudes, self.runupLatitudes)
         ax.legend(loc="lower right")
 
         for index, label in enumerate(self.obsLabels):
