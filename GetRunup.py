@@ -3,6 +3,7 @@
 
 from datetime import datetime, timedelta, timezone
 import json
+import haversine
         
 class GetRunup:
     def __init__(self, 
