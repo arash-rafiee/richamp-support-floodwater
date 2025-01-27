@@ -796,7 +796,7 @@ class Grapher:
         if(self.obsExists):
             numberOfWindDatapoints = len(self.obsDatapointsTimes)
         if(self.runupExists):
-            numberOfRunupDatapoints = len(self.runupTimes)
+            numberOfRunupDatapoints = len(self.runupLabels)
         print("numberOfDatapoints Wind, Rain, Water, Wave, Eta, Elevation, Runup", numberOfWindDatapoints, numberOfRainDatapoints, numberOfWaterDatapoints, numberOfWaveDatapoints, numberOfEtaDatapoints, numberOfElevationDatapoints, numberOfRunupDatapoints, flush=True)
         fig, ax = plt.subplots()
         print("maxWind", self.maxWind, "maxRain", self.maxRain, "maxWave", self.maxSWH, "maxWater", self.maxWater, "maxEta", self.maxEta, "maxElevation", self.maxElevation, "maxRunup", self.maxRunup, flush=True)
