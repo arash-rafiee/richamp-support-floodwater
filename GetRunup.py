@@ -91,7 +91,7 @@ class GetRunup:
             runupDict[key]["runup"] = offshoreWavelength
             runupDict[key]["wavelength"] = offshoreWavelength
             runupDict[key]["nodeIndex"] = stationName
-            runupDict[key]["latitude"] shorelineCoordinates[0]
+            runupDict[key]["latitude"] = shorelineCoordinates[0]
             runupDict[key]["longitude"] = shorelineCoordinates[1]
         
         # print(windDict)
