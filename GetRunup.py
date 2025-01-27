@@ -6,6 +6,7 @@ import json
 import haversine
 import math
 import numpy as np
+from Encoders import NumpyEncoder
         
 class GetRunup:
     def __init__(self, 
@@ -92,4 +93,4 @@ class GetRunup:
         
         # print(windDict)
         with open(RUNUP_DATA_FILE, "w") as outfile:
-            json.dump(runupDict, outfile)
+            json.dump(runupDict, outfile, cls=NumpyEncoder)
