@@ -71,7 +71,7 @@ class GetRunup:
             averageSlope = math.atan((offshoreElevation - shorelineElevation) / distance)
             print("average slope", averageSlope)
             
-            f = 9.81
+            g = 9.81
 #             Convert mean wave period to deepwater wavelength
             offshoreWavelength = (g * offshoreMwp**2) / (2 * math.pi)
             print("offshoreWavelength", offshoreWavelength)
@@ -86,6 +86,8 @@ class GetRunup:
             runupDict[key] = {}
             runupDict[key]["times"] = runupTimes
             runupDict[key]["runup"] = offshoreWater
+            runupDict[key]["runup"] = offshoreWavelength
+            runupDict[key]["wavelength"] = offshoreWavelength
         
         # print(windDict)
         with open(RUNUP_DATA_FILE, "w") as outfile:
