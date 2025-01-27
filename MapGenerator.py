@@ -45,9 +45,9 @@ worldPixelsHeight = 256
 worldPixelsWidth = 256
 # https://groups.google.com/g/google-maps-js-api-v3/c/hDRO4oHVSeM/m/osOYQYXg2oUJ?pli=1
 # metersPerPixel = 156543.03392 * math.cos(centerLatitude * math.pi / 180) / math.pow(2, zoom)
-minLatitude = 41.37
-maxLatitude = 41.42
-minLongitude = -71.55
+minLatitude = 41.2
+maxLatitude = 41.4
+minLongitude = -71.9
 maxLongitude = -71.5
 
 centerLatitude = (minLatitude + maxLatitude) / 2
@@ -68,7 +68,7 @@ lngZoom = findZoom(deltaPixelsWidth, worldPixelsWidth, lngFraction)
 print("zoom", latZoom, lngZoom)
 
 zoom = min(latZoom, lngZoom, ZOOM_MAX)
-outline=False
+outline=True
 if(outline):
     mapType = "outline"
 else:

@@ -153,3 +153,18 @@ Galilee
 "lat long of center", "(41.39499999999999, -71.525)"
 "lat long of north east", "(41.43362102050805, -71.47350158691407)"
 "lat long of south west", "(41.35635601867699, -71.57649841308594)"
+
+Cape Cod Bay
+"lat long of center", "(41.79999999999999, -70.49999999999999)"
+"lat long of north east", "(42.411307106237615, -69.67602539062499)"
+"lat long of south west", "(41.18280523636922, -71.32397460937499)"
+
+Cape Cod
+"lat long of center", "(42.000000000000014, -70.10000000000001)"
+"lat long of north east", "(42.15289894651102, -69.89400634765626)"
+"lat long of south west", "(41.84673278181634, -70.30599365234376)"
+
+Southern Rhode Island
+"lat long of center", "(41.300000000000004, -71.70000000000002)"
+"lat long of north east", "(41.454571991786615, -71.49400634765627)"
+"lat long of south west", "(41.145060792196574, -71.90599365234377)"

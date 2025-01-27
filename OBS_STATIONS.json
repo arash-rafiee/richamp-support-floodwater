@@ -49,7 +49,9 @@
       "offshoreKey": "71",
       "name": "Charlestown Shoreline",
       "latitude": "41.3557",
-      "longitude": "-71.64224"
+      "longitude": "-71.64224",
+      "offshoreLatitude": "41.2914",
+      "offshoreLongitude": "-71.61732"
     }
   }
 }

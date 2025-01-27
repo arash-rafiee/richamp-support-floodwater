@@ -1063,7 +1063,7 @@ class Reader:
             stationsDict = json.load(stations_file)
             
         data = {}
-#         data = self.getMapWithPoints(points, triangles, maskedTriangles, elevations, dataType, data)
+        data = self.getMapWithPoints(points, triangles, maskedTriangles, elevations, dataType, data)
 #                 
         print("Interpolating", dataType, flush=True)
         closestPoints = []

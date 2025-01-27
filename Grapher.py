@@ -1000,7 +1000,7 @@ class Grapher:
             gc.collect()
         if(len(self.mapElevation) > 0):
             vmin = -30
-            vmax = 50
+            vmax = 10
 #             vmax = math.ceil(self.maxElevation)
             levels = 100
             levelBoundaries = np.linspace(vmin, vmax, levels + 1)
@@ -1013,6 +1013,8 @@ class Grapher:
 #             ax.scatter(self.mapElevationPointsLongitudes, self.mapElevationPointsLatitudes, label="Nodes", alpha=0.1, marker=".", s=1, zorder=4, color="purple")
             if(self.assetExists):
                     ax.scatter(self.assetLongitudes, self.assetLatitudes, label="Assets", zorder=3, alpha=0.7, marker=".", s=40, color="black")
+#             Below line graphs mesh points
+#             ax.scatter(self.mapElevationPointsLongitudes, self.mapElevationPointsLatitudes, label="Nodes", zorder=3, alpha=0.7, marker=".", s=1, color="black")
             plt.axis(plotAxis)
             plt.title("Map Elevation")
             ax.legend(loc="upper right")
@@ -1357,7 +1359,7 @@ class Grapher:
                 stationName = self.tideLabels[index]
                 maxElevation = str(round(max(self.datapointsWaters[index]), 2))
                 plt.title(self.titlePrefix + stationName + " station water elevation max: " + maxElevation, fontsize=18)
-#                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
+                plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
                 plt.ylabel("elevation (meters)", fontsize=14)
                 plt.savefig(graph_directory + stationName + '_water.png')
                 plt.close()

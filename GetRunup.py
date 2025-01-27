@@ -46,9 +46,12 @@ class GetRunup:
             stationDict = stationsDict["RUNUP"][key]
             stationId = stationDict["id"]
             stationName = stationDict["name"]
-            latitude = stationDict["latitude"]
-            longitude = stationDict["longitude"]
+            shorelineCoordinates = (float(stationDict["latitude"]), float(stationDict["longitude"]))
             offshoreKey = stationDict["offshoreKey"]
+            offshoreLatitude = stationDict["offshoreLatitude"]
+            offshoreLongitude = stationDict["offshoreLongitude"]
+            offshoreCoordinates = (float(stationDict["offshoreLatitude"]), float(stationDict["offshoreLongitude"]))
+
             
             runupTimes = waterDict[offshoreKey]["times"]
             offshoreWater = waterDict[offshoreKey]["water"]
@@ -59,6 +62,9 @@ class GetRunup:
             offshoreElevation = meshDict[offshoreKey]["elevation"]
             print(offshoreWater, offshoreSwh, offshoreMwd, offshoreMwp, shorelineElevation, offshoreElevation)
             print("max time, water, swg, mwd, mwp, and elevation shoreline offshore", max(offshoreWater), max(offshoreSwh), max(offshoreMwd), max(offshoreMwp), shorelineElevation, offshoreElevation)
+    #                             distance and threshold in kilometers
+            distance = haversine.haversine(offshoreCoordinates, shorelineCoordinates)
+            print("distance between offshore and shoreline", distance)
 #             First, calculate offshore node index from given runup station location (Can be hardcoded to a specific v18 node index)
 #               A way to find the shoreline and offshore point elevation, water level, and wave parameters,
 #               Observational stations can be set for the shoreline and offshore point. Then the values will be interpolated onto the points as

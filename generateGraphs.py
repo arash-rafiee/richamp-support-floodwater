@@ -80,6 +80,19 @@ CHARLESTOWN_AXIS = [-71.67074920654298, -71.61925079345704, 41.38432229342453, 4
 GALILEE_MAP="Galilee.png"
 GALILEE_OUTLINE_MAP="GalileeOutline.png"
 GALILEE_AXIS=[-71.57649841308594, -71.47350158691407, 41.43362102050805, 41.35635601867699]
+
+CAPE_COD_BAY_MAP = "CapeCodBay.png"
+CAPE_COD_BAY_OUTLINE_MAP = "CapeCodBayOutline.png"
+CAPE_COD_BAY_AXIS = [-71.32397460937499, -69.67602539062499, 42.411307106237615, 41.18280523636922]
+
+CAPE_COD_MAP = "CapeCod.png"
+CAPE_COD_OUTLINE_MAP = "CapeCodOutline.png"
+CAPE_COD_AXIS = [-70.30599365234376, -69.89400634765626, 42.15289894651102, 41.84673278181634]
+
+SOUTHERN_RHODE_ISLAND_MAP = "SouthernRhodeIsland.png"
+SOUTHERN_RHODE_ISLAND_OUTLINE_MAP = "SouthernRhodeIslandOutline.png"
+SOUTHERN_RHODE_ISLAND_AXIS = [-71.90599365234377, -71.49400634765627, 41.454571991786615, 41.145060792196574]
+
 def main():
     p = argparse.ArgumentParser(description="Make a request to generate graphs")
     p.add_argument(
@@ -280,6 +293,31 @@ def main():
     elif(backgroundChoice == "GALILEE_OUTLINE"):
         backgroundMap = GALILEE_OUTLINE_MAP
         backgroundAxis = GALILEE_AXIS
+    elif(backgroundChoice == "CAPE_COD_BAY"):
+        backgroundMap = CAPE_COD_BAY_MAP
+        backgroundAxis = CAPE_COD_BAY_AXIS
+    elif(backgroundChoice == "CAPE_COD_BAY_OUTLINE"):
+        backgroundMap = CAPE_COD_BAY_OUTLINE_MAP
+        backgroundAxis = CAPE_COD_BAY_AXIS
+    elif(backgroundChoice == "CAPE_COD"):
+        backgroundMap = CAPE_COD_MAP
+        backgroundAxis = CAPE_COD_AXIS
+    elif(backgroundChoice == "CAPE_COD_OUTLINE"):
+        backgroundMap = CAPE_COD_OUTLINE_MAP
+        backgroundAxis = CAPE_COD_AXIS
+    elif(backgroundChoice == "SOUTHERN_RHODE_ISLAND"):
+        backgroundMap = SOUTHERN_RHODE_ISLAND_MAP
+        backgroundAxis = SOUTHERN_RHODE_ISLAND_AXIS
+    elif(backgroundChoice == "SOUTHERN_RHODE_ISLAND_OUTLINE"):
+        backgroundMap = SOUTHERN_RHODE_ISLAND_OUTLINE_MAP
+        backgroundAxis = SOUTHERN_RHODE_ISLAND_AXIS
+    elif(backgroundChoice == "CHARLESTOWN"):
+        backgroundMap = CHARLESTOWN_MAP
+        backgroundAxis = CHARLESTOWN_AXIS
+    elif(backgroundChoice == "CHARLESTOWN_OUTLINE"):
+        backgroundMap = CHARLESTOWN_OUTLINE_MAP
+        backgroundAxis = CHARLESTOWN_AXIS
+        
         
     print("args.adcircExists", args.adcircExists, flush=True)
     if(args.adcircExists):
@@ -317,7 +355,7 @@ def main():
 
         ADCIRC_WATER_DATA_FILE = water_temp_directory + "adcirc_water_data_file" + ".json"
 
-        (waterStartDateObject, waterEndDateObject) = Fort63Reader(ADCIRC_WATER_FILE=ADCIRC_WATER_FILE, STATIONS_FILE=STATIONS_FILE, ADCIRC_WATER_DATA_FILE=ADCIRC_WATER_DATA_FILE, BACKGROUND_AXIS=backgroundAxis).generateWindDataForStations()
+#         (waterStartDateObject, waterEndDateObject) = Fort63Reader(ADCIRC_WATER_FILE=ADCIRC_WATER_FILE, STATIONS_FILE=STATIONS_FILE, ADCIRC_WATER_DATA_FILE=ADCIRC_WATER_DATA_FILE, BACKGROUND_AXIS=backgroundAxis).generateWindDataForStations()
 #         waterStartDateObject = datetime.datetime(year=2018, month=2, day=28, hour=5)
 #         waterEndDateObject = datetime.datetime(year=2018, month=3, day=4, hour=5)
         dataToGraph["WATER"] = ADCIRC_WATER_DATA_FILE
@@ -331,7 +369,7 @@ def main():
 
         ADCIRC_MESH_DATA_FILE = water_temp_directory + "adcirc_elevation_data_file" + ".json"
 
-        Fort14Reader(ADCIRC_MESH_FILE=ADCIRC_MESH_FILE, STATIONS_FILE=STATIONS_FILE, ADCIRC_MESH_DATA_FILE=ADCIRC_MESH_DATA_FILE, BACKGROUND_AXIS=backgroundAxis).generateMeshDataForStations()
+#         Fort14Reader(ADCIRC_MESH_FILE=ADCIRC_MESH_FILE, STATIONS_FILE=STATIONS_FILE, ADCIRC_MESH_DATA_FILE=ADCIRC_MESH_DATA_FILE, BACKGROUND_AXIS=backgroundAxis).generateMeshDataForStations()
 #         waterStartDateObject = datetime.datetime(year=2018, month=2, day=28, hour=5)
 #         waterEndDateObject = datetime.datetime(year=2018, month=3, day=4, hour=5)
         dataToGraph["MESH"] = ADCIRC_MESH_DATA_FILE
@@ -358,19 +396,19 @@ def main():
         WAVE_PWP_DATA_FILE = wave_temp_directory + "wave_pwp_data_file" + ".json"
         WAVE_RAD_DATA_FILE = wave_temp_directory + "wave_rad_data_file" + ".json"
         STATIONS_FILE = args.stations
-        (waveStartDateObject, waveEndDateObject) = WaveReader(
-            WAVE_SWH_FILE=WAVE_SWH_FILE,
-            WAVE_MWD_FILE=WAVE_MWD_FILE,
-            WAVE_MWP_FILE=WAVE_MWP_FILE,
-            WAVE_PWP_FILE=WAVE_PWP_FILE,
-            WAVE_RAD_FILE=WAVE_RAD_FILE,
-            STATIONS_FILE=STATIONS_FILE, 
-            WAVE_SWH_DATA_FILE=WAVE_SWH_DATA_FILE,
-            WAVE_MWD_DATA_FILE=WAVE_MWD_DATA_FILE,
-            WAVE_MWP_DATA_FILE=WAVE_MWP_DATA_FILE,
-            WAVE_PWP_DATA_FILE=WAVE_PWP_DATA_FILE,
-            WAVE_RAD_DATA_FILE=WAVE_RAD_DATA_FILE,
-            BACKGROUND_AXIS=backgroundAxis).generateWaveDataForStations()
+#         (waveStartDateObject, waveEndDateObject) = WaveReader(
+#             WAVE_SWH_FILE=WAVE_SWH_FILE,
+#             WAVE_MWD_FILE=WAVE_MWD_FILE,
+#             WAVE_MWP_FILE=WAVE_MWP_FILE,
+#             WAVE_PWP_FILE=WAVE_PWP_FILE,
+#             WAVE_RAD_FILE=WAVE_RAD_FILE,
+#             STATIONS_FILE=STATIONS_FILE, 
+#             WAVE_SWH_DATA_FILE=WAVE_SWH_DATA_FILE,
+#             WAVE_MWD_DATA_FILE=WAVE_MWD_DATA_FILE,
+#             WAVE_MWP_DATA_FILE=WAVE_MWP_DATA_FILE,
+#             WAVE_PWP_DATA_FILE=WAVE_PWP_DATA_FILE,
+#             WAVE_RAD_DATA_FILE=WAVE_RAD_DATA_FILE,
+#             BACKGROUND_AXIS=backgroundAxis).generateWaveDataForStations()
         
 #         waveStartDateObject = datetime.datetime(year=2024, month=8, day=28, hour=5, tzinfo=datetime.timezone.utc)
 #         waveEndDateObject = datetime.datetime(year=2024, month=12, day=4, hour=5, tzinfo=datetime.timezone.utc)

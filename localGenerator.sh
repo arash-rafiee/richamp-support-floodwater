@@ -97,7 +97,7 @@
 # python generateGraphs.py --stations HAWAII_STATIONS.json --rainExists true --rain hone_rain_gfs.nc --tempDir temp/ --backgroundChoice HAWAII
 
 # python generateGraphs.py --stations HAWAII_STATIONS.json --gfsExists true --wind hone_wind_gfs.nc --tempDir temp/ --backgroundChoice HAWAII
-
+# 
 python generateGraphs.py --stations OBS_STATIONS.json \
 --wavesExists true \
 --waverad /project/pi_iginis_uri_edu/pranav_sai_uri_edu/AdcircManualRuns/ScenarioRuns/v18SandyRun/forecast/rads.64.nc \
@@ -109,3 +109,5 @@ python generateGraphs.py --stations OBS_STATIONS.json \
 --meshExists true --mesh /project/pi_iginis_uri_edu/pranav_sai_uri_edu/AdcircManualRuns/ScenarioRuns/v18SandyRun/forecast/fort.14 \
 --generateRunup true \
 --tempDir /scratch3/workspace/pranav_sai_uri_edu-manrun/temp/ --backgroundChoice RHODE_ISLAND_CHAMP
+
+# python generateGraphs.py --stations OBS_STATIONS.json --meshExists true --mesh ../trackfiles/v18.fort.14 --tempDir temp/ --backgroundChoice CAPE_COD
