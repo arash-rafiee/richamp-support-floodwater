@@ -5,6 +5,7 @@ from datetime import datetime, timedelta, timezone
 import json
 import haversine
 import math
+import numpy as np
         
 class GetRunup:
     def __init__(self, 
