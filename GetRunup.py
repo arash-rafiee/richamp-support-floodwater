@@ -85,6 +85,15 @@ class GetRunup:
 #               Next, extract depth profile along transect from mesh data file
 #               Next, extract wave data for offshore point
 #               Finally, loop through each time and calculate the runup using the extracted values and a selected formula
+
+
+#           Revised 1/29/25
+#             Key steps to calculating the wave runup
+#              Find the deep water wavelength. This is a dispeersion problem that should be calculated with account to the water depth.
+#             Find the significant wave height, shoaled to the appropriate offshore distance
+#              Calculate the iribarren number, validate its validity
+#             Figure out how to convert the mean wave direction into meaningful values
+#                 Created additional points at NJ and Katama Airfield. Running to see what the min max values of MWD are
             runupDict[key] = {}
             runupDict[key]["times"] = runupTimes
             runupDict[key]["runup"] = offshoreWater

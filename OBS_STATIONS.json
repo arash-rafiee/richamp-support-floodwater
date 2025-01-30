@@ -22,6 +22,34 @@
       "name": "Charlestown Offshore",
       "latitude": "41.2914",
       "longitude": "-71.61732"
+    },
+    "72": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Holgate, NJ Shoreline",
+      "latitude": "39.53653",
+      "longitude": "-74.25832"
+    },
+    "73": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Holgate, NJ Offshore",
+      "latitude": "39.37808",
+      "longitude": "-73.93154"
+    },
+    "74": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Katama Airfield Shoreline",
+      "latitude": "41.34922",
+      "longitude": "-70.52273"
+    },
+    "75": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Katama Airfield Offshore",
+      "latitude": "41.33417",
+      "longitude": "-70.52228"
     }
   },
   "NDBC": {
@@ -31,6 +59,20 @@
       "name": "Charlestown Offshore",
       "latitude": "41.2914",
       "longitude": "-71.61732"
+    },
+    "73": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Holgate, NJ Offshore",
+      "latitude": "39.37808",
+      "longitude": "-73.93154"
+    },
+    "75": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Katama Airfield Offshore",
+      "latitude": "41.33417",
+      "longitude": "-70.52228"
     }
   },
   "NOS": {
@@ -40,6 +82,20 @@
       "name": "Charlestown Offshore",
       "latitude": "41.2914",
       "longitude": "-71.61732"
+    },
+    "73": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Holgate, NJ Offshore",
+      "latitude": "39.37808",
+      "longitude": "-73.93154"
+    },
+    "75": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Katama Airfield Offshore",
+      "latitude": "41.33417",
+      "longitude": "-70.52228"
     }
   },
   "RUNUP": {
@@ -52,6 +108,26 @@
       "longitude": "-71.64224",
       "offshoreLatitude": "41.2914",
       "offshoreLongitude": "-71.61732"
+    },
+    "72": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "offshoreKey": "73",
+      "name": "Holgate, NJ Shoreline",
+      "latitude": "39.53653",
+      "longitude": "-74.25832",
+      "offshoreLatitude": "39.37808",
+      "offshoreLongitude": "-73.93154"
+    },
+    "74": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "offshoreKey": "75",
+      "name": "Katama Airfield Shoreline",
+      "latitude": "41.34922",
+      "longitude": "-70.52273",
+      "offshoreLatitude": "41.33417",
+      "offshoreLongitude": "-70.52228"
     }
   }
 }
