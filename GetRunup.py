@@ -71,8 +71,8 @@ class GetRunup:
             print("distance between offshore and shoreline", distance)
 #             Calculate average slope in radians
 #              hardcode the average slope
-#             distance = 50
-#             offshoreElevation = 5
+            distance = 50
+            offshoreElevation = 5
             averageSlope = math.atan((offshoreElevation - shorelineElevation) / distance)
             print("average slope", averageSlope)
             
