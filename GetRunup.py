@@ -82,7 +82,7 @@ class GetRunup:
             print("offshoreWavelength", offshoreWavelength)
             
 #             Iribarren number
-            iribarren = (averageSlope / (np.array(offshoreSwh) * offshoreWavelength)**(1/2))
+            iribarren = (averageSlope / ((np.array(offshoreSwh) * offshoreWavelength)**(1/2)))
 #             First, calculate offshore node index from given runup station location (Can be hardcoded to a specific v18 node index)
 #               A way to find the shoreline and offshore point elevation, water level, and wave parameters,
 #               Observational stations can be set for the shoreline and offshore point. Then the values will be interpolated onto the points as
