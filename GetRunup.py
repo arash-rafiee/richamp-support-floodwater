@@ -70,6 +70,9 @@ class GetRunup:
             distance = haversine.haversine(offshoreCoordinates, shorelineCoordinates) * 1000
             print("distance between offshore and shoreline", distance)
 #             Calculate average slope in radians
+#              hardcode the average slope
+#             distance = 50
+#             offshoreElevation = 5
             averageSlope = math.atan((offshoreElevation - shorelineElevation) / distance)
             print("average slope", averageSlope)
             
@@ -77,6 +80,9 @@ class GetRunup:
 #             Convert mean wave period to deepwater wavelength
             offshoreWavelength = (g * np.array(offshoreMwp)**2) / (2 * math.pi)
             print("offshoreWavelength", offshoreWavelength)
+            
+#             Iribarren number
+            iribarren = (averageSlope / (np.array(offshoreSwh) * offshoreWavelength)**(1/2))
 #             First, calculate offshore node index from given runup station location (Can be hardcoded to a specific v18 node index)
 #               A way to find the shoreline and offshore point elevation, water level, and wave parameters,
 #               Observational stations can be set for the shoreline and offshore point. Then the values will be interpolated onto the points as
@@ -90,14 +96,20 @@ class GetRunup:
 #           Revised 1/29/25
 #             Key steps to calculating the wave runup
 #              Find the deep water wavelength. This is a dispeersion problem that should be calculated with account to the water depth.
+#                     -I tink done
 #             Find the significant wave height, shoaled to the appropriate offshore distance
+#                 Vosdoukas uses SWH and wavelength at 93 meter depth
+#                     Stockdon "reverse shoaled the data to deep water using linear wave theory". They assimilated data from a bunch of places
+#                         Holman used wave data 3km away at 20 m depth
 #              Calculate the iribarren number, validate its validity
 #             Figure out how to convert the mean wave direction into meaningful values
 #                 Created additional points at NJ and Katama Airfield. Running to see what the min max values of MWD are
+
+#              -Also running on local for the purpose of working out the calculations for SWH and Deepwater wavelength
             runupDict[key] = {}
             runupDict[key]["times"] = runupTimes
-            runupDict[key]["runup"] = offshoreWater
-            runupDict[key]["runup"] = offshoreWavelength
+#             runupDict[key]["runup"] = offshoreWater
+            runupDict[key]["runup"] = iribarren
             runupDict[key]["wavelength"] = offshoreWavelength
             runupDict[key]["nodeIndex"] = stationName
             runupDict[key]["latitude"] = shorelineCoordinates[0]
