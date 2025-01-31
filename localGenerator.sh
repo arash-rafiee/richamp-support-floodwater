@@ -98,26 +98,27 @@
 
 # python generateGraphs.py --stations HAWAII_STATIONS.json --gfsExists true --wind hone_wind_gfs.nc --tempDir temp/ --backgroundChoice HAWAII
 # 
-python generateGraphs.py --stations OBS_STATIONS.json \
---wavesExists true \
---waverad /project/pi_iginis_uri_edu/pranav_sai_uri_edu/AdcircManualRuns/ScenarioRuns/v18SandyRun/forecast/rads.64.nc \
---waveswh /project/pi_iginis_uri_edu/pranav_sai_uri_edu/AdcircManualRuns/ScenarioRuns/v18SandyRun/forecast/swan_HS.63.nc \
---wavemwd /project/pi_iginis_uri_edu/pranav_sai_uri_edu/AdcircManualRuns/ScenarioRuns/v18SandyRun/forecast/swan_DIR.63.nc \
---wavemwp /project/pi_iginis_uri_edu/pranav_sai_uri_edu/AdcircManualRuns/ScenarioRuns/v18SandyRun/forecast/swan_TMM10.63.nc \
---wavepwp /project/pi_iginis_uri_edu/pranav_sai_uri_edu/AdcircManualRuns/ScenarioRuns/v18SandyRun/forecast/swan_TPS.63.nc \
---waterExists true --water /project/pi_iginis_uri_edu/pranav_sai_uri_edu/AdcircManualRuns/ScenarioRuns/v18SandyRun/forecast/fort.63.nc \
---meshExists true --mesh /project/pi_iginis_uri_edu/pranav_sai_uri_edu/AdcircManualRuns/ScenarioRuns/v18SandyRun/forecast/fort.14 \
---generateRunup true \
---tempDir /scratch3/workspace/pranav_sai_uri_edu-manrun/temp/ --backgroundChoice RHODE_ISLAND_CHAMP
-
 # python generateGraphs.py --stations OBS_STATIONS.json \
 # --wavesExists true \
-# --waverad /Volumes/ssd/ObservationalWind/wave_data/rads.64.nc \
-# --waveswh /Volumes/ssd/ObservationalWind/wave_data/swan_HS.63.nc \
-# --wavemwd /Volumes/ssd/ObservationalWind/wave_data/swan_DIR.63.nc \
-# --wavemwp /Volumes/ssd/ObservationalWind/wave_data/swan_TMM10.63.nc \
-# --wavepwp /Volumes/ssd/ObservationalWind/wave_data/swan_TPS.63.nc \
-# --meshExists true --mesh /Volumes/ssd/ObservationalWind/wave_data/fort.14 \
+# --waverad /project/pi_iginis_uri_edu/pranav_sai_uri_edu/AdcircManualRuns/ScenarioRuns/v18SandyRun/forecast/rads.64.nc \
+# --waveswh /project/pi_iginis_uri_edu/pranav_sai_uri_edu/AdcircManualRuns/ScenarioRuns/v18SandyRun/forecast/swan_HS.63.nc \
+# --wavemwd /project/pi_iginis_uri_edu/pranav_sai_uri_edu/AdcircManualRuns/ScenarioRuns/v18SandyRun/forecast/swan_DIR.63.nc \
+# --wavemwp /project/pi_iginis_uri_edu/pranav_sai_uri_edu/AdcircManualRuns/ScenarioRuns/v18SandyRun/forecast/swan_TMM10.63.nc \
+# --wavepwp /project/pi_iginis_uri_edu/pranav_sai_uri_edu/AdcircManualRuns/ScenarioRuns/v18SandyRun/forecast/swan_TPS.63.nc \
+# --waterExists true --water /project/pi_iginis_uri_edu/pranav_sai_uri_edu/AdcircManualRuns/ScenarioRuns/v18SandyRun/forecast/fort.63.nc \
+# --meshExists true --mesh /project/pi_iginis_uri_edu/pranav_sai_uri_edu/AdcircManualRuns/ScenarioRuns/v18SandyRun/forecast/fort.14 \
 # --generateRunup true \
-# --tempDir /Volumes/ssd/temp/ --backgroundChoice RHODE_ISLAND_CHAMP
+# --tempDir /scratch3/workspace/pranav_sai_uri_edu-manrun/temp/ --backgroundChoice RHODE_ISLAND_CHAMP
+
+python generateGraphs.py --stations OBS_STATIONS.json \
+--wavesExists true \
+--waverad /Volumes/ssd/ObservationalWind/wave_data/rads.64.nc \
+--waveswh /Volumes/ssd/ObservationalWind/wave_data/swan_HS.63.nc \
+--wavemwd /Volumes/ssd/ObservationalWind/wave_data/swan_DIR.63.nc \
+--wavemwp /Volumes/ssd/ObservationalWind/wave_data/swan_TMM10.63.nc \
+--wavepwp /Volumes/ssd/ObservationalWind/wave_data/swan_TPS.63.nc \
+--meshExists true --mesh /Volumes/ssd/ObservationalWind/wave_data/fort.14 \
+--waterExists true --water /Volumes/ssd/ObservationalWind/wave_data/fort.63.nc \
+--generateRunup true \
+--tempDir /Volumes/ssd/temp/ --backgroundChoice RHODE_ISLAND_CHAMP
 # python generateGraphs.py --stations OBS_STATIONS.json --meshExists true --mesh ../trackfiles/v18.fort.14 --tempDir temp/ --backgroundChoice CAPE_COD

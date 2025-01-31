@@ -272,6 +272,8 @@ class Grapher:
         
         self.runupTimes = []
         self.datapointsRunup = []
+        self.datapointsWavelength = []
+        self.datapointsIribarren = []
     
 
 #        So loading obs, wind, and waves should be able to cover and set all available data
@@ -752,14 +754,20 @@ class Grapher:
                 self.runupLongitudes.append(runupDataset[stationKey]["longitude"])
                 
                 datapointRunup = []
+                datapointWavelength = []
+                datapointIribarren = []
                 for index in range(len(runupDataset[stationKey]["times"])):
                     if(self.runupStartDate == None):
                         self.runupStartDate = datetime.fromtimestamp(int(runupDataset[stationKey]["times"][index]), timezone.utc)
                     if(not runupTimestampsInitialized):
                         self.runupTimes.append(self.unixTimeToDeltaHours(runupDataset[stationKey]["times"][index], self.runupStartDate))
                     datapointRunup.append(runupDataset[stationKey]["runup"][index])
+                    datapointWavelength.append(runupDataset[stationKey]["wavelength"][index])
+                    datapointIribarren.append(runupDataset[stationKey]["iribarren"][index])
                 runupTimestampsInitialized = True
-                self.datapointsRunup.append(datapointRunup)                     
+                self.datapointsRunup.append(datapointRunup)    
+                self.datapointsWavelength.append(datapointWavelength)
+                self.datapointsIribarren.append(datapointIribarren)                 
 
     def generateGraphs(self):
         graph_directory = "graphs/"
@@ -1467,7 +1475,7 @@ class Grapher:
         for index in range(numberOfRunupDatapoints):
             if(len(self.datapointsRunup) > 0):
                 fig, ax = plt.subplots(figsize=(16,9))
-                ax.plot(self.runupTimes, self.datapointsRunup[index], label="Forecast")
+                ax.plot(self.runupTimes, self.datapointsRunup[index])
                 ax.legend(loc="upper left")
                 ax.format_xdata = mdates.DateFormatter('%d')
                 plt.xticks(fontsize=12)
@@ -1478,6 +1486,32 @@ class Grapher:
 #                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
                 plt.ylabel("runup (meters)", fontsize=14)
                 plt.savefig(graph_directory + stationName + '_runup.png')
+                plt.close()
+                fig, ax = plt.subplots(figsize=(16,9))
+                ax.plot(self.runupTimes, self.datapointsWavelength[index])
+                ax.legend(loc="upper left")
+                ax.format_xdata = mdates.DateFormatter('%d')
+                plt.xticks(fontsize=12)
+                plt.yticks(fontsize=12)
+                stationName = self.runupLabels[index]
+                maxWavelength = str(round(max(self.datapointsWavelength[index]), 2))
+                plt.title(self.titlePrefix + stationName + " station wavelength max: " + maxWavelength, fontsize=18)
+#                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
+                plt.ylabel("wavelength (meters)", fontsize=14)
+                plt.savefig(graph_directory + stationName + '_wavelength.png')
+                plt.close()
+                fig, ax = plt.subplots(figsize=(16,9))
+                ax.plot(self.runupTimes, self.datapointsIribarren[index])
+                ax.legend(loc="upper left")
+                ax.format_xdata = mdates.DateFormatter('%d')
+                plt.xticks(fontsize=12)
+                plt.yticks(fontsize=12)
+                stationName = self.runupLabels[index]
+                maxIribarren = str(round(max(self.datapointsIribarren[index]), 2))
+                plt.title(self.titlePrefix + stationName + " station iribarren max: " + maxIribarren, fontsize=18)
+#                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
+                plt.ylabel("iribarren number", fontsize=14)
+                plt.savefig(graph_directory + stationName + '_iribarren.png')
                 plt.close()
                 
            

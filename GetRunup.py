@@ -52,10 +52,9 @@ class GetRunup:
             stationName = stationDict["name"]
             shorelineCoordinates = (float(stationDict["latitude"]), float(stationDict["longitude"]))
             offshoreKey = stationDict["offshoreKey"]
-            offshoreLatitude = stationDict["offshoreLatitude"]
-            offshoreLongitude = stationDict["offshoreLongitude"]
             offshoreCoordinates = (float(stationDict["offshoreLatitude"]), float(stationDict["offshoreLongitude"]))
-
+            surfKey = stationDict["surfKey"]
+            surfCoordinates = (float(stationDict["surfLatitude"]), float(stationDict["surfLongitude"]))
             
             runupTimes = waterDict[offshoreKey]["times"]
             offshoreWater = waterDict[offshoreKey]["water"]
@@ -63,25 +62,33 @@ class GetRunup:
             offshoreMwd = mwdDict[offshoreKey]["mwd"]
             offshoreMwp = mwpDict[offshoreKey]["mwp"]
             shorelineElevation = float(meshDict[key]["elevation"])
+            surfElevation = float(meshDict[surfKey]["elevation"])
             offshoreElevation = float(meshDict[offshoreKey]["elevation"])
 #             print(offshoreWater, offshoreSwh, offshoreMwd, offshoreMwp, shorelineElevation, offshoreElevation)
 #             print("max time, water, swg, mwd, mwp, and elevation shoreline offshore", max(offshoreWater), max(offshoreSwh), max(offshoreMwd), max(offshoreMwp), shorelineElevation, offshoreElevation)
     #                             distance and threshold in kilometers
-            distance = haversine.haversine(offshoreCoordinates, shorelineCoordinates) * 1000
+            print("shorelineElevation, offshoreElevation", shorelineElevation, surfElevation)
+            distance = haversine.haversine(surfCoordinates, shorelineCoordinates) * 1000
             print("distance between offshore and shoreline", distance)
 #             Calculate average slope in radians
 #              hardcode the average slope
-            distance = 50
-            offshoreElevation = 5
-            averageSlope = math.atan((offshoreElevation - shorelineElevation) / distance)
+#             distance = 50
+#             offshoreElevation = 5
+            averageSlope = math.atan((shorelineElevation - surfElevation) / distance)
             print("average slope", averageSlope)
-            
+#             averageSlope = 0.025
+#             averageSlope = 
             g = 9.81
 #             Convert mean wave period to deepwater wavelength
             offshoreWavelength = (g * np.array(offshoreMwp)**2) / (2 * math.pi)
-            print("offshoreWavelength", offshoreWavelength)
+#             print("offshoreWavelength", offshoreWavelength)
             
 #             Iribarren number
+            swh200 = offshoreSwh[200]
+            wavelength200 = offshoreWavelength[200]
+            iribarren200 = averageSlope / (np.sqrt(swh200 * wavelength200))
+            print("swh200", swh200, "wavelength200", wavelength200)
+            print("IRIBARREN NUMBER AT INDEX 200:", iribarren200)
             iribarren = (averageSlope / (np.sqrt(np.array(offshoreSwh) * offshoreWavelength)))
 #             First, calculate offshore node index from given runup station location (Can be hardcoded to a specific v18 node index)
 #               A way to find the shoreline and offshore point elevation, water level, and wave parameters,
@@ -106,11 +113,17 @@ class GetRunup:
 #                 Created additional points at NJ and Katama Airfield. Running to see what the min max values of MWD are
 
 #              -Also running on local for the purpose of working out the calculations for SWH and Deepwater wavelength
+
+#             1/30/25 Midnight update.. well folks, thats all! Tried a whole numch of things, iribarren calculation is off. I dont know if its a problem with the average slope or the wavelength calculaton, or the iribarren
+#               formula itself. Poop. Should I just quit?
+
+#              1/30/25 11PM, tried tweaking. Added graphing for wavelength and iribarren, as well as debugs showing calculation of iribarren.
+#                 No luck, iribarren is stll way too low. Do I have to use peak wave period?
             runupDict[key] = {}
             runupDict[key]["times"] = runupTimes
-#             runupDict[key]["runup"] = offshoreWater
             runupDict[key]["runup"] = iribarren
             runupDict[key]["wavelength"] = offshoreWavelength
+            runupDict[key]["iribarren"] = iribarren
             runupDict[key]["nodeIndex"] = stationName
             runupDict[key]["latitude"] = shorelineCoordinates[0]
             runupDict[key]["longitude"] = shorelineCoordinates[1]
