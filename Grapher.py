@@ -36,7 +36,7 @@ class Grapher:
 #         startDateTimestamp - (-987120000.0)
 #         return datetime.fromtimestamp(timestamp, timezone.utc)
 #         timestamp = (-987120000.0) + timestampDelta
-#         return datetime.fromtimestamp(timestamp, timezone.utc)
+        return datetime.fromtimestamp(timestamp, timezone.utc)
         delta = datetime.fromtimestamp(timestamp, timezone.utc) - startDate
         return delta.total_seconds()/3600
     
@@ -269,11 +269,15 @@ class Grapher:
         self.runupLongitudes = []
         self.runupLatitudes = []
         self.runupLabels = []
+        self.runupSurfDistance = []
+        self.runupOffshoreDistance = []
+        self.runupAverageSlope = []
         
         self.runupTimes = []
         self.datapointsRunup = []
         self.datapointsWavelength = []
         self.datapointsIribarren = []
+        self.datapointsSteepness = []
     
 
 #        So loading obs, wind, and waves should be able to cover and set all available data
@@ -752,10 +756,13 @@ class Grapher:
                 self.runupLabels.append(nodeIndex)
                 self.runupLatitudes.append(runupDataset[stationKey]["latitude"])
                 self.runupLongitudes.append(runupDataset[stationKey]["longitude"])
-                
+                self.runupSurfDistance.append(str(round(runupDataset[stationKey]["surfDistance"], 2)))
+                self.runupOffshoreDistance.append(str(round(runupDataset[stationKey]["offshoreDistance"], 2)))
+                self.runupAverageSlope.append(str(round(runupDataset[stationKey]["averageSlope"], 5)))
                 datapointRunup = []
                 datapointWavelength = []
                 datapointIribarren = []
+                datapointSteepness = []
                 for index in range(len(runupDataset[stationKey]["times"])):
                     if(self.runupStartDate == None):
                         self.runupStartDate = datetime.fromtimestamp(int(runupDataset[stationKey]["times"][index]), timezone.utc)
@@ -764,10 +771,12 @@ class Grapher:
                     datapointRunup.append(runupDataset[stationKey]["runup"][index])
                     datapointWavelength.append(runupDataset[stationKey]["wavelength"][index])
                     datapointIribarren.append(runupDataset[stationKey]["iribarren"][index])
+                    datapointSteepness.append(runupDataset[stationKey]["steepness"][index])
                 runupTimestampsInitialized = True
                 self.datapointsRunup.append(datapointRunup)    
                 self.datapointsWavelength.append(datapointWavelength)
-                self.datapointsIribarren.append(datapointIribarren)                 
+                self.datapointsIribarren.append(datapointIribarren)
+                self.datapointsSteepness.append(datapointSteepness)                
 
     def generateGraphs(self):
         graph_directory = "graphs/"
@@ -1023,8 +1032,13 @@ class Grapher:
                     ax.scatter(self.assetLongitudes, self.assetLatitudes, label="Assets", zorder=3, alpha=0.7, marker=".", s=40, color="black")
 #             Below line graphs mesh points
 #             ax.scatter(self.mapElevationPointsLongitudes, self.mapElevationPointsLatitudes, label="Nodes", zorder=3, alpha=0.7, marker=".", s=1, color="black")
+#           Below line graphs ASSET points without the need for observational asset data to have been generated
+            ax.scatter(self.elevationLongitudes, self.elevationLatitudes, label="Data Locations", zorder=3, alpha=0.7, marker=".", s=40, color="black")
+            for index in range(len(self.datapointsElevation)):
+                ax.annotate(str(round(self.datapointsElevation[index], 2)), (self.elevationLongitudes[index], self.elevationLatitudes[index]))
             plt.axis(plotAxis)
             plt.title("Map Elevation")
+#             plt.title("Map Elevation - " + "surf distance: " + self.runupSurfDistance[index] + " offshore distance: " + self.runupOffshoreDistance[index] + " slope: " + self.runupAverageSlope[index])
             ax.legend(loc="upper right")
 #             plt.xlabel(datetime.fromtimestamp(int(self.mapWindTimes[index]), timezone.utc))
 #             graphs up to 10 m/s, ~20 knots
@@ -1374,7 +1388,7 @@ class Grapher:
 #         No loop because no timeseries
         if(len(self.datapointsElevation) > 0):
             fig, ax = plt.subplots(figsize=(16,13))
-            print(len(self.assetLabels), len(self.datapointsElevation))
+#             print(len(self.assetLabels), len(self.datapointsElevation))
             ax.scatter(self.assetLabels, self.datapointsElevation, label="Mesh")
             if(self.assetExists):
                 ax.scatter(self.assetLabels, self.assetDatapointsElevation, label="Asset")
@@ -1412,7 +1426,8 @@ class Grapher:
                     ax.legend(loc="lower right")
                     stationName = self.buoyLabels[index]
                     plt.title(stationName + " station significant wave height")
-                    plt.xlabel("Hours since " + self.waveStartDate.strftime(self.DATE_FORMAT))
+#                     plt.xlabel("Hours since " + self.waveStartDate.strftime(self.DATE_FORMAT))
+                    ax.format_xdata = mdates.DateFormatter('%d')
                     plt.ylabel("SWH (meters)")
                     plt.savefig(graph_directory + stationName + '_wave_swh.png')
                     plt.close()
@@ -1424,7 +1439,8 @@ class Grapher:
                     ax.legend(loc="lower right")
                     stationName = self.buoyLabels[index]
                     plt.title(stationName + " station mean wave direction")
-                    plt.xlabel("Hours since " + self.waveStartDate.strftime(self.DATE_FORMAT))
+#                     plt.xlabel("Hours since " + self.waveStartDate.strftime(self.DATE_FORMAT))
+                    ax.format_xdata = mdates.DateFormatter('%d')
                     plt.ylabel("MWD (degrees)")
                     plt.savefig(graph_directory + stationName + '_wave_mwd.png')
                     plt.close()
@@ -1436,7 +1452,8 @@ class Grapher:
                     ax.legend(loc="lower right")
                     stationName = self.buoyLabels[index]
                     plt.title(stationName + " station mean wave period")
-                    plt.xlabel("Hours since " + self.waveStartDate.strftime(self.DATE_FORMAT))
+#                     plt.xlabel("Hours since " + self.waveStartDate.strftime(self.DATE_FORMAT))
+                    ax.format_xdata = mdates.DateFormatter('%d')
                     plt.ylabel("MWP (seconds)")
                     plt.savefig(graph_directory + stationName + '_wave_mwp.png')
                     plt.close()
@@ -1448,7 +1465,8 @@ class Grapher:
                     ax.legend(loc="lower right")
                     stationName = self.buoyLabels[index]
                     plt.title(stationName + " station peak wave period")
-                    plt.xlabel("Hours since " + self.waveStartDate.strftime(self.DATE_FORMAT))
+#                     plt.xlabel("Hours since " + self.waveStartDate.strftime(self.DATE_FORMAT))
+                    ax.format_xdata = mdates.DateFormatter('%d')
                     plt.ylabel("PWP (seconds)")
                     plt.savefig(graph_directory + stationName + '_wave_pwp.png')
                     plt.close()
@@ -1476,7 +1494,7 @@ class Grapher:
             if(len(self.datapointsRunup) > 0):
                 fig, ax = plt.subplots(figsize=(16,9))
                 ax.plot(self.runupTimes, self.datapointsRunup[index])
-                ax.legend(loc="upper left")
+#                 ax.legend(loc="upper left")
                 ax.format_xdata = mdates.DateFormatter('%d')
                 plt.xticks(fontsize=12)
                 plt.yticks(fontsize=12)
@@ -1489,7 +1507,7 @@ class Grapher:
                 plt.close()
                 fig, ax = plt.subplots(figsize=(16,9))
                 ax.plot(self.runupTimes, self.datapointsWavelength[index])
-                ax.legend(loc="upper left")
+#                 ax.legend(loc="upper left")
                 ax.format_xdata = mdates.DateFormatter('%d')
                 plt.xticks(fontsize=12)
                 plt.yticks(fontsize=12)
@@ -1501,8 +1519,21 @@ class Grapher:
                 plt.savefig(graph_directory + stationName + '_wavelength.png')
                 plt.close()
                 fig, ax = plt.subplots(figsize=(16,9))
+                ax.plot(self.runupTimes, self.datapointsSteepness[index])
+#                 ax.legend(loc="upper left")
+                ax.format_xdata = mdates.DateFormatter('%d')
+                plt.xticks(fontsize=12)
+                plt.yticks(fontsize=12)
+                stationName = self.runupLabels[index]
+                maxSteepness = str(round(max(self.datapointsSteepness[index]), 2))
+                plt.title(self.titlePrefix + stationName + " station iribarren max: " + maxSteepness, fontsize=18)
+#                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
+                plt.ylabel("wave steepness (H₀/L₀)", fontsize=14)
+                plt.savefig(graph_directory + stationName + '_steepness.png')
+                plt.close()
+                fig, ax = plt.subplots(figsize=(16,9))
                 ax.plot(self.runupTimes, self.datapointsIribarren[index])
-                ax.legend(loc="upper left")
+#                 ax.legend(loc="upper left")
                 ax.format_xdata = mdates.DateFormatter('%d')
                 plt.xticks(fontsize=12)
                 plt.yticks(fontsize=12)

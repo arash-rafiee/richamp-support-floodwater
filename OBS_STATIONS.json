@@ -17,100 +17,44 @@
       "longitude": "-71.64224"
     },
     "71": {
-      "id": "RUNUP",
-      "source": "RUNUP",
-      "name": "Charlestown Offshore",
-      "latitude": "41.2914",
-      "longitude": "-71.61732"
-    },
-    "72": {
-      "id": "RUNUP",
-      "source": "RUNUP",
-      "name": "Holgate, NJ Shoreline",
-      "latitude": "39.53653",
-      "longitude": "-74.25832"
-    },
-    "73": {
-        "id": "RUNUP",
-      "source": "RUNUP",
-      "name": "Holgate, NJ Offshore",
-      "latitude": "39.37808",
-      "longitude": "-73.93154"
-    },
-    "74": {
-      "id": "RUNUP",
-      "source": "RUNUP",
-      "name": "Katama Airfield Shoreline",
-      "latitude": "41.34922",
-      "longitude": "-70.52273"
-    },
-    "75": {
-      "id": "RUNUP",
-      "source": "RUNUP",
-      "name": "Katama Airfield Offshore",
-      "latitude": "41.33417",
-      "longitude": "-70.52228"
-    },
-    "76": {
         "id": "RUNUP",
         "source": "RUNUP",
         "name": "Charlestown Surfline",
         "latitude": "41.35293",
         "longitude": "-71.64127"
+    },
+    "72": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Charlestown Offshore",
+      "latitude": "41.2914",
+      "longitude": "-71.61732"
     }
   },
   "NDBC": {
-    "71": {
+    "72": {
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Charlestown Offshore",
       "latitude": "41.2914",
       "longitude": "-71.61732"
-    },
-    "73": {
-      "id": "RUNUP",
-      "source": "RUNUP",
-      "name": "Holgate, NJ Offshore",
-      "latitude": "39.37808",
-      "longitude": "-73.93154"
-    },
-    "75": {
-      "id": "RUNUP",
-      "source": "RUNUP",
-      "name": "Katama Airfield Offshore",
-      "latitude": "41.33417",
-      "longitude": "-70.52228"
     }
   },
   "NOS": {
-    "71": {
+    "72": {
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Charlestown Offshore",
       "latitude": "41.2914",
       "longitude": "-71.61732"
-    },
-    "73": {
-      "id": "RUNUP",
-      "source": "RUNUP",
-      "name": "Holgate, NJ Offshore",
-      "latitude": "39.37808",
-      "longitude": "-73.93154"
-    },
-    "75": {
-      "id": "RUNUP",
-      "source": "RUNUP",
-      "name": "Katama Airfield Offshore",
-      "latitude": "41.33417",
-      "longitude": "-70.52228"
     }
   },
   "RUNUP": {
     "70": {
       "id": "RUNUP",
       "source": "RUNUP",
-      "offshoreKey": "71",
-      "surfKey": "76",
+      "surfKey": "71",
+      "offshoreKey": "72",
       "name": "Charlestown Shoreline",
       "latitude": "41.3557",
       "longitude": "-71.64224",
@@ -118,32 +62,6 @@
       "surfLongitude": "-71.64127",
       "offshoreLatitude": "41.2914",
       "offshoreLongitude": "-71.61732"
-    },
-    "72": {
-      "id": "RUNUP",
-      "source": "RUNUP",
-      "offshoreKey": "73",
-      "surfKey": "76",
-      "name": "Holgate, NJ Shoreline",
-      "latitude": "39.53653",
-      "longitude": "-74.25832",
-      "surfLatitude": "41.35293",
-      "surfLongitude": "-71.64127",
-      "offshoreLatitude": "39.37808",
-      "offshoreLongitude": "-73.93154"
-    },
-    "74": {
-      "id": "RUNUP",
-      "source": "RUNUP",
-      "offshoreKey": "75",
-      "surfKey": "76",
-      "name": "Katama Airfield Shoreline",
-      "latitude": "41.34922",
-      "longitude": "-70.52273",
-      "surfLatitude": "41.35293",
-      "surfLongitude": "-71.64127",
-      "offshoreLatitude": "41.33417",
-      "offshoreLongitude": "-70.52228"
     }
   }
 }

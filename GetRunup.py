@@ -14,7 +14,7 @@ class GetRunup:
         ADCIRC_WATER_DATA_FILE="", 
         WAVE_SWH_DATA_FILE="", 
         WAVE_MWD_DATA_FILE="",
-        WAVE_MWP_DATA_FILE="",
+        WAVE_PWP_DATA_FILE="",
         ADCIRC_MESH_DATA_FILE="",
         RUNUP_DATA_FILE=""):
         print("Generating Runup!", flush=True)
@@ -27,8 +27,8 @@ class GetRunup:
             swhDict = json.load(datafile)
         with open(WAVE_MWD_DATA_FILE) as datafile:
             mwdDict = json.load(datafile)
-        with open(WAVE_MWP_DATA_FILE) as datafile:
-            mwpDict = json.load(datafile)
+        with open(WAVE_PWP_DATA_FILE) as datafile:
+            pwpDict = json.load(datafile)
         with open(ADCIRC_MESH_DATA_FILE) as datafile:
             meshDict = json.load(datafile)
             
@@ -60,36 +60,39 @@ class GetRunup:
             offshoreWater = waterDict[offshoreKey]["water"]
             offshoreSwh = swhDict[offshoreKey]["swh"]
             offshoreMwd = mwdDict[offshoreKey]["mwd"]
-            offshoreMwp = mwpDict[offshoreKey]["mwp"]
+            offshorePwp = pwpDict[offshoreKey]["pwp"]
             shorelineElevation = float(meshDict[key]["elevation"])
             surfElevation = float(meshDict[surfKey]["elevation"])
             offshoreElevation = float(meshDict[offshoreKey]["elevation"])
 #             print(offshoreWater, offshoreSwh, offshoreMwd, offshoreMwp, shorelineElevation, offshoreElevation)
 #             print("max time, water, swg, mwd, mwp, and elevation shoreline offshore", max(offshoreWater), max(offshoreSwh), max(offshoreMwd), max(offshoreMwp), shorelineElevation, offshoreElevation)
     #                             distance and threshold in kilometers
-            print("shorelineElevation, offshoreElevation", shorelineElevation, surfElevation)
-            distance = haversine.haversine(surfCoordinates, shorelineCoordinates) * 1000
-            print("distance between offshore and shoreline", distance)
+            print("shorelineElevation, surfElevation, offshoreElevation", shorelineElevation, surfElevation, offshoreElevation)
+            surfDistance = haversine.haversine(surfCoordinates, shorelineCoordinates) * 1000
+            offshoreDistance = haversine.haversine(offshoreCoordinates, shorelineCoordinates) * 1000
+            print("surfDistance, offshoreDistance", surfDistance, offshoreDistance)
+#             print("distance between offshore and shoreline", distance)
 #             Calculate average slope in radians
 #              hardcode the average slope
 #             distance = 50
 #             offshoreElevation = 5
-            averageSlope = math.atan((shorelineElevation - surfElevation) / distance)
+            averageSlope = math.atan((shorelineElevation - surfElevation) / surfDistance)
             print("average slope", averageSlope)
 #             averageSlope = 0.025
 #             averageSlope = 
             g = 9.81
 #             Convert mean wave period to deepwater wavelength
-            offshoreWavelength = (g * np.array(offshoreMwp)**2) / (2 * math.pi)
+            offshoreWavelength = (g * np.array(offshorePwp)**2) / (2 * math.pi)
 #             print("offshoreWavelength", offshoreWavelength)
             
 #             Iribarren number
             swh200 = offshoreSwh[200]
             wavelength200 = offshoreWavelength[200]
-            iribarren200 = averageSlope / (np.sqrt(swh200 * wavelength200))
-            print("swh200", swh200, "wavelength200", wavelength200)
-            print("IRIBARREN NUMBER AT INDEX 200:", iribarren200)
-            iribarren = (averageSlope / (np.sqrt(np.array(offshoreSwh) * offshoreWavelength)))
+            iribarren200 = averageSlope / (np.sqrt(swh200 / wavelength200))
+#             print("swh200", swh200, "wavelength200", wavelength200)
+#             print("IRIBARREN NUMBER AT INDEX 200:", iribarren200)
+            offshoreSteepness = np.array(offshoreSwh) / offshoreWavelength
+            iribarren = (averageSlope / (np.sqrt(offshoreSteepness)))
 #             First, calculate offshore node index from given runup station location (Can be hardcoded to a specific v18 node index)
 #               A way to find the shoreline and offshore point elevation, water level, and wave parameters,
 #               Observational stations can be set for the shoreline and offshore point. Then the values will be interpolated onto the points as
@@ -119,15 +122,24 @@ class GetRunup:
 
 #              1/30/25 11PM, tried tweaking. Added graphing for wavelength and iribarren, as well as debugs showing calculation of iribarren.
 #                 No luck, iribarren is stll way too low. Do I have to use peak wave period?
+
+#             1/31/25 I fixed it. Was multiplying instead of dividing in the iribarren formula. 
+#                 The iribarren number calculations look correct, I can now calculate runup?
+#                     Adding graphing for shoreline, surf, and offshore points to visualize where they are in space and their elevation
             runupDict[key] = {}
+            runupDict[key]["surfDistance"] = surfDistance
+            runupDict[key]["offshoreDistance"] = offshoreDistance
+            runupDict[key]["averageSlope"] = averageSlope
             runupDict[key]["times"] = runupTimes
             runupDict[key]["runup"] = iribarren
             runupDict[key]["wavelength"] = offshoreWavelength
+            runupDict[key]["steepness"] = offshoreSteepness
             runupDict[key]["iribarren"] = iribarren
             runupDict[key]["nodeIndex"] = stationName
             runupDict[key]["latitude"] = shorelineCoordinates[0]
             runupDict[key]["longitude"] = shorelineCoordinates[1]
         
         # print(windDict)
+        print("Writing runup data file!")
         with open(RUNUP_DATA_FILE, "w") as outfile:
             json.dump(runupDict, outfile, cls=NumpyEncoder)
