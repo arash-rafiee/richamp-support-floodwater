@@ -86,9 +86,9 @@ class GetRunup:
 #             print("offshoreWavelength", offshoreWavelength)
             
 #             Iribarren number
-            swh200 = offshoreSwh[200]
-            wavelength200 = offshoreWavelength[200]
-            iribarren200 = averageSlope / (np.sqrt(swh200 / wavelength200))
+#             swh200 = offshoreSwh[200]
+#             wavelength200 = offshoreWavelength[200]
+#             iribarren200 = averageSlope / (np.sqrt(swh200 / wavelength200))
 #             print("swh200", swh200, "wavelength200", wavelength200)
 #             print("IRIBARREN NUMBER AT INDEX 200:", iribarren200)
             offshoreSteepness = np.array(offshoreSwh) / offshoreWavelength
