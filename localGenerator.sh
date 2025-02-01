@@ -100,13 +100,13 @@
 # 
 python generateGraphs.py --stations OBS_STATIONS.json \
 --wavesExists true \
---waverad /scratch3/workspace/pranav_sai_uri_edu-manrun/ecflow_output/ricv1/archive/20250127/hour_12/adcirc/forecast/forecast_base/rads.64.nc \
---waveswh /scratch3/workspace/pranav_sai_uri_edu-manrun/ecflow_output/ricv1/archive/20250127/hour_12/adcirc/forecast/forecast_base/swan_HS.63.nc \
---wavemwd /scratch3/workspace/pranav_sai_uri_edu-manrun/ecflow_output/ricv1/archive/20250127/hour_12/adcirc/forecast/forecast_base/swan_DIR.63.nc \
---wavemwp /scratch3/workspace/pranav_sai_uri_edu-manrun/ecflow_output/ricv1/archive/20250127/hour_12/adcirc/forecast/forecast_base/swan_TMM10.63.nc \
---wavepwp /scratch3/workspace/pranav_sai_uri_edu-manrun/ecflow_output/ricv1/archive/20250127/hour_12/adcirc/forecast/forecast_base/swan_TPS.63.nc \
---waterExists true --water /scratch3/workspace/pranav_sai_uri_edu-manrun/ecflow_output/ricv1/archive/20250127/hour_12/adcirc/forecast/forecast_base/fort.63.nc \
---meshExists true --mesh /scratch3/workspace/pranav_sai_uri_edu-manrun/ecflow_output/ricv1/archive/20250127/hour_12/adcirc/forecast/forecast_base/fort.14 \
+--waverad /scratch3/workspace/pranav_sai_uri_edu-manrun/1938ModifiedMeanSeaLevelRun/forecast_RI_track/rads.64.nc \
+--waveswh /scratch3/workspace/pranav_sai_uri_edu-manrun/1938ModifiedMeanSeaLevelRun/forecast_RI_track/swan_HS.63.nc \
+--wavemwd /scratch3/workspace/pranav_sai_uri_edu-manrun/1938ModifiedMeanSeaLevelRun/forecast_RI_track/swan_DIR.63.nc \
+--wavemwp /scratch3/workspace/pranav_sai_uri_edu-manrun/1938ModifiedMeanSeaLevelRun/forecast_RI_track/swan_TMM10.63.nc \
+--wavepwp /scratch3/workspace/pranav_sai_uri_edu-manrun/1938ModifiedMeanSeaLevelRun/forecast_RI_track/swan_TPS.63.nc \
+--waterExists true --water /scratch3/workspace/pranav_sai_uri_edu-manrun/1938ModifiedMeanSeaLevelRun/forecast_RI_track/fort.63.nc \
+--meshExists true --mesh /scratch3/workspace/pranav_sai_uri_edu-manrun/1938ModifiedMeanSeaLevelRun/forecast_RI_track/fort.14 \
 --generateRunup true \
 --tempDir /scratch3/workspace/pranav_sai_uri_edu-manrun/temp/ --backgroundChoice CHARLESTOWN
 

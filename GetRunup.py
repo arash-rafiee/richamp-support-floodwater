@@ -126,6 +126,8 @@ class GetRunup:
 #             1/31/25 I fixed it. Was multiplying instead of dividing in the iribarren formula. 
 #                 The iribarren number calculations look correct, I can now calculate runup?
 #                     Adding graphing for shoreline, surf, and offshore points to visualize where they are in space and their elevation
+
+#           2/1/25 program in the runup formulas and compare in graphs
             runupDict[key] = {}
             runupDict[key]["surfDistance"] = surfDistance
             runupDict[key]["offshoreDistance"] = offshoreDistance
