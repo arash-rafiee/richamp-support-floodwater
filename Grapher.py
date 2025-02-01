@@ -1533,6 +1533,7 @@ class Grapher:
                 plt.close()
                 fig, ax = plt.subplots(figsize=(16,9))
                 ax.plot(self.runupTimes, self.datapointsIribarren[index])
+                ax.set_ylim([0, 2])
 #                 ax.legend(loc="upper left")
                 ax.format_xdata = mdates.DateFormatter('%d')
                 plt.xticks(fontsize=12)
