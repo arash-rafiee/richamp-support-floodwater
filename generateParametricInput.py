@@ -305,15 +305,15 @@ def main(track):
 
     print("writing file Wind_Inp.txt")
     with open("Wind_Inp.txt", "w") as f:
-        f.write("richamp\n")
-        f.write("3\n")
-        minTrackTime = min(trackTimes)
+        f.write("richamp\n") #Storm name
+        f.write("3\n") #Not sure what this is
+        minTrackTime = min(trackTimes) #start time
         f.write(str(minTrackTime.year).zfill(4) + " " + str(minTrackTime.month).zfill(2) + " " + str(minTrackTime.day).zfill(2) + " " + str(minTrackTime.hour).zfill(2) + " " + str(minTrackTime.minute).zfill(2) + " " + str(minTrackTime.second).zfill(2) + "\n")
-        f.write("1.0\n")
-        f.write(str(max(trackDeltaHours)) + "\n")
+        f.write("1.0\n") #Not sure what this is
+        f.write(str(max(trackDeltaHours)) + "\n") #Number of timesteps
         f.write(str(MIN_LONGITUDE) + " " + str(MAX_LONGITUDE) + "\n")
         f.write(str(MIN_LATITUDE) + " " + str(MAX_LATITUDE) + "\n")
-        f.write("12.\n")
+        f.write("12.\n") #(1 / deltaLatitude) if deltaLat deltaLon 0.1, then 10
         f.close()
 
     print("writing file track.richamp")

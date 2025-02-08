@@ -128,6 +128,14 @@ class GetRunup:
 #                     Adding graphing for shoreline, surf, and offshore points to visualize where they are in space and their elevation
 
 #           2/1/25 program in the runup formulas and compare in graphs
+
+#           2/3/25 Define offshore points with normal vector starting from shoreline.
+#           Graph swh as a function of distance from shoreline
+#           Graph mwp vp pwp to compare
+#           Create script to convert GFS oceanweather wind to 306 type wind for ManRuns
+
+#           2/5 The convert script isint working. Debug by converting oceanweather to 306, then to nc, then graphing until it is right.
+#           Ask mr. g to write it starting at max lat and min lon, row by row. And ask him to make a Wind_Inp file so its easy to convert to NetCDF
             runupDict[key] = {}
             runupDict[key]["surfDistance"] = surfDistance
             runupDict[key]["offshoreDistance"] = offshoreDistance
