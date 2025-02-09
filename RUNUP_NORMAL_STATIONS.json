@@ -1,0 +1,562 @@
+{
+  "ASSET": {
+    "70": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Charlestown Shoreline",
+      "latitude": "41.3557",
+      "longitude": "-71.64224"
+    },
+    "71": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Charlestown Surfline",
+      "latitude": "41.35293",
+      "longitude": "-71.64127"
+    },
+    "72": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Charlestown Offshore",
+      "latitude": "41.2914",
+      "longitude": "-71.61732"
+    },
+    "70000": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-10",
+      "name": "Charlestown -10.0 m",
+      "latitude": "41.355787",
+      "longitude": "-71.642270"
+    },
+    "70001": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-9",
+      "name": "Charlestown -9.0 m",
+      "latitude": "41.355778",
+      "longitude": "-71.642267"
+    },
+    "70002": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-8",
+      "name": "Charlestown -8.0 m",
+      "latitude": "41.355770",
+      "longitude": "-71.642264"
+    },
+    "70003": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-7",
+      "name": "Charlestown -7.0 m",
+      "latitude": "41.355761",
+      "longitude": "-71.642261"
+    },
+    "70004": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-6",
+      "name": "Charlestown -6.0 m",
+      "latitude": "41.355752",
+      "longitude": "-71.642258"
+    },
+    "70005": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-5",
+      "name": "Charlestown -5.0 m",
+      "latitude": "41.355743",
+      "longitude": "-71.642255"
+    },
+    "70006": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-4",
+      "name": "Charlestown -4.0 m",
+      "latitude": "41.355735",
+      "longitude": "-71.642252"
+    },
+    "70007": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-3",
+      "name": "Charlestown -3.0 m",
+      "latitude": "41.355726",
+      "longitude": "-71.642249"
+    },
+    "70008": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-2",
+      "name": "Charlestown -2.0 m",
+      "latitude": "41.355717",
+      "longitude": "-71.642246"
+    },
+    "70009": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-1",
+      "name": "Charlestown -1.0 m",
+      "latitude": "41.355709",
+      "longitude": "-71.642243"
+    },
+    "70010": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "0",
+      "name": "Charlestown 0.0 m",
+      "latitude": "41.355700",
+      "longitude": "-71.642240"
+    },
+    "70011": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "1",
+      "name": "Charlestown 1.0 m",
+      "latitude": "41.355691",
+      "longitude": "-71.642237"
+    },
+    "70012": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "2",
+      "name": "Charlestown 2.0 m",
+      "latitude": "41.355683",
+      "longitude": "-71.642234"
+    },
+    "70013": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "3",
+      "name": "Charlestown 3.0 m",
+      "latitude": "41.355674",
+      "longitude": "-71.642231"
+    },
+    "70014": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "4",
+      "name": "Charlestown 4.0 m",
+      "latitude": "41.355665",
+      "longitude": "-71.642228"
+    },
+    "70015": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "5",
+      "name": "Charlestown 5.0 m",
+      "latitude": "41.355657",
+      "longitude": "-71.642225"
+    },
+    "70016": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "6",
+      "name": "Charlestown 6.0 m",
+      "latitude": "41.355648",
+      "longitude": "-71.642222"
+    },
+    "70017": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "7",
+      "name": "Charlestown 7.0 m",
+      "latitude": "41.355639",
+      "longitude": "-71.642219"
+    },
+    "70018": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "8",
+      "name": "Charlestown 8.0 m",
+      "latitude": "41.355630",
+      "longitude": "-71.642216"
+    },
+    "70019": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "9",
+      "name": "Charlestown 9.0 m",
+      "latitude": "41.355622",
+      "longitude": "-71.642213"
+    },
+    "70020": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "10",
+      "name": "Charlestown 10.0 m",
+      "latitude": "41.355613",
+      "longitude": "-71.642210"
+    }
+  },
+  "NDBC": {
+    "72": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Charlestown Offshore",
+      "latitude": "41.2914",
+      "longitude": "-71.61732"
+    },
+    "70000": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-10",
+      "name": "Charlestown -10.0 m",
+      "latitude": "41.355787",
+      "longitude": "-71.642270"
+    },
+    "70001": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-9",
+      "name": "Charlestown -9.0 m",
+      "latitude": "41.355778",
+      "longitude": "-71.642267"
+    },
+    "70002": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-8",
+      "name": "Charlestown -8.0 m",
+      "latitude": "41.355770",
+      "longitude": "-71.642264"
+    },
+    "70003": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-7",
+      "name": "Charlestown -7.0 m",
+      "latitude": "41.355761",
+      "longitude": "-71.642261"
+    },
+    "70004": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-6",
+      "name": "Charlestown -6.0 m",
+      "latitude": "41.355752",
+      "longitude": "-71.642258"
+    },
+    "70005": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-5",
+      "name": "Charlestown -5.0 m",
+      "latitude": "41.355743",
+      "longitude": "-71.642255"
+    },
+    "70006": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-4",
+      "name": "Charlestown -4.0 m",
+      "latitude": "41.355735",
+      "longitude": "-71.642252"
+    },
+    "70007": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-3",
+      "name": "Charlestown -3.0 m",
+      "latitude": "41.355726",
+      "longitude": "-71.642249"
+    },
+    "70008": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-2",
+      "name": "Charlestown -2.0 m",
+      "latitude": "41.355717",
+      "longitude": "-71.642246"
+    },
+    "70009": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-1",
+      "name": "Charlestown -1.0 m",
+      "latitude": "41.355709",
+      "longitude": "-71.642243"
+    },
+    "70010": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "0",
+      "name": "Charlestown 0.0 m",
+      "latitude": "41.355700",
+      "longitude": "-71.642240"
+    },
+    "70011": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "1",
+      "name": "Charlestown 1.0 m",
+      "latitude": "41.355691",
+      "longitude": "-71.642237"
+    },
+    "70012": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "2",
+      "name": "Charlestown 2.0 m",
+      "latitude": "41.355683",
+      "longitude": "-71.642234"
+    },
+    "70013": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "3",
+      "name": "Charlestown 3.0 m",
+      "latitude": "41.355674",
+      "longitude": "-71.642231"
+    },
+    "70014": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "4",
+      "name": "Charlestown 4.0 m",
+      "latitude": "41.355665",
+      "longitude": "-71.642228"
+    },
+    "70015": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "5",
+      "name": "Charlestown 5.0 m",
+      "latitude": "41.355657",
+      "longitude": "-71.642225"
+    },
+    "70016": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "6",
+      "name": "Charlestown 6.0 m",
+      "latitude": "41.355648",
+      "longitude": "-71.642222"
+    },
+    "70017": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "7",
+      "name": "Charlestown 7.0 m",
+      "latitude": "41.355639",
+      "longitude": "-71.642219"
+    },
+    "70018": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "8",
+      "name": "Charlestown 8.0 m",
+      "latitude": "41.355630",
+      "longitude": "-71.642216"
+    },
+    "70019": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "9",
+      "name": "Charlestown 9.0 m",
+      "latitude": "41.355622",
+      "longitude": "-71.642213"
+    },
+    "70020": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "10",
+      "name": "Charlestown 10.0 m",
+      "latitude": "41.355613",
+      "longitude": "-71.642210"
+    }
+  },
+  "NOS": {
+    "72": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Charlestown Offshore",
+      "latitude": "41.2914",
+      "longitude": "-71.61732"
+    },
+    "70000": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-10",
+      "name": "Charlestown -10.0 m",
+      "latitude": "41.355787",
+      "longitude": "-71.642270"
+    },
+    "70001": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-9",
+      "name": "Charlestown -9.0 m",
+      "latitude": "41.355778",
+      "longitude": "-71.642267"
+    },
+    "70002": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-8",
+      "name": "Charlestown -8.0 m",
+      "latitude": "41.355770",
+      "longitude": "-71.642264"
+    },
+    "70003": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-7",
+      "name": "Charlestown -7.0 m",
+      "latitude": "41.355761",
+      "longitude": "-71.642261"
+    },
+    "70004": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-6",
+      "name": "Charlestown -6.0 m",
+      "latitude": "41.355752",
+      "longitude": "-71.642258"
+    },
+    "70005": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-5",
+      "name": "Charlestown -5.0 m",
+      "latitude": "41.355743",
+      "longitude": "-71.642255"
+    },
+    "70006": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-4",
+      "name": "Charlestown -4.0 m",
+      "latitude": "41.355735",
+      "longitude": "-71.642252"
+    },
+    "70007": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-3",
+      "name": "Charlestown -3.0 m",
+      "latitude": "41.355726",
+      "longitude": "-71.642249"
+    },
+    "70008": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-2",
+      "name": "Charlestown -2.0 m",
+      "latitude": "41.355717",
+      "longitude": "-71.642246"
+    },
+    "70009": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-1",
+      "name": "Charlestown -1.0 m",
+      "latitude": "41.355709",
+      "longitude": "-71.642243"
+    },
+    "70010": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "0",
+      "name": "Charlestown 0.0 m",
+      "latitude": "41.355700",
+      "longitude": "-71.642240"
+    },
+    "70011": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "1",
+      "name": "Charlestown 1.0 m",
+      "latitude": "41.355691",
+      "longitude": "-71.642237"
+    },
+    "70012": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "2",
+      "name": "Charlestown 2.0 m",
+      "latitude": "41.355683",
+      "longitude": "-71.642234"
+    },
+    "70013": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "3",
+      "name": "Charlestown 3.0 m",
+      "latitude": "41.355674",
+      "longitude": "-71.642231"
+    },
+    "70014": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "4",
+      "name": "Charlestown 4.0 m",
+      "latitude": "41.355665",
+      "longitude": "-71.642228"
+    },
+    "70015": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "5",
+      "name": "Charlestown 5.0 m",
+      "latitude": "41.355657",
+      "longitude": "-71.642225"
+    },
+    "70016": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "6",
+      "name": "Charlestown 6.0 m",
+      "latitude": "41.355648",
+      "longitude": "-71.642222"
+    },
+    "70017": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "7",
+      "name": "Charlestown 7.0 m",
+      "latitude": "41.355639",
+      "longitude": "-71.642219"
+    },
+    "70018": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "8",
+      "name": "Charlestown 8.0 m",
+      "latitude": "41.355630",
+      "longitude": "-71.642216"
+    },
+    "70019": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "9",
+      "name": "Charlestown 9.0 m",
+      "latitude": "41.355622",
+      "longitude": "-71.642213"
+    },
+    "70020": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "10",
+      "name": "Charlestown 10.0 m",
+      "latitude": "41.355613",
+      "longitude": "-71.642210"
+    }
+  },
+  "RUNUP": {
+    "70": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "surfKey": "71",
+      "offshoreKey": "72",
+      "name": "Charlestown",
+      "latitude": "41.3557",
+      "longitude": "-71.64224",
+      "surfLatitude": "41.35293",
+      "surfLongitude": "-71.64127",
+      "offshoreLatitude": "41.2914",
+      "offshoreLongitude": "-71.61732"
+    }
+  }
+}

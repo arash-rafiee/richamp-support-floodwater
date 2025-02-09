@@ -1,13 +1,4 @@
 {
-  "USGS": {
-    "1": {
-      "id": "01115170",
-      "source": "USGS",
-      "name": "Moswansicut Stream, RI",
-      "latitude": "41.840833333333336",
-      "longitude": "-71.585"
-    }
-  },
   "ASSET": {
     "70": {
       "id": "RUNUP",
@@ -55,7 +46,7 @@
       "source": "RUNUP",
       "surfKey": "71",
       "offshoreKey": "72",
-      "name": "Charlestown Shoreline",
+      "name": "Charlestown",
       "latitude": "41.3557",
       "longitude": "-71.64224",
       "surfLatitude": "41.35293",
