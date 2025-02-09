@@ -1555,6 +1555,35 @@ class Grapher:
             plt.savefig(graph_directory + 'all_stations_wave_pwp.png')
             plt.close(fig_pwp)
             
+#           Plot mwp and pwp together
+        if self.wavesExists:
+            fig, ax = plt.subplots(figsize=(12, 8))
+    
+            for index in range(numberOfWaveDatapoints):
+                if len(self.datapointsMWP[index]) > 0 and not np.isnan(np.min(self.datapointsMWP[index])):
+                    ax.scatter(self.waveTimes, self.datapointsMWP[index], 
+                               marker=".", color='b', label=f"MWP Forecast {self.buoyLabels[index]}")
+                    if self.buoyExists:
+                        ax.scatter(self.buoyDatapointsTimes[index], self.buoyDatapointsMWP[index], 
+                                   marker="x", color='b', label=f"MWP Buoy {self.buoyLabels[index]}")
+
+                if len(self.datapointsPWP[index]) > 0 and not np.isnan(np.min(self.datapointsPWP[index])):
+                    ax.scatter(self.waveTimes, self.datapointsPWP[index], 
+                               marker=".", color='r', label=f"PWP Forecast {self.buoyLabels[index]}")
+                    if self.buoyExists:
+                        ax.scatter(self.buoyDatapointsTimes[index], self.buoyDatapointsPWP[index], 
+                                   marker="x", color='r', label=f"PWP Buoy {self.buoyLabels[index]}")
+
+            ax.legend(loc="upper left", ncol=2, bbox_to_anchor=(1, 1))
+            ax.set_title("MWP and PWP Across All Stations")
+            ax.format_xdata = mdates.DateFormatter('%d')
+            ax.set_ylabel("Wave Period (seconds)")
+            ax.set_xlabel("Date")
+    
+            fig.tight_layout()
+            fig.savefig(graph_directory + 'all_stations_wave_mwp_pwp.png')
+            plt.close(fig)
+            
 #         Graph water values on top of each other
         if len(self.datapointsWaters) > 0:
             fig, ax = plt.subplots(figsize=(16, 9))

@@ -208,6 +208,22 @@ class GetRunup:
 #           
 #           GetBuoyWater stopped working. NAVD datum isint working. Thinking I have to switch to MSL datum, then add in MSL offset to convert to navd after pulling the obs data
 
+#           Thought of a way to get runup prediction location
+#              Discretize and generate stations close to shoreline point at a fine resolution
+#           For each time, Iterate through the stations, starting at the offshore side. 
+#             Check the water level for each station, if the water level is equal to 0, break. The found point
+#               Is the location of runup prediction.
+#                This method heavily depends on the coarseness of the station locations in order to get an accurate runup prediction point.
+#               Save the runup prediction points for each timestep to an array.
+#               The next step is to use the runup prediction point as the shoreline point for any given timestep. This means that the beach slope and distance have
+#               to be calculated from the runup prediction point, not the shoreline point.
+#             It will probbably be easier to create the predictionLocations array first,
+#               Then work on creating runup predictions using the predicitonLocation and surfline to generate iribarren number.
+
+#           Water levels look wack. Don't match up with observation at all. Rerunning with fixed sea level offset.
+
+            predictionLocations = []
+
             runupDict[key] = {}
             runupDict[key]["surfDistance"] = surfDistance
             runupDict[key]["offshoreDistance"] = offshoreDistance
@@ -217,6 +233,7 @@ class GetRunup:
             runupDict[key]["wavelength"] = offshoreWavelength
             runupDict[key]["steepness"] = offshoreSteepness
             runupDict[key]["iribarren"] = iribarren
+            runupDict[key]["predictionLocations"] = predictionLocations
             runupDict[key]["nodeIndex"] = stationName
             runupDict[key]["latitude"] = shorelineCoordinates[0]
             runupDict[key]["longitude"] = shorelineCoordinates[1]

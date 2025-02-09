@@ -396,19 +396,19 @@ def main():
         WAVE_PWP_DATA_FILE = wave_temp_directory + "wave_pwp_data_file" + ".json"
         WAVE_RAD_DATA_FILE = wave_temp_directory + "wave_rad_data_file" + ".json"
         STATIONS_FILE = args.stations
-#         (waveStartDateObject, waveEndDateObject) = WaveReader(
-#             WAVE_SWH_FILE=WAVE_SWH_FILE,
-#             WAVE_MWD_FILE=WAVE_MWD_FILE,
-#             WAVE_MWP_FILE=WAVE_MWP_FILE,
-#             WAVE_PWP_FILE=WAVE_PWP_FILE,
-#             WAVE_RAD_FILE=WAVE_RAD_FILE,
-#             STATIONS_FILE=STATIONS_FILE, 
-#             WAVE_SWH_DATA_FILE=WAVE_SWH_DATA_FILE,
-#             WAVE_MWD_DATA_FILE=WAVE_MWD_DATA_FILE,
-#             WAVE_MWP_DATA_FILE=WAVE_MWP_DATA_FILE,
-#             WAVE_PWP_DATA_FILE=WAVE_PWP_DATA_FILE,
-#             WAVE_RAD_DATA_FILE=WAVE_RAD_DATA_FILE,
-#             BACKGROUND_AXIS=backgroundAxis).generateWaveDataForStations()
+        (waveStartDateObject, waveEndDateObject) = WaveReader(
+            WAVE_SWH_FILE=WAVE_SWH_FILE,
+            WAVE_MWD_FILE=WAVE_MWD_FILE,
+            WAVE_MWP_FILE=WAVE_MWP_FILE,
+            WAVE_PWP_FILE=WAVE_PWP_FILE,
+            WAVE_RAD_FILE=WAVE_RAD_FILE,
+            STATIONS_FILE=STATIONS_FILE, 
+            WAVE_SWH_DATA_FILE=WAVE_SWH_DATA_FILE,
+            WAVE_MWD_DATA_FILE=WAVE_MWD_DATA_FILE,
+            WAVE_MWP_DATA_FILE=WAVE_MWP_DATA_FILE,
+            WAVE_PWP_DATA_FILE=WAVE_PWP_DATA_FILE,
+            WAVE_RAD_DATA_FILE=WAVE_RAD_DATA_FILE,
+            BACKGROUND_AXIS=backgroundAxis).generateWaveDataForStations()
         
 #         waveStartDateObject = datetime.datetime(year=2024, month=8, day=28, hour=5, tzinfo=datetime.timezone.utc)
 #         waveEndDateObject = datetime.datetime(year=2024, month=12, day=4, hour=5, tzinfo=datetime.timezone.utc)
@@ -443,9 +443,9 @@ def main():
             GetObsElevation(STATIONS_FILE=STATIONS_FILE, OBS_ASSET_DATA_FILE=OBS_ASSET_DATA_FILE)
             dataToGraph["ASSET"] = OBS_ASSET_DATA_FILE
         if(args.wavesExists):
-#             print("Parsed start and end date from netCDF, ", waveStartDateObject, waveEndDateObject, flush=True)
+            print("Parsed start and end date from netCDF, ", waveStartDateObject, waveEndDateObject, flush=True)
             OBS_WAVE_DATA_FILE = wind_temp_directory + "obs_wave_data_file" + ".json"
-#             GetBuoyWaves(STATIONS_FILE=STATIONS_FILE, OBS_WAVE_DATA_FILE=OBS_WAVE_DATA_FILE, startDateObject=waveStartDateObject, endDateObject=waveEndDateObject)
+            GetBuoyWaves(STATIONS_FILE=STATIONS_FILE, OBS_WAVE_DATA_FILE=OBS_WAVE_DATA_FILE, startDateObject=waveStartDateObject, endDateObject=waveEndDateObject)
 #             This wave observational file will contain the observational data in correct format for three types of observational data,
 #           significant wave height, mean wave direction, and mean wave period
             dataToGraph["BUOY"] = OBS_WAVE_DATA_FILE
