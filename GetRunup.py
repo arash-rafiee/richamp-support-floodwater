@@ -58,6 +58,52 @@ class GetRunup:
             
             runupTimes = waterDict[offshoreKey]["times"]
             offshoreWater = waterDict[offshoreKey]["water"]
+            
+#             waterTimestampsInitialized = False
+#             for stationKey in waterDict.keys():
+#                 if(stationKey != "map_data"):
+#                     nodeIndex = waterDict[stationKey]["nodeIndex"]
+#                     if(not self.tideExists or (stationKey in tideDataset.keys())):
+#                         self.waterLabels.append(nodeIndex)
+#                         self.waterLatitudes.append(waterDataset[stationKey]["latitude"])
+#                         self.waterLongitudes.append(waterDataset[stationKey]["longitude"])
+#                 
+#                         if(not tideLabelsInitialized):
+#                             self.tideLabels.append(self.obsMetadata["NOS"][stationKey]["name"])
+#                             self.tideLatitudes.append(float(self.obsMetadata["NOS"][stationKey]["latitude"]))
+#                             self.tideLongitudes.append(float(self.obsMetadata["NOS"][stationKey]["longitude"]))
+# 
+#                         datapointWaters = []
+#                         for index in range(len(waterDataset[stationKey]["times"])):
+#                             if(self.waterStartDate == None):
+#                                 self.waterStartDate = datetime.fromtimestamp(int(waterDataset[stationKey]["times"][index]), timezone.utc)
+#                             if(not waterTimestampsInitialized):
+#                                 self.waterTimes.append(self.unixTimeToDeltaHours(waterDataset[stationKey]["times"][index], self.waterStartDate))
+#                             datapointWaters.append(waterDataset[stationKey]["water"][index])
+#                         waterTimestampsInitialized = True
+#                         self.datapointsWaters.append(datapointWaters)
+#                         if(self.tideExists):
+#                             tideTimes = []
+#                             tideWaters = []
+#                 #                         Height is not station altitude, it is sea surface height
+#                             for index in range(len(tideDataset[stationKey]["times"])):
+#                                 tideTimes.append(self.unixTimeToDeltaHours(tideDataset[stationKey]["times"][index], self.waterStartDate))
+#                                 tideWater = tideDataset[stationKey]["water"][index]
+#                                 tideWaters.append(tideWater)
+#                             self.tideDatapointsTimes.append(tideTimes)
+#                             self.tideDatapointsWaters.append(tideWaters)
+#                             tidePredictionTimes = []
+#                             tidePredictionWaters = []
+#                 #                         Height is not station altitude, it is sea surface height
+#                             for index in range(len(tideDataset[stationKey]["prediction_times"])):
+#                                 tidePredictionTimes.append(self.unixTimeToDeltaHours(tideDataset[stationKey]["prediction_times"][index], self.waterStartDate))
+#                                 tidePredictionWater = tideDataset[stationKey]["prediction_water"][index]
+#                                 tidePredictionWaters.append(tidePredictionWater)
+#                             self.tideDatapointsPredictionTimes.append(tidePredictionTimes)
+#                             self.tideDatapointsPredictionWaters.append(tidePredictionWaters)
+#             tideLabelsInitialized = True
+            
+            
             offshoreSwh = swhDict[offshoreKey]["swh"]
             offshoreMwd = mwdDict[offshoreKey]["mwd"]
             offshorePwp = pwpDict[offshoreKey]["pwp"]
@@ -136,6 +182,32 @@ class GetRunup:
 
 #           2/5 The convert script isint working. Debug by converting oceanweather to 306, then to nc, then graphing until it is right.
 #           Ask mr. g to write it starting at max lat and min lon, row by row. And ask him to make a Wind_Inp file so its easy to convert to NetCDF
+
+#           Finished OceanwatherTo306 script. Got runs. Now need to calculate runup.
+#            First step is to get a series of points x distance from the 0 water level point on the shpreline.
+#             The first question, how to find the 0 water level point for a given time?
+#           One idea is to interpolate to where there is 0 water. 
+#               Another idea is to pick where the water level is at a minimum.
+#             
+#             What has to be given is a general location of the shoreline. 
+#             What can be given is a set of two points. A general coastline point and a general surfzone point.
+#             The goal is, from the genral location of the shoreline point, can a precise location of the 0 water level point be generated?
+#              Given the shoreline point, a search can ensue around a set radius. A subset of the water data is taken in the search area
+#              The water level of the search area is scanned to try and produce a waterline line segment.
+
+
+
+#              Scratch the above.
+#                 Define a line along the beach connecting the shoreline point to the surfzone point.
+#                  To find the location of runup prediction, traverse the line. Find for which position of the line the water level reaches 0.
+
+#           I created a script to generate normal line obs stations. Detirmining the prediction location for runup for a given timestep
+#              i.e finding the location of 0 water level for a given timestep
+#           Is another challenge
+#           The adcirc mesh might have even better resolution or atlesat on par with the normal line
+#           
+#           GetBuoyWater stopped working. NAVD datum isint working. Thinking I have to switch to MSL datum, then add in MSL offset to convert to navd after pulling the obs data
+
             runupDict[key] = {}
             runupDict[key]["surfDistance"] = surfDistance
             runupDict[key]["offshoreDistance"] = offshoreDistance

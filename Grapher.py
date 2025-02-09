@@ -684,65 +684,66 @@ class Grapher:
                                 self.maxSWH = pointSWH
                 else:
                     nodeIndex = iteratorDataset[stationKey]["nodeIndex"]
-                    self.waveLabels.append(nodeIndex)
-                    self.waveLatitudes.append(iteratorDataset[stationKey]["latitude"])
-                    self.waveLongitudes.append(iteratorDataset[stationKey]["longitude"])
-                    if(not buoyLabelsInitialized):
-                        self.buoyLabels.append(self.obsMetadata["NDBC"][stationKey]["name"])
-                        self.buoyLatitudes.append(float(self.obsMetadata["NDBC"][stationKey]["latitude"]))
-                        self.buoyLongitudes.append(float(self.obsMetadata["NDBC"][stationKey]["longitude"]))
+                    if(not self.buoyExists or (stationKey in buoyDataset.keys())):
+                        self.waveLabels.append(nodeIndex)
+                        self.waveLatitudes.append(iteratorDataset[stationKey]["latitude"])
+                        self.waveLongitudes.append(iteratorDataset[stationKey]["longitude"])
+                        if(not buoyLabelsInitialized):
+                            self.buoyLabels.append(self.obsMetadata["NDBC"][stationKey]["name"])
+                            self.buoyLatitudes.append(float(self.obsMetadata["NDBC"][stationKey]["latitude"]))
+                            self.buoyLongitudes.append(float(self.obsMetadata["NDBC"][stationKey]["longitude"]))
 
-                    datapointSWH = []
-                    datapointMWD = []
-                    datapointMWP = []
-                    datapointPWP = []
-                    datapointRADMag = []
-                    datapointRADDir = []
-                    for index in range(len(iteratorDataset[stationKey]["times"])):
-                        if(self.waveStartDate == None):
-                            self.waveStartDate = datetime.fromtimestamp(int(iteratorDataset[stationKey]["times"][index]), timezone.utc)
-                        if(not waveTimestampsInitialized):
-                            self.waveTimes.append(self.unixTimeToDeltaHours(iteratorDataset[stationKey]["times"][index], self.waveStartDate))
-                        if(swhExists):
-                            datapointSWH.append(swhDataset[stationKey]["swh"][index])
-                        if(mwdExists):
-                            datapointMWD.append(mwdDataset[stationKey]["mwd"][index])
-                        if(mwpExists):
-                            datapointMWP.append(mwpDataset[stationKey]["mwp"][index])
-                        if(pwpExists):
-                            datapointPWP.append(pwpDataset[stationKey]["pwp"][index])
-                        if(radExists):
-                            radX = radDataset[stationKey]["radstressX"][index]
-                            radY = radDataset[stationKey]["radstressY"][index]
-                            radMag = self.vectorSpeed(radX, radY)
-                            radDir = self.vectorDirection(radX, radY)
-                            datapointRADMag.append(radMag)
-                            datapointRADDir.append(radDir)
-                    waveTimestampsInitialized = True
-                    self.datapointsSWH.append(datapointSWH)
-                    self.datapointsMWD.append(datapointMWD)
-                    self.datapointsMWP.append(datapointMWP)
-                    self.datapointsPWP.append(datapointPWP)
-                    self.datapointsRADMag.append(datapointRADMag)
-                    self.datapointsRADDir.append(datapointRADDir) 
-                    if(self.buoyExists):
-                        buoyTimes = []
-                        buoySWH = []
-                        buoyMWD = []
-                        buoyMWP = []
-                        buoyPWP = []
-            #                         Height is not station altitude, it is sea surface height
-                        for index in range(len(buoyDataset[stationKey]["times"])):
-                            buoyTimes.append(self.unixTimeToDeltaHours(buoyDataset[stationKey]["times"][index], self.waveStartDate))
-                            buoySWH.append(buoyDataset[stationKey]["swh"][index])
-                            buoyMWD.append(buoyDataset[stationKey]["mwd"][index])
-                            buoyMWP.append(buoyDataset[stationKey]["mwp"][index])
-                            buoyPWP.append(buoyDataset[stationKey]["pwp"][index])
-                        self.buoyDatapointsTimes.append(buoyTimes)
-                        self.buoyDatapointsSWH.append(buoySWH)
-                        self.buoyDatapointsMWD.append(buoyMWD)
-                        self.buoyDatapointsMWP.append(buoyMWP)
-                        self.buoyDatapointsPWP.append(buoyPWP)
+                        datapointSWH = []
+                        datapointMWD = []
+                        datapointMWP = []
+                        datapointPWP = []
+                        datapointRADMag = []
+                        datapointRADDir = []
+                        for index in range(len(iteratorDataset[stationKey]["times"])):
+                            if(self.waveStartDate == None):
+                                self.waveStartDate = datetime.fromtimestamp(int(iteratorDataset[stationKey]["times"][index]), timezone.utc)
+                            if(not waveTimestampsInitialized):
+                                self.waveTimes.append(self.unixTimeToDeltaHours(iteratorDataset[stationKey]["times"][index], self.waveStartDate))
+                            if(swhExists):
+                                datapointSWH.append(swhDataset[stationKey]["swh"][index])
+                            if(mwdExists):
+                                datapointMWD.append(mwdDataset[stationKey]["mwd"][index])
+                            if(mwpExists):
+                                datapointMWP.append(mwpDataset[stationKey]["mwp"][index])
+                            if(pwpExists):
+                                datapointPWP.append(pwpDataset[stationKey]["pwp"][index])
+                            if(radExists):
+                                radX = radDataset[stationKey]["radstressX"][index]
+                                radY = radDataset[stationKey]["radstressY"][index]
+                                radMag = self.vectorSpeed(radX, radY)
+                                radDir = self.vectorDirection(radX, radY)
+                                datapointRADMag.append(radMag)
+                                datapointRADDir.append(radDir)
+                        waveTimestampsInitialized = True
+                        self.datapointsSWH.append(datapointSWH)
+                        self.datapointsMWD.append(datapointMWD)
+                        self.datapointsMWP.append(datapointMWP)
+                        self.datapointsPWP.append(datapointPWP)
+                        self.datapointsRADMag.append(datapointRADMag)
+                        self.datapointsRADDir.append(datapointRADDir) 
+                        if(self.buoyExists):
+                            buoyTimes = []
+                            buoySWH = []
+                            buoyMWD = []
+                            buoyMWP = []
+                            buoyPWP = []
+                #                         Height is not station altitude, it is sea surface height
+                            for index in range(len(buoyDataset[stationKey]["times"])):
+                                buoyTimes.append(self.unixTimeToDeltaHours(buoyDataset[stationKey]["times"][index], self.waveStartDate))
+                                buoySWH.append(buoyDataset[stationKey]["swh"][index])
+                                buoyMWD.append(buoyDataset[stationKey]["mwd"][index])
+                                buoyMWP.append(buoyDataset[stationKey]["mwp"][index])
+                                buoyPWP.append(buoyDataset[stationKey]["pwp"][index])
+                            self.buoyDatapointsTimes.append(buoyTimes)
+                            self.buoyDatapointsSWH.append(buoySWH)
+                            self.buoyDatapointsMWD.append(buoyMWD)
+                            self.buoyDatapointsMWP.append(buoyMWP)
+                            self.buoyDatapointsPWP.append(buoyPWP)
    
             buoyLabelsInitialized = True     
             
@@ -1235,7 +1236,7 @@ class Grapher:
     #                         print("point, water", point, water)
                             currentMaskedTriangles[triangleIndex] = True
                             break
-                waveTriangulation = Triangulation(self.mapWaverPointsLongitudes, self.mapWavePointsLatitudes, triangles=self.mapWaveTriangles, mask=currentMaskedTriangles)
+                waveTriangulation = Triangulation(self.mapWavePointsLongitudes, self.mapWavePointsLatitudes, triangles=self.mapWaveTriangles, mask=currentMaskedTriangles)
 
                 plt.imshow(img, extent=self.backgroundAxis, aspect=aspectRatio)
                 contourset = ax.tricontourf(waveTriangulation, self.mapSWH[index], levelBoundaries, alpha=0.5, vmin=vmin, vmax=vmax)
@@ -1490,6 +1491,103 @@ class Grapher:
                     plt.ylabel("Rad stress direction (degrees)")
                     plt.savefig(graph_directory + stationName + '_wave_radstress_dir.png')
                     plt.close()
+                    
+# Graph wave parameters on the same graph for comparison
+#     swh graph
+        if self.wavesExists:
+            fig_swh, ax_swh = plt.subplots(figsize=(12, 8))
+            for index in range(numberOfWaveDatapoints):
+                if len(self.datapointsSWH[index]) > 0:
+                    if(not np.isnan(np.min(self.datapointsSWH[index]))):
+                        ax_swh.scatter(self.waveTimes, self.datapointsSWH[index], 
+                                       marker=".", label=f"Forecast {self.buoyLabels[index]}")
+                        if self.buoyExists:
+                            ax_swh.scatter(self.buoyDatapointsTimes[index], self.buoyDatapointsSWH[index], 
+                                           label=f"Buoy {self.buoyLabels[index]}")
+    
+            ax_swh.legend(loc="lower right", ncol=2, bbox_to_anchor=(1, 0))
+            ax_swh.set_title("Significant Wave Height Across All Stations")
+            ax_swh.format_xdata = mdates.DateFormatter('%d')
+            ax_swh.set_ylabel("SWH (meters)")
+            ax_swh.set_xlabel("Date")
+            plt.tight_layout()
+            plt.savefig(graph_directory + 'all_stations_wave_swh.png')
+            plt.close(fig_swh)
+        # MWP Graph
+        if self.wavesExists:
+            fig_mwp, ax_mwp = plt.subplots(figsize=(12, 8))
+            for index in range(numberOfWaveDatapoints):
+                if len(self.datapointsMWP[index]) > 0:
+                    if(not np.isnan(np.min(self.datapointsMWP[index]))):
+                        ax_mwp.scatter(self.waveTimes, self.datapointsMWP[index], 
+                                       marker=".", label=f"Forecast {self.buoyLabels[index]}")
+                        if self.buoyExists:
+                            ax_mwp.scatter(self.buoyDatapointsTimes[index], self.buoyDatapointsMWP[index], 
+                                           label=f"Buoy {self.buoyLabels[index]}")
+    
+            ax_mwp.legend(loc="lower right", ncol=2, bbox_to_anchor=(1, 0))
+            ax_mwp.set_title("Mean Wave Period Across All Stations")
+            ax_mwp.format_xdata = mdates.DateFormatter('%d')
+            ax_mwp.set_ylabel("MWP (seconds)")
+            ax_mwp.set_xlabel("Date")
+            plt.tight_layout()
+            plt.savefig(graph_directory + 'all_stations_wave_mwp.png')
+            plt.close(fig_mwp)
+
+        # PWP Graph
+        if self.wavesExists:
+            fig_pwp, ax_pwp = plt.subplots(figsize=(12, 8))
+            for index in range(numberOfWaveDatapoints):
+                if len(self.datapointsPWP[index]) > 0:
+                    if(not np.isnan(np.min(self.datapointsPWP[index]))):
+                        ax_pwp.scatter(self.waveTimes, self.datapointsPWP[index], 
+                                       marker=".", label=f"Forecast {self.buoyLabels[index]}")
+                        if self.buoyExists:
+                            ax_pwp.scatter(self.buoyDatapointsTimes[index], self.buoyDatapointsPWP[index], 
+                                           label=f"Buoy {self.buoyLabels[index]}")
+    
+            ax_pwp.legend(loc="lower right", ncol=2, bbox_to_anchor=(1, 0))
+            ax_pwp.set_title("Peak Wave Period Across All Stations")
+            ax_pwp.format_xdata = mdates.DateFormatter('%d')
+            ax_pwp.set_ylabel("PWP (seconds)")
+            ax_pwp.set_xlabel("Date")
+            plt.tight_layout()
+            plt.savefig(graph_directory + 'all_stations_wave_pwp.png')
+            plt.close(fig_pwp)
+            
+#         Graph water values on top of each other
+        if len(self.datapointsWaters) > 0:
+            fig, ax = plt.subplots(figsize=(16, 9))
+    
+            for index in range(numberOfWaterDatapoints):
+                if(not np.isnan(np.min(self.datapointsWaters[index]))):
+                    stationName = self.tideLabels[index]
+                    # Plot forecast data for each station
+                    ax.plot(self.waterTimes, self.datapointsWaters[index], label=f"Forecast {stationName}")
+        
+                    # Plot tide data if available
+                    if self.tideExists:
+                        ax.plot(self.tideDatapointsTimes[index], self.tideDatapointsWaters[index], label=f"Station {stationName}")
+                    # Note: Prediction data plotting is commented out in the original code, so it remains commented here:
+                    # ax.plot(self.tideDatapointsPredictionTimes[index], self.tideDatapointsPredictionWaters[index], label=f"Prediction {stationName}")
+
+            # Configure the plot
+            ax.legend(loc="upper left", ncol=2, bbox_to_anchor=(1, 1))
+            ax.format_xdata = mdates.DateFormatter('%d')
+            plt.xticks(fontsize=12)
+            plt.yticks(fontsize=12)
+    
+            # Since we're plotting multiple stations, we'll use a more general title
+            plt.title(self.titlePrefix + "Water Elevation for All Stations", fontsize=18)
+            plt.xlabel("Date", fontsize=14)
+            plt.ylabel("Elevation (meters)", fontsize=14)
+    
+            plt.tight_layout()
+            plt.savefig(graph_directory + 'all_stations_water.png')
+            plt.close()
+
+        
+#         Graph values generated by GetRunup step
         for index in range(numberOfRunupDatapoints):
             if(len(self.datapointsRunup) > 0):
                 fig, ax = plt.subplots(figsize=(16,9))

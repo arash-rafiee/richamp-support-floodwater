@@ -356,8 +356,8 @@ def main():
         ADCIRC_WATER_DATA_FILE = water_temp_directory + "adcirc_water_data_file" + ".json"
 
         (waterStartDateObject, waterEndDateObject) = Fort63Reader(ADCIRC_WATER_FILE=ADCIRC_WATER_FILE, STATIONS_FILE=STATIONS_FILE, ADCIRC_WATER_DATA_FILE=ADCIRC_WATER_DATA_FILE, BACKGROUND_AXIS=backgroundAxis).generateWindDataForStations()
-#         waterStartDateObject = datetime.datetime(year=2018, month=2, day=28, hour=5)
-#         waterEndDateObject = datetime.datetime(year=2018, month=3, day=4, hour=5)
+#         waterStartDateObject = datetime.datetime(year=2024, month=11, day=15, hour=0, tzinfo=datetime.timezone.utc)
+#         waterEndDateObject = datetime.datetime(year=2024, month=11, day=20, hour=0, tzinfo=datetime.timezone.utc)
         dataToGraph["WATER"] = ADCIRC_WATER_DATA_FILE
 #         dataToGraph["DIFF"] = ADCIRC_DIFF_WATER_DATA_FILE
        
@@ -396,25 +396,25 @@ def main():
         WAVE_PWP_DATA_FILE = wave_temp_directory + "wave_pwp_data_file" + ".json"
         WAVE_RAD_DATA_FILE = wave_temp_directory + "wave_rad_data_file" + ".json"
         STATIONS_FILE = args.stations
-        (waveStartDateObject, waveEndDateObject) = WaveReader(
-            WAVE_SWH_FILE=WAVE_SWH_FILE,
-            WAVE_MWD_FILE=WAVE_MWD_FILE,
-            WAVE_MWP_FILE=WAVE_MWP_FILE,
-            WAVE_PWP_FILE=WAVE_PWP_FILE,
-            WAVE_RAD_FILE=WAVE_RAD_FILE,
-            STATIONS_FILE=STATIONS_FILE, 
-            WAVE_SWH_DATA_FILE=WAVE_SWH_DATA_FILE,
-            WAVE_MWD_DATA_FILE=WAVE_MWD_DATA_FILE,
-            WAVE_MWP_DATA_FILE=WAVE_MWP_DATA_FILE,
-            WAVE_PWP_DATA_FILE=WAVE_PWP_DATA_FILE,
-            WAVE_RAD_DATA_FILE=WAVE_RAD_DATA_FILE,
-            BACKGROUND_AXIS=backgroundAxis).generateWaveDataForStations()
+#         (waveStartDateObject, waveEndDateObject) = WaveReader(
+#             WAVE_SWH_FILE=WAVE_SWH_FILE,
+#             WAVE_MWD_FILE=WAVE_MWD_FILE,
+#             WAVE_MWP_FILE=WAVE_MWP_FILE,
+#             WAVE_PWP_FILE=WAVE_PWP_FILE,
+#             WAVE_RAD_FILE=WAVE_RAD_FILE,
+#             STATIONS_FILE=STATIONS_FILE, 
+#             WAVE_SWH_DATA_FILE=WAVE_SWH_DATA_FILE,
+#             WAVE_MWD_DATA_FILE=WAVE_MWD_DATA_FILE,
+#             WAVE_MWP_DATA_FILE=WAVE_MWP_DATA_FILE,
+#             WAVE_PWP_DATA_FILE=WAVE_PWP_DATA_FILE,
+#             WAVE_RAD_DATA_FILE=WAVE_RAD_DATA_FILE,
+#             BACKGROUND_AXIS=backgroundAxis).generateWaveDataForStations()
         
 #         waveStartDateObject = datetime.datetime(year=2024, month=8, day=28, hour=5, tzinfo=datetime.timezone.utc)
 #         waveEndDateObject = datetime.datetime(year=2024, month=12, day=4, hour=5, tzinfo=datetime.timezone.utc)
         dataToGraph["SWH"] = WAVE_SWH_DATA_FILE
         dataToGraph["MWD"] = WAVE_MWD_DATA_FILE
-#         dataToGraph["MWP"] = WAVE_MWP_DATA_FILE
+        dataToGraph["MWP"] = WAVE_MWP_DATA_FILE
         dataToGraph["PWP"] = WAVE_PWP_DATA_FILE
 #         dataToGraph["RAD"] = WAVE_RAD_DATA_FILE
         
@@ -443,9 +443,9 @@ def main():
             GetObsElevation(STATIONS_FILE=STATIONS_FILE, OBS_ASSET_DATA_FILE=OBS_ASSET_DATA_FILE)
             dataToGraph["ASSET"] = OBS_ASSET_DATA_FILE
         if(args.wavesExists):
-            print("Parsed start and end date from netCDF, ", waveStartDateObject, waveEndDateObject, flush=True)
+#             print("Parsed start and end date from netCDF, ", waveStartDateObject, waveEndDateObject, flush=True)
             OBS_WAVE_DATA_FILE = wind_temp_directory + "obs_wave_data_file" + ".json"
-            GetBuoyWaves(STATIONS_FILE=STATIONS_FILE, OBS_WAVE_DATA_FILE=OBS_WAVE_DATA_FILE, startDateObject=waveStartDateObject, endDateObject=waveEndDateObject)
+#             GetBuoyWaves(STATIONS_FILE=STATIONS_FILE, OBS_WAVE_DATA_FILE=OBS_WAVE_DATA_FILE, startDateObject=waveStartDateObject, endDateObject=waveEndDateObject)
 #             This wave observational file will contain the observational data in correct format for three types of observational data,
 #           significant wave height, mean wave direction, and mean wave period
             dataToGraph["BUOY"] = OBS_WAVE_DATA_FILE

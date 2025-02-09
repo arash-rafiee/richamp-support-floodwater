@@ -59,7 +59,7 @@ def generate_points_along_line(json_data, resolution=1, points_count=20):
                 json_data[section][new_key] = new_point
             point_counter += 1  # Increment counter for next iteration
             
-def offshore_generate_points_along_line(json_data, resolution=100, points_count=100):
+def offshore_generate_points_along_line(json_data, resolution=1000, points_count=10):
     point_counter = 0  # Counter for unique keys
     for runup_id, runup_data in json_data['RUNUP'].items():
         shoreline_lat, shoreline_lon = float(runup_data['latitude']), float(runup_data['longitude'])
@@ -88,7 +88,7 @@ def offshore_generate_points_along_line(json_data, resolution=100, points_count=
             point_counter += 1  # Increment counter for next iteration
 
 # Load JSON data
-with open('OBS_STATIONS.json', 'r') as file:
+with open('RUNUP_OBS_STATIONS.json', 'r') as file:
     data = json.load(file)
 
 
@@ -98,7 +98,7 @@ generate_points_along_line(data)
 with open('RUNUP_NORMAL_STATIONS.json', 'w') as file:
     json.dump(data, file, indent=2)
 
-with open('OBS_STATIONS.json', 'r') as file:
+with open('RUNUP_OBS_STATIONS.json', 'r') as file:
     data = json.load(file)
         # Generate points and modify JSON
 offshore_generate_points_along_line(data)

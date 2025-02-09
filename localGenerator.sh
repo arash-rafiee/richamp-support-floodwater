@@ -123,4 +123,5 @@ python generateGraphs.py --stations RUNUP_OFFSHORE_STATIONS.json \
 --tempDir /Volumes/ssd/temp/ --backgroundChoice CHARLESTOWN
 # python generateGraphs.py --stations OBS_STATIONS.json --meshExists true --mesh ../trackfiles/v18.fort.14 --tempDir temp/ --backgroundChoice CAPE_COD
 
-# python generateGraphs.py --stations OBS_STATIONS.json --obsExists true --gfsExists true --wind /Volumes/ssd/ObservationalWind/Dec172023WaveData/dec23.nc --tempDir /Volumes/ssd/temp/
+# python generateGraphs.py --stations OBS_STATIONS.json --obsExists true --gfsExists true --wind /Volumes/ssd/ObservationalWind/feb25.nc --tempDir /Volumes/ssd/temp/ --backgroundChoice EAST_COAST
+# python generateGraphs.py --stations OBS_STATIONS.json --obsExists true --waterExists true --water /Volumes/ssd/ObservationalWind/wave_data/fort.63.nc --tempDir /Volumes/ssd/temp/

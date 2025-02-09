@@ -8,6 +8,37 @@ from urllib.error import HTTPError
 from datetime import datetime, timedelta, timezone
 import json
 from Encoders import NumpyEncoder
+import signal
+import os
+import time 
+
+def alarm_handler(signum, frame):
+    raise TimeoutError("URL retrieval timed out")
+
+def safe_urlretrieve(url, filename, timeout=10, max_retries=3):
+    for attempt in range(max_retries):
+        try:
+            # Set the alarm for the timeout
+            signal.signal(signal.SIGALRM, alarm_handler)
+            signal.alarm(timeout)
+            
+            urlretrieve(url, filename)
+            
+            # Cancel the alarm if the retrieval was successful
+            signal.alarm(0)
+            return True  # Indicate success
+        except TimeoutError:
+            print(f"Attempt {attempt + 1} timed out. Retrying...")
+            if os.path.exists(filename):
+                os.remove(filename)  # Remove partially downloaded file if exists
+        except Exception as e:
+            print(f"Attempt {attempt + 1} failed with error: {e}. Retrying...")
+            if os.path.exists(filename):
+                os.remove(filename)  # Clean up if there's an error
+        finally:
+            signal.alarm(0)  # Cancel the alarm in case it wasn't cancelled yet
+
+    return False  # If all retries fail
         
 class GetBuoyWater:
     def __init__(self, STATIONS_FILE="", OBS_WATER_DATA_FILE="", startDateObject="", endDateObject=""):
@@ -24,8 +55,8 @@ class GetBuoyWater:
 
         startDate = startDateObject.strftime("%Y%m%d")
         endDate = endDateObject.strftime("%Y%m%d")
-        startDateFormat = startDateObject.strftime("%Y-%m-%d")
-        endDateFormat = endDateObject.strftime("%Y-%m-%d")
+        startDateFormat = startDateObject.strftime("%Y%m%d")
+        endDateFormat = endDateObject.strftime("%Y%m%d")
 
         heightStartDate = startDateObject.strftime("%Y-%m-%dT%H:%M:%SZ")
         heightEndDate = endDateObject.strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -54,16 +85,16 @@ class GetBuoyWater:
             stationId = stationDict["id"]
             stationName = stationDict["name"]
 # https://opendap.co-ops.nos.noaa.gov/erddap/tabledap/IOOS_Hourly_Height_Verified_Water_Level.htmlTable?STATION_ID%2CDATUM%2CBEGIN_DATE%2CEND_DATE%2Ctime%2CWL_VALUE%2CSIGMA&STATION_ID=%228452660%22&DATUM%3E=%22MSL%22&BEGIN_DATE%3E=%222024-07-29%22&END_DATE%3E=%222024-08-10%22
-            url = "https://opendap.co-ops.nos.noaa.gov/erddap/tabledap/IOOS_Hourly_Height_Verified_Water_Level.mat?STATION_ID%2CDATUM%2CBEGIN_DATE%2CEND_DATE%2Ctime%2CWL_VALUE%2CSIGMA&STATION_ID=%22"  + stationId + "%22&DATUM%3E=%22NAVD%22&BEGIN_DATE%3E=%22" + startDateFormat + "%22&END_DATE%3E=%22" + endDateFormat + "%22"
+            url = "https://opendap.co-ops.nos.noaa.gov/erddap/tabledap/IOOS_Hourly_Height_Verified_Water_Level.mat?STATION_ID%2CDATUM%2CBEGIN_DATE%2CEND_DATE%2Ctime%2CWL_VALUE%2CSIGMA&STATION_ID=%22"  + stationId + "%22&DATUM%3E=%22MSL%22&BEGIN_DATE%3E=%22" + startDateFormat + "%22&END_DATE%3E=%22" + endDateFormat + "%22"
             
             predictionTimes = []
             predictionWaters = []
             for year in predictionYears:
                 try:
                     predictionUrl = "https://tidesandcurrents.noaa.gov/cgi-bin/predictiondownload.cgi?&stnid=" + stationId +  "&threshold=&thresholdDirection=greaterThan&bdate=" + str(year) + "&timezone=GMT&datum=NAVD&clock=24hour&type=txt&annual=true"
-#                     print(predictionUrl)
+                    print("predictionUrl", predictionUrl)
                     predictionFilename = temp_directory + stationDict["id"] + str(year) + "_TidePrediction.mat"
-                    urlretrieve(predictionUrl, predictionFilename)
+                    safe_urlretrieve(predictionUrl, predictionFilename)
                     with open(predictionFilename) as file:
                         lines = file.readlines()
                         if(len(lines) > 0):
@@ -79,7 +110,7 @@ class GetBuoyWater:
                                     predictionWaters.append(predictionWater)
 #                             predictionLines.append(lines[15::])
                 except (HTTPError, FileNotFoundError):
-                    print("Bad prdiction url")
+                    print("Bad prdiction url: ", predictionUrl)
                     badStations.append(badStations.append(stationDict))
 #             print(predictionLines)
 
@@ -88,8 +119,9 @@ class GetBuoyWater:
             matFilename = temp_directory + stationDict["id"] + ".mat"
         #     sensorFilename = stationDict["id"] + "_sensor"
             try:
+                print("mat url", url)
         #     Once mat files are downloaded once, comment out this line to stop querying the API
-                urlretrieve(url, matFilename)
+                safe_urlretrieve(url, matFilename)
         #         urlretrieve(sensorURL, sensorFilename)
                 data = scipy.io.loadmat(matFilename)
                 unixTimes = data["IOOS_Hourly_Height_Verified_Wat"]["time"][0][0].flatten()
@@ -101,7 +133,7 @@ class GetBuoyWater:
                 waterDict[key]["prediction_water"] = predictionWaters
         
             except (HTTPError, FileNotFoundError):
-        #         print("oops bad url")
+                print("bad mat url: ", url)
                 badStations.append(badStations.append(stationDict))
         
         # print(windDict)
