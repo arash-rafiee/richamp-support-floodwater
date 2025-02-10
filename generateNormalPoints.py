@@ -59,7 +59,7 @@ def generate_points_along_line(json_data, resolution=1, points_count=20):
                 json_data[section][new_key] = new_point
             point_counter += 1  # Increment counter for next iteration
             
-def offshore_generate_points_along_line(json_data, resolution=2000, points_count=10):
+def offshore_generate_points_along_line(json_data, resolution=1000, points_count=10):
     point_counter = 0  # Counter for unique keys
     for runup_id, runup_data in json_data['RUNUP'].items():
         shoreline_lat, shoreline_lon = float(runup_data['latitude']), float(runup_data['longitude'])
