@@ -93,6 +93,35 @@ SOUTHERN_RHODE_ISLAND_MAP = "SouthernRhodeIsland.png"
 SOUTHERN_RHODE_ISLAND_OUTLINE_MAP = "SouthernRhodeIslandOutline.png"
 SOUTHERN_RHODE_ISLAND_AXIS = [-71.90599365234377, -71.49400634765627, 41.454571991786615, 41.145060792196574]
 
+WESTERLY_MAP = "Westerly.png"
+WESTERLY_OUTLINE_MAP = "WesterlyOutline.png"
+WESTERLY_AXIS = [-71.95299682617187, -71.74700317382812, 41.42727255213162, 41.27263562301683]
+
+NAPATREE_OFFSHORE_MAP = "NapatreeOffshore.png"
+NAPATREE_OFFSHORE_OUTLINE_MAP = "NapatreeOffshoreOutline.png"
+NAPATREE_OFFSHORE_AXIS = [-71.95299682617187, -71.74700317382812, 41.327391216900665, 41.17251699986816]
+
+LITTLE_NARRAGANSETT_BAY_MAP = "LittleNarragansettBay.png"
+LITTLE_NARRAGANSETT_BAY_OUTLINE_MAP = "LittleNarragansettBayOutline.png"
+NAPATREE_OFFSHORE_AXIS = [-71.89574920654297, -71.84425079345704, 41.339335652731975, 41.3006586089844]
+
+
+NAPATREE_MAP = "Napatree.png"
+NAPATREE_OUTLINE_MAP = "NapatreeOutline.png"
+NAPATREE_AXIS = [-71.88687460327148, -71.86112539672851, 41.31967002720852, 41.30032853828529]
+
+WATCH_HILL_MAP = "WatchHill.png"
+WATCH_HILL_OUTLINE_MAP = "WatchHillOutline.png"
+WATCH_HILL_AXIS = [-71.86287460327148, -71.83712539672851, 41.31967002720852, 41.30032853828529]
+
+MISQUAMICUT_MAP = "Misquamicut.png"
+MISQUAMICUT_OUTLINE_MAP = "MisquamicutOutline.png"
+MISQUAMICUT_AXIS = [-71.84074920654298, -71.78925079345704, 41.34433416895306, 41.30566009263403]
+
+ATLANTIC_BEACH_PARK_MAP = "AtlanticBeachPark.png"
+ATLANTIC_BEACH_PARK_OUTLINE_MAP = "AtlanticBeachParkOutline.png"
+ATLANTIC_BEACH_PARK_AXIS = [-71.86149841308595, -71.75850158691408, 41.36366259899496, 41.28631444735617]
+
 def main():
     p = argparse.ArgumentParser(description="Make a request to generate graphs")
     p.add_argument(
@@ -317,7 +346,48 @@ def main():
     elif(backgroundChoice == "CHARLESTOWN_OUTLINE"):
         backgroundMap = CHARLESTOWN_OUTLINE_MAP
         backgroundAxis = CHARLESTOWN_AXIS
-        
+    elif(backgroundChoice == "WESTERLY"):
+        backgroundMap = WESTERLY_MAP
+        backgroundAxis = WESTERLY_AXIS
+    elif(backgroundChoice == "WESTERLY_OUTLINE"):
+        backgroundMap = WESTERLY_OUTLINE_MAP
+        backgroundAxis = WESTERLY_AXIS
+    elif(backgroundChoice == "NAPATREE_OFFSHORE"):
+        backgroundMap = NAPATREE_OFFSHORE_MAP
+        backgroundAxis = NAPATREE_OFFSHORE_AXIS
+    elif(backgroundChoice == "NAPATREE_OFFSHORE_OUTLINE"):
+        backgroundMap = NAPATREE_OFFSHORE_OUTLINE_MAP
+        backgroundAxis = NAPATREE_OFFSHORE_AXIS
+    elif(backgroundChoice == "LITTLE_NARRAGANSETT_BAY"):
+        backgroundMap = LITTLE_NARRAGANSETT_BAY_MAP
+        backgroundAxis = LITTLE_NARRAGANSETT_BAY_AXIS
+    elif(backgroundChoice == "LITTLE_NARRAGANSETT_BAY_OUTLINE"):
+        backgroundMap = LITTLE_NARRAGANSETT_BAY_OUTLINE_MAP
+        backgroundAxis = LITTLE_NARRAGANSETT_BAY_AXIS
+    elif(backgroundChoice == "NAPATREE"):
+        backgroundMap = NAPATREE_MAP
+        backgroundAxis = NAPATREE_AXIS
+    elif(backgroundChoice == "NAPATREE_OUTLINE"):
+        backgroundMap = NAPATREE_OUTLINE_MAP
+        backgroundAxis = NAPATREE_AXIS
+    elif(backgroundChoice == "WATCH_HILL"):
+        backgroundMap = WATCH_HILL_MAP
+        backgroundAxis = WATCH_HILL_AXIS
+    elif(backgroundChoice == "WATCH_HILL_OUTLINE"):
+        backgroundMap = WATCH_HILL_OUTLINE_MAP
+        backgroundAxis = WATCH_HILL_AXIS
+    elif(backgroundChoice == "MISQUAMICUT"):
+        backgroundMap = MISQUAMICUT_MAP
+        backgroundAxis = MISQUAMICUT_AXIS
+    elif(backgroundChoice == "MISQUAMICUT_OUTLINE"):
+        backgroundMap = MISQUAMICUT_OUTLINE_MAP
+        backgroundAxis = MISQUAMICUT_AXIS
+    elif(backgroundChoice == "ATLANTIC_BEACH_PARK"):
+        backgroundMap = ATLANTIC_BEACH_PARK_MAP
+        backgroundAxis = ATLANTIC_BEACH_PARK_AXIS
+    elif(backgroundChoice == "ATLANTIC_BEACH_PARK_OUTLINE"):
+        backgroundMap = ATLANTIC_BEACH_PARK_OUTLINE_MAP
+        backgroundAxis = ATLANTIC_BEACH_PARK_AXIS
         
     print("args.adcircExists", args.adcircExists, flush=True)
     if(args.adcircExists):

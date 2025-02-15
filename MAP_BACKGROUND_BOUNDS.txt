@@ -168,3 +168,40 @@ Southern Rhode Island
 "lat long of center", "(41.300000000000004, -71.70000000000002)"
 "lat long of north east", "(41.454571991786615, -71.49400634765627)"
 "lat long of south west", "(41.145060792196574, -71.90599365234377)"
+
+Westerly
+"lat long of center", "(41.35, -71.85)"
+"lat long of north east", "(41.42727255213162, -71.74700317382812)"
+"lat long of south west", "(41.27263562301683, -71.95299682617187)"
+
+
+Napatree Offshore
+"lat long of center", "(41.25000000000001, -71.85)"
+"lat long of north east", "(41.327391216900665, -71.74700317382812)"
+"lat long of south west", "(41.17251699986816, -71.95299682617187)"
+
+Little Narragansett Bay
+"lat long of center", "(41.32000000000001, -71.87)"
+"lat long of north east", "(41.339335652731975, -71.84425079345704)"
+"lat long of south west", "(41.3006586089844, -71.89574920654297)"
+
+Napatree
+"lat long of center", "(41.31, -71.874)"
+"lat long of north east", "(41.31967002720852, -71.86112539672851)"
+"lat long of south west", "(41.30032853828529, -71.88687460327148)"
+
+Watch Hill
+"lat long of center", "(41.31, -71.85)"
+"lat long of north east", "(41.31967002720852, -71.83712539672851)"
+"lat long of south west", "(41.30032853828529, -71.86287460327148)"
+
+
+Misquamicut
+"lat long of center", "(41.325, -71.81500000000001)"
+"lat long of north east", "(41.34433416895306, -71.78925079345704)"
+"lat long of south west", "(41.30566009263403, -71.84074920654298)"
+
+Atlantic Beach Park
+"lat long of center", "(41.325, -71.81000000000002)"
+"lat long of north east", "(41.36366259899496, -71.75850158691408)"
+"lat long of south west", "(41.28631444735617, -71.86149841308595)"

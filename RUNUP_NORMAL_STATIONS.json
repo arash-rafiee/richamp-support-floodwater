@@ -21,6 +21,27 @@
       "latitude": "41.2914",
       "longitude": "-71.61732"
     },
+    "80": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree Shoreline",
+      "latitude": "41.30913",
+      "longitude": "-71.87615"
+    },
+    "81": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree Surfline",
+      "latitude": "41.30353",
+      "longitude": "-71.87175"
+    },
+    "82": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree Offshore",
+      "latitude": "41.19892",
+      "longitude": "-71.80623"
+    },
     "70000": {
       "id": "RUNUP",
       "source": "RUNUP",
@@ -188,6 +209,174 @@
       "name": "Charlestown 10.0 m",
       "latitude": "41.355613",
       "longitude": "-71.642210"
+    },
+    "80021": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-10",
+      "name": "Napatree -10.0 m",
+      "latitude": "41.309207",
+      "longitude": "-71.876211"
+    },
+    "80022": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-9",
+      "name": "Napatree -9.0 m",
+      "latitude": "41.309200",
+      "longitude": "-71.876205"
+    },
+    "80023": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-8",
+      "name": "Napatree -8.0 m",
+      "latitude": "41.309192",
+      "longitude": "-71.876199"
+    },
+    "80024": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-7",
+      "name": "Napatree -7.0 m",
+      "latitude": "41.309184",
+      "longitude": "-71.876193"
+    },
+    "80025": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-6",
+      "name": "Napatree -6.0 m",
+      "latitude": "41.309176",
+      "longitude": "-71.876187"
+    },
+    "80026": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-5",
+      "name": "Napatree -5.0 m",
+      "latitude": "41.309169",
+      "longitude": "-71.876180"
+    },
+    "80027": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-4",
+      "name": "Napatree -4.0 m",
+      "latitude": "41.309161",
+      "longitude": "-71.876174"
+    },
+    "80028": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-3",
+      "name": "Napatree -3.0 m",
+      "latitude": "41.309153",
+      "longitude": "-71.876168"
+    },
+    "80029": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-2",
+      "name": "Napatree -2.0 m",
+      "latitude": "41.309145",
+      "longitude": "-71.876162"
+    },
+    "80030": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-1",
+      "name": "Napatree -1.0 m",
+      "latitude": "41.309138",
+      "longitude": "-71.876156"
+    },
+    "80031": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "0",
+      "name": "Napatree 0.0 m",
+      "latitude": "41.309130",
+      "longitude": "-71.876150"
+    },
+    "80032": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "1",
+      "name": "Napatree 1.0 m",
+      "latitude": "41.309122",
+      "longitude": "-71.876144"
+    },
+    "80033": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "2",
+      "name": "Napatree 2.0 m",
+      "latitude": "41.309115",
+      "longitude": "-71.876138"
+    },
+    "80034": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "3",
+      "name": "Napatree 3.0 m",
+      "latitude": "41.309107",
+      "longitude": "-71.876132"
+    },
+    "80035": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "4",
+      "name": "Napatree 4.0 m",
+      "latitude": "41.309099",
+      "longitude": "-71.876126"
+    },
+    "80036": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "5",
+      "name": "Napatree 5.0 m",
+      "latitude": "41.309091",
+      "longitude": "-71.876120"
+    },
+    "80037": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "6",
+      "name": "Napatree 6.0 m",
+      "latitude": "41.309084",
+      "longitude": "-71.876113"
+    },
+    "80038": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "7",
+      "name": "Napatree 7.0 m",
+      "latitude": "41.309076",
+      "longitude": "-71.876107"
+    },
+    "80039": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "8",
+      "name": "Napatree 8.0 m",
+      "latitude": "41.309068",
+      "longitude": "-71.876101"
+    },
+    "80040": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "9",
+      "name": "Napatree 9.0 m",
+      "latitude": "41.309060",
+      "longitude": "-71.876095"
+    },
+    "80041": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "10",
+      "name": "Napatree 10.0 m",
+      "latitude": "41.309053",
+      "longitude": "-71.876089"
     }
   },
   "NDBC": {
@@ -198,6 +387,13 @@
       "latitude": "41.2914",
       "longitude": "-71.61732"
     },
+    "82": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree Offshore",
+      "latitude": "41.19892",
+      "longitude": "-71.80623"
+    },
     "70000": {
       "id": "RUNUP",
       "source": "RUNUP",
@@ -365,6 +561,174 @@
       "name": "Charlestown 10.0 m",
       "latitude": "41.355613",
       "longitude": "-71.642210"
+    },
+    "80021": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-10",
+      "name": "Napatree -10.0 m",
+      "latitude": "41.309207",
+      "longitude": "-71.876211"
+    },
+    "80022": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-9",
+      "name": "Napatree -9.0 m",
+      "latitude": "41.309200",
+      "longitude": "-71.876205"
+    },
+    "80023": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-8",
+      "name": "Napatree -8.0 m",
+      "latitude": "41.309192",
+      "longitude": "-71.876199"
+    },
+    "80024": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-7",
+      "name": "Napatree -7.0 m",
+      "latitude": "41.309184",
+      "longitude": "-71.876193"
+    },
+    "80025": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-6",
+      "name": "Napatree -6.0 m",
+      "latitude": "41.309176",
+      "longitude": "-71.876187"
+    },
+    "80026": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-5",
+      "name": "Napatree -5.0 m",
+      "latitude": "41.309169",
+      "longitude": "-71.876180"
+    },
+    "80027": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-4",
+      "name": "Napatree -4.0 m",
+      "latitude": "41.309161",
+      "longitude": "-71.876174"
+    },
+    "80028": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-3",
+      "name": "Napatree -3.0 m",
+      "latitude": "41.309153",
+      "longitude": "-71.876168"
+    },
+    "80029": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-2",
+      "name": "Napatree -2.0 m",
+      "latitude": "41.309145",
+      "longitude": "-71.876162"
+    },
+    "80030": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-1",
+      "name": "Napatree -1.0 m",
+      "latitude": "41.309138",
+      "longitude": "-71.876156"
+    },
+    "80031": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "0",
+      "name": "Napatree 0.0 m",
+      "latitude": "41.309130",
+      "longitude": "-71.876150"
+    },
+    "80032": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "1",
+      "name": "Napatree 1.0 m",
+      "latitude": "41.309122",
+      "longitude": "-71.876144"
+    },
+    "80033": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "2",
+      "name": "Napatree 2.0 m",
+      "latitude": "41.309115",
+      "longitude": "-71.876138"
+    },
+    "80034": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "3",
+      "name": "Napatree 3.0 m",
+      "latitude": "41.309107",
+      "longitude": "-71.876132"
+    },
+    "80035": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "4",
+      "name": "Napatree 4.0 m",
+      "latitude": "41.309099",
+      "longitude": "-71.876126"
+    },
+    "80036": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "5",
+      "name": "Napatree 5.0 m",
+      "latitude": "41.309091",
+      "longitude": "-71.876120"
+    },
+    "80037": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "6",
+      "name": "Napatree 6.0 m",
+      "latitude": "41.309084",
+      "longitude": "-71.876113"
+    },
+    "80038": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "7",
+      "name": "Napatree 7.0 m",
+      "latitude": "41.309076",
+      "longitude": "-71.876107"
+    },
+    "80039": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "8",
+      "name": "Napatree 8.0 m",
+      "latitude": "41.309068",
+      "longitude": "-71.876101"
+    },
+    "80040": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "9",
+      "name": "Napatree 9.0 m",
+      "latitude": "41.309060",
+      "longitude": "-71.876095"
+    },
+    "80041": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "10",
+      "name": "Napatree 10.0 m",
+      "latitude": "41.309053",
+      "longitude": "-71.876089"
     }
   },
   "NOS": {
@@ -375,6 +739,13 @@
       "latitude": "41.2914",
       "longitude": "-71.61732"
     },
+    "82": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree Offshore",
+      "latitude": "41.19892",
+      "longitude": "-71.80623"
+    },
     "70000": {
       "id": "RUNUP",
       "source": "RUNUP",
@@ -542,6 +913,174 @@
       "name": "Charlestown 10.0 m",
       "latitude": "41.355613",
       "longitude": "-71.642210"
+    },
+    "80021": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-10",
+      "name": "Napatree -10.0 m",
+      "latitude": "41.309207",
+      "longitude": "-71.876211"
+    },
+    "80022": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-9",
+      "name": "Napatree -9.0 m",
+      "latitude": "41.309200",
+      "longitude": "-71.876205"
+    },
+    "80023": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-8",
+      "name": "Napatree -8.0 m",
+      "latitude": "41.309192",
+      "longitude": "-71.876199"
+    },
+    "80024": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-7",
+      "name": "Napatree -7.0 m",
+      "latitude": "41.309184",
+      "longitude": "-71.876193"
+    },
+    "80025": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-6",
+      "name": "Napatree -6.0 m",
+      "latitude": "41.309176",
+      "longitude": "-71.876187"
+    },
+    "80026": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-5",
+      "name": "Napatree -5.0 m",
+      "latitude": "41.309169",
+      "longitude": "-71.876180"
+    },
+    "80027": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-4",
+      "name": "Napatree -4.0 m",
+      "latitude": "41.309161",
+      "longitude": "-71.876174"
+    },
+    "80028": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-3",
+      "name": "Napatree -3.0 m",
+      "latitude": "41.309153",
+      "longitude": "-71.876168"
+    },
+    "80029": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-2",
+      "name": "Napatree -2.0 m",
+      "latitude": "41.309145",
+      "longitude": "-71.876162"
+    },
+    "80030": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "-1",
+      "name": "Napatree -1.0 m",
+      "latitude": "41.309138",
+      "longitude": "-71.876156"
+    },
+    "80031": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "0",
+      "name": "Napatree 0.0 m",
+      "latitude": "41.309130",
+      "longitude": "-71.876150"
+    },
+    "80032": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "1",
+      "name": "Napatree 1.0 m",
+      "latitude": "41.309122",
+      "longitude": "-71.876144"
+    },
+    "80033": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "2",
+      "name": "Napatree 2.0 m",
+      "latitude": "41.309115",
+      "longitude": "-71.876138"
+    },
+    "80034": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "3",
+      "name": "Napatree 3.0 m",
+      "latitude": "41.309107",
+      "longitude": "-71.876132"
+    },
+    "80035": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "4",
+      "name": "Napatree 4.0 m",
+      "latitude": "41.309099",
+      "longitude": "-71.876126"
+    },
+    "80036": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "5",
+      "name": "Napatree 5.0 m",
+      "latitude": "41.309091",
+      "longitude": "-71.876120"
+    },
+    "80037": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "6",
+      "name": "Napatree 6.0 m",
+      "latitude": "41.309084",
+      "longitude": "-71.876113"
+    },
+    "80038": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "7",
+      "name": "Napatree 7.0 m",
+      "latitude": "41.309076",
+      "longitude": "-71.876107"
+    },
+    "80039": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "8",
+      "name": "Napatree 8.0 m",
+      "latitude": "41.309068",
+      "longitude": "-71.876101"
+    },
+    "80040": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "9",
+      "name": "Napatree 9.0 m",
+      "latitude": "41.309060",
+      "longitude": "-71.876095"
+    },
+    "80041": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "distance": "10",
+      "name": "Napatree 10.0 m",
+      "latitude": "41.309053",
+      "longitude": "-71.876089"
     }
   },
   "RUNUP": {
@@ -557,6 +1096,19 @@
       "surfLongitude": "-71.64127",
       "offshoreLatitude": "41.2914",
       "offshoreLongitude": "-71.61732"
+    },
+    "80": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "surfKey": "81",
+      "offshoreKey": "82",
+      "name": "Napatree",
+      "latitude": "41.30913",
+      "longitude": "-71.87615",
+      "surfLatitude": "41.30353",
+      "surfLongitude": "-71.87175",
+      "offshoreLatitude": "41.19892",
+      "offshoreLongitude": "-71.80623"
     }
   }
 }
