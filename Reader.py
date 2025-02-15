@@ -1235,8 +1235,8 @@ class Fort63Reader:
         waterDataset, timesWater = self.reader.getNetcdfProperties(self.ADCIRC_WATER_FILE, "water")
         initializeClosestWaterNodes = True
         if(initializeClosestWaterNodes):
-            thresholdDistance = 10
-#             thresholdDistance = 1
+#             thresholdDistance = 10
+            thresholdDistance = 1
             self.reader.initializeClosestNodes(waterDataset, thresholdDistance, "water")
         spaceSparseness = 1
 #         spaceSparseness = 10
@@ -1432,7 +1432,7 @@ class WaveReader:
         timeSparseness = 1
         initializeClosestWaveNodes = True
         if(initializeClosestWaveNodes):
-            thresholdDistance = 3
+            thresholdDistance = 1
 #             thresholdDistance = 
             self.reader.initializeClosestNodes(swhDataset, thresholdDistance, "swh")
         interpolateValues = True
