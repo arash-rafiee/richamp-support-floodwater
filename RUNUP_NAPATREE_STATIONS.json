@@ -1,0 +1,58 @@
+{
+  "ASSET": {
+    "80": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree Shoreline",
+      "latitude": "41.30913",
+      "longitude": "-71.87615"
+    },
+    "81": {
+        "id": "RUNUP",
+        "source": "RUNUP",
+        "name": "Napatree Surfline",
+        "latitude": "41.30353",
+        "longitude": "-71.87175"
+    },
+    "82": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree Offshore",
+      "latitude": "41.19892",
+      "longitude": "-71.80623"
+    }
+  },
+  "NDBC": {
+    "82": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree Offshore",
+      "latitude": "41.19892",
+      "longitude": "-71.80623"
+    }
+  },
+  "NOS": {
+    "82": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree Offshore",
+      "latitude": "41.19892",
+      "longitude": "-71.80623"
+    }
+  },
+  "RUNUP": {
+    "80": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "surfKey": "81",
+      "offshoreKey": "82",
+      "name": "Napatree",
+      "latitude": "41.30913",
+      "longitude": "-71.87615",
+      "surfLatitude": "41.30353",
+      "surfLongitude": "-71.87175",
+      "offshoreLatitude": "41.19892",
+      "offshoreLongitude": "-71.80623"
+    }
+  }
+}

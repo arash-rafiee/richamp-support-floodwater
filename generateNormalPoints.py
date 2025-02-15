@@ -88,21 +88,21 @@ def offshore_generate_points_along_line(json_data, resolution=200, points_count=
             point_counter += 1  # Increment counter for next iteration
 
 # Load JSON data
-with open('RUNUP_OBS_STATIONS.json', 'r') as file:
+with open('RUNUP_NAPATREE_STATIONS.json', 'r') as file:
     data = json.load(file)
 
 
 generate_points_along_line(data)
 
 # Write modified JSON back to file
-with open('RUNUP_NORMAL_STATIONS.json', 'w') as file:
+with open('NAPATREE_NORMAL_STATIONS.json', 'w') as file:
     json.dump(data, file, indent=2)
 
-with open('RUNUP_OBS_STATIONS.json', 'r') as file:
+with open('RUNUP_NAPATREE_STATIONS.json', 'r') as file:
     data = json.load(file)
         # Generate points and modify JSON
 offshore_generate_points_along_line(data)
 
 # Write modified JSON back to file
-with open('RUNUP_3KM_STATIONS.json', 'w') as file:
+with open('NAPATREE_3KM_STATIONS.json', 'w') as file:
     json.dump(data, file, indent=2)
