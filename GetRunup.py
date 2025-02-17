@@ -212,12 +212,13 @@ class GetRunup:
                 
                 waterlineStation = normalDict[waterlineKey]
                 waterlineCoordinates = (float(waterlineStation["latitude"]), float(waterlineStation["longitude"]))
+                waterlineElevation = float(meshDict[waterlineKey]["elevation"])
                 
 #                 Now I need to calculate the averageSlope using the waterlineKey point
 
 
-                surfDistance = haversine.haversine(surfCoordinates, waterlineCoordinates) * 1000
-                averageSlope = math.atan((shorelineElevation - surfElevation) / surfDistance)
+                waterlineDistance = haversine.haversine(waterlineCoordinates, shorelineCoordinates) * 1000
+                averageSlope = math.atan((shorelineElevation - waterlineElevation) / waterlineDistance)
                 averageSlopes.append(averageSlope)
                 #           Then I need to calculate the wave parameters
 #           That can happen outside of the loop
@@ -225,9 +226,9 @@ class GetRunup:
 #           Then calculate the irribarren number
                 iribarren = (averageSlope / (np.sqrt(offshoreSteepness[index])))
                 iribarrenNumbers.append(iribarren)
-                runupHolmanHigh = self.calculateHolmanHighRunup(iribarren)
-                runupHolmanMid = self.calculateHolmanMidRunup(iribarren)
-                runupHolmanLow = self.calculateHolmanLowRunup(iribarren)
+                runupHolmanHigh = self.calculateHolmanHighRunup(iribarren) * offshoreSwh[index]
+                runupHolmanMid = self.calculateHolmanMidRunup(iribarren) * offshoreSwh[index]
+                runupHolmanLow = self.calculateHolmanLowRunup(iribarren) * offshoreSwh[index]
                 runupValues.append(runupHolmanLow)
                 runupValuesHolmanHigh.append(runupHolmanHigh)
                 runupValuesHolmanMid.append(runupHolmanMid)
