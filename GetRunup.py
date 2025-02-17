@@ -39,7 +39,7 @@ class GetRunup:
         azi = g['azi1']
     
         # Calculate perpendicular bearing (90 degrees clockwise)
-        perp_azi = (azi - 90) % 360
+        perp_azi = (azi + 90) % 360
     
         # Calculate new positions by moving perpendicular to the line
         # Move waterline point
