@@ -21,6 +21,13 @@
       "latitude": "41.19892",
       "longitude": "-71.80623"
     },
+    "83": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree Deepline",
+      "latitude": "41.293640",
+      "longitude": "-71.863981"
+    },
     "80000": {
       "id": "RUNUP",
       "source": "RUNUP",
@@ -997,6 +1004,13 @@
       "name": "Napatree Offshore",
       "latitude": "41.19892",
       "longitude": "-71.80623"
+    },
+    "83": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree Deepline",
+      "latitude": "41.293640",
+      "longitude": "-71.863981"
     }
   },
   "NOS": {
@@ -1006,6 +1020,13 @@
       "name": "Napatree Offshore",
       "latitude": "41.19892",
       "longitude": "-71.80623"
+    },
+    "83": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree Deepline",
+      "latitude": "41.293640",
+      "longitude": "-71.863981"
     },
     "80000": {
       "id": "RUNUP",
@@ -1982,6 +2003,7 @@
       "source": "RUNUP",
       "surfKey": "81",
       "offshoreKey": "82",
+      "deeplineKey": "83",
       "name": "Napatree",
       "latitude": "41.30913",
       "longitude": "-71.87615",

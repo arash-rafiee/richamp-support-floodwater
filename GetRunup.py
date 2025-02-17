@@ -106,6 +106,7 @@ class GetRunup:
             offshoreCoordinates = (float(stationDict["offshoreLatitude"]), float(stationDict["offshoreLongitude"]))
             surfKey = stationDict["surfKey"]
             surfCoordinates = (float(stationDict["surfLatitude"]), float(stationDict["surfLongitude"]))
+            deeplineKey = stationDist["deeplineKey"]
             
             runupTimes = waterDict[offshoreKey]["times"]
 #             runupTimes = swhDict[offshoreKey]["times"]
@@ -156,9 +157,13 @@ class GetRunup:
 #             tideLabelsInitialized = True
             
             
-            offshoreSwh = swhDict[offshoreKey]["swh"]
-            offshoreMwd = mwdDict[offshoreKey]["mwd"]
-            offshorePwp = pwpDict[offshoreKey]["pwp"]
+#             offshoreSwh = swhDict[offshoreKey]["swh"]
+#             offshoreMwd = mwdDict[offshoreKey]["mwd"]
+#             offshorePwp = pwpDict[offshoreKey]["pwp"]
+#           Use wave parameters at 2Km away
+            offshoreSwh = swhDict[deeplineKey]["swh"]
+            offshoreMwd = mwdDict[deeplineKey]["mwd"]
+            offshorePwp = pwpDict[deeplineKey]["pwp"]
             shorelineElevation = float(meshDict[key]["elevation"])
             surfElevation = float(meshDict[surfKey]["elevation"])
             offshoreElevation = float(meshDict[offshoreKey]["elevation"])
