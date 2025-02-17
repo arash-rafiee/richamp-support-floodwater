@@ -819,7 +819,7 @@ class Grapher:
                 self.datapointsRunupHolmanLow.append(datapointHolmanLow)
 
     def generateGraphs(self):
-        graph_directory = "/Volumes/ssd/ObservationalWind/graphs/"
+        graph_directory = "graphs/"
         
         numberOfWindDatapoints = 0
         numberOfRainDatapoints = 0
