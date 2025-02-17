@@ -126,6 +126,10 @@ NAPATREE_BEACH_MAP = "NapatreeBeach.png"
 NAPATREE_BEACH_OUTLINE_MAP = "NapatreeBeachOutline.png"
 NAPATREE_BEACH_AXIS = [-71.87760932540894, -71.87439067459107, 41.31020885039359, 41.30779112719234]
 
+NAPATREE_BEACH_2_MAP = "NapatreeBeach2.png"
+NAPATREE_BEACH_2_OUTLINE_MAP = "NapatreeBeach2Outline.png"
+NAPATREE_BEACH_2_AXIS = [-71.87705466270445, -71.87544533729552, 41.30960442799856, 41.30839556639793]
+
 def main():
     p = argparse.ArgumentParser(description="Make a request to generate graphs")
     p.add_argument(
@@ -398,6 +402,12 @@ def main():
     elif(backgroundChoice == "NAPATREE_BEACH_OUTLINE"):
         backgroundMap = NAPATREE_BEACH_OUTLINE_MAP
         backgroundAxis = NAPATREE_BEACH_AXIS
+    elif(backgroundChoice == "NAPATREE_BEACH_2"):
+        backgroundMap = NAPATREE_BEACH_2_MAP
+        backgroundAxis = NAPATREE_BEACH_2_AXIS
+    elif(backgroundChoice == "NAPATREE_BEACH_2_OUTLINE"):
+        backgroundMap = NAPATREE_BEACH_2_OUTLINE_MAP
+        backgroundAxis = NAPATREE_BEACH_2_AXIS
         
     print("args.adcircExists", args.adcircExists, flush=True)
     if(args.adcircExists):

@@ -210,3 +210,9 @@ Napatree Beach
 "lat long of center", "(41.30899999999999, -71.876)"
 "lat long of north east", "(41.31020885039359, -71.87439067459107)"
 "lat long of south west", "(41.30779112719234, -71.87760932540894)"
+
+Napatree Beach 2
+"lat long of center", "(41.30899999999999, -71.87624999999998)"
+"lat long of north east", "(41.30960442799856, -71.87544533729552)"
+"lat long of south west", "(41.30839556639793, -71.87705466270445)"
+

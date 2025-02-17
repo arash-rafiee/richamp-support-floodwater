@@ -1671,7 +1671,7 @@ class Grapher:
                 ax.plot(self.runupTimes, self.datapointsRunupHolmanMid[index], label="Holman Mid Tide")
                 ax.plot(self.runupTimes, self.datapointsRunupHolmanLow[index], label="Holman Low Tide")
 
-#                 ax.legend(loc="upper left")
+                ax.legend(loc="upper left")
                 ax.format_xdata = mdates.DateFormatter('%d')
                 plt.xticks(fontsize=12)
                 plt.yticks(fontsize=12)

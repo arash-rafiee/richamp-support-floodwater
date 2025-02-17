@@ -228,7 +228,7 @@ class GetRunup:
                 runupValuesHolmanMid.append(runupHolmanMid)
                 runupValuesHolmanLow.append(runupHolmanLow)
                 
-                runupWaterlineCoordinates, runupTangentCoordinates = self.calculateRunupWaterline(waterlineCoordinates, tangentCoordinates, runupHolmanHigh)
+                runupWaterlineCoordinates, runupTangentCoordinates = self.calculateRunupWaterline(waterlineCoordinates, tangentCoordinates, runupHolmanLow)
                 runupWaterlineLatitudes.append(runupWaterlineCoordinates[0])
                 runupWaterlineLongitudes.append(runupWaterlineCoordinates[1])
                 runupTangentLatitudes.append(runupTangentCoordinates[0])
