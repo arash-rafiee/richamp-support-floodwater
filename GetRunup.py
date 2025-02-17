@@ -7,8 +7,57 @@ import haversine
 import math
 import numpy as np
 from Encoders import NumpyEncoder
+from geographiclib.geodesic import Geodesic
         
 class GetRunup:
+
+    def calculateHolmanHighRunup(self, iribarrenNumber):
+        slope = 0.80
+        intercept = 0.11
+        return (iribarrenNumber * slope) + intercept
+
+    def calculateHolmanMidRunup(self, iribarrenNumber):
+        slope = 0.93
+        intercept = 0.04
+        return (iribarrenNumber * slope) + intercept
+
+    def calculateHolmanLowRunup(self, iribarrenNumber):
+        slope = 0.24
+        intercept = 0.65
+        return (iribarrenNumber * slope) + intercept
+        
+    def calculateRunupWaterline(self, waterlineCoordinates, tangentCoordinates, runup):
+        # Extract coordinates (latitude, longitude)
+        lat1, lon1 = waterlineCoordinates
+        lat2, lon2 = tangentCoordinates
+    
+        # Calculate the geodesic between the points
+        geod = Geodesic.WGS84
+        g = geod.Inverse(lat1, lon1, lat2, lon2)
+    
+        # Get the azimuth (bearing) at the first point
+        azi = g['azi1']
+    
+        # Calculate perpendicular bearing (90 degrees clockwise)
+        perp_azi = (azi + 90) % 360
+    
+        # Calculate new positions by moving perpendicular to the line
+        # Move waterline point
+        r1 = geod.Direct(lat1, lon1, perp_azi, runup)
+        runupWaterlineLat = r1['lat2']
+        runupWaterlineLon = r1['lon2']
+    
+        # Move tangent point
+        r2 = geod.Direct(lat2, lon2, perp_azi, runup)
+        runupTangentLat = r2['lat2']
+        runupTangentLon = r2['lon2']
+    
+        # Return translated coordinates as tuples
+        runupWaterlineCoordinates = (runupWaterlineLat, runupWaterlineLon)
+        runupTangentCoordinates = (runupTangentLat, runupTangentLon)
+    
+        return runupWaterlineCoordinates, runupTangentCoordinates
+
     def __init__(self, 
         STATIONS_FILE="",
         ADCIRC_WATER_DATA_FILE="", 
@@ -48,6 +97,8 @@ class GetRunup:
 #             The RUNUP stations should correspond to a node on the ADCIRC mesh
 #               The RUNUP stations can also include an offshore node in the json, bypassing the need to find the offshore node index.
             stationDict = stationsDict["RUNUP"][key]
+            normalDict = stationsDict["NORMAL"][key]
+            tangentDict = stationsDict["TANGENT"][key]
             stationId = stationDict["id"]
             stationName = stationDict["name"]
             shorelineCoordinates = (float(stationDict["latitude"]), float(stationDict["longitude"]))
@@ -56,8 +107,8 @@ class GetRunup:
             surfKey = stationDict["surfKey"]
             surfCoordinates = (float(stationDict["surfLatitude"]), float(stationDict["surfLongitude"]))
             
-#             runupTimes = waterDict[offshoreKey]["times"]
-            runupTimes = swhDict[offshoreKey]["times"]
+            runupTimes = waterDict[offshoreKey]["times"]
+#             runupTimes = swhDict[offshoreKey]["times"]
             offshoreWater = waterDict[offshoreKey]["water"]
             
 #             waterTimestampsInitialized = False
@@ -111,6 +162,101 @@ class GetRunup:
             shorelineElevation = float(meshDict[key]["elevation"])
             surfElevation = float(meshDict[surfKey]["elevation"])
             offshoreElevation = float(meshDict[offshoreKey]["elevation"])
+            
+            
+#             Calculating wave parameters perserved in arrays
+            g = 9.81
+            offshoreWavelength = (g * np.array(offshorePwp)**2) / (2 * math.pi)
+            offshoreSteepness = np.array(offshoreSwh) / offshoreWavelength
+
+            waterlineKeys = []
+            averageSlopes = []
+            iribarrenNumbers = []
+            runupValues = []
+            runupValuesHolmanHigh = []
+            runupValuesHolmanMid = []
+            runupValuesHolmanLow = []
+            runupWaterlineLatitudes = [] 
+            runupWaterlineLongitudes = [] 
+            runupTangentLatitudes = [] 
+            runupTangentLongitudes = []
+            
+#             From this point, iterate through each timestep in the wave file.
+            for index, waterValue in enumerate(offshoreWater):
+                waterlineKey = None
+                for normalKey in normalDict:
+                    normalStationWaterValue = waterDict[normalKey]["water"][index]
+#                     print("normalStationWaterValue, index", index, normalStationWaterValue)
+                    if(not np.isnan(normalStationWaterValue)):
+                        waterlineKey = normalKey
+                        break
+                if(waterlineKey != None):
+#                     print("Found waterline", waterlineKey, " for index", index)
+                    waterlineKeys.append(waterlineKey)
+                else:
+                    print("DID NOT FIND WATERLINE! Appending previous waterline key.")
+                    print("If no previous key exists, will error out.")
+                    waterlineKeys.append(waterlineKey[-1])
+                
+#                 Now I have the waterline key
+
+#                   The corresponding tangent key
+
+                tangentStation = tangentDict[waterlineKey]
+                tangentCoordinates = (float(tangentStation["latitude"]), float(tangentStation["longitude"]))
+                
+                waterlineStation = normalDict[waterlineKey]
+                waterlineCoordinates = (float(waterlineStation["latitude"]), float(waterlineStation["longitude"]))
+                
+#                 Now I need to calculate the averageSlope using the waterlineKey point
+
+
+                surfDistance = haversine.haversine(surfCoordinates, waterlineCoordinates) * 1000
+                averageSlope = math.atan((shorelineElevation - surfElevation) / surfDistance)
+                averageSlopes.append(averageSlope)
+                #           Then I need to calculate the wave parameters
+#           That can happen outside of the loop
+
+#           Then calculate the irribarren number
+                iribarren = (averageSlope / (np.sqrt(offshoreSteepness[index])))
+                iribarrenNumbers.append(iribarren)
+                runupHolmanHigh = self.calculateHolmanHighRunup(iribarren)
+                runupHolmanMid = self.calculateHolmanMidRunup(iribarren)
+                runupHolmanLow = self.calculateHolmanLowRunup(iribarren)
+                runupValues.append(runupHolmanHigh)
+                runupValuesHolmanHigh.append(runupHolmanHigh)
+                runupValuesHolmanMid.append(runupHolmanMid)
+                runupValuesHolmanLow.append(runupHolmanLow)
+                
+                runupWaterlineCoordinates, runupTangentCoordinates = self.calculateRunupWaterline(waterlineCoordinates, tangentCoordinates, runupHolmanHigh)
+                runupWaterlineLatitudes.append(runupWaterlineCoordinates[0])
+                runupWaterlineLongitudes.append(runupWaterlineCoordinates[1])
+                runupTangentLatitudes.append(runupTangentCoordinates[0])
+                runupTangentLongitudes.append(runupTangentCoordinates[1])
+
+#           Then calculate the runup value 2% exceedence
+
+#           Then calculate the runupLine and runupTangentLine
+#           
+#           Save these. Will end up having two arrays called runupWaterlineLatitudes[] runupWaterlineLogitudes runupTangentLatitudes runupTangentLongitudes
+
+#           These will get graphed alongside the waterlineKey generated line with the tangent point
+
+
+#                     print("waterValue at ", normalKey, waterDict[normalKey]["water"][index])
+#                     print("closest Nodes to normalkey", normalKey, waterDict[normalKey]["nodeIndex"])
+#                     closestNode = waterDict[normalKey]["nodeIndex"]
+#                     closestNodeWaterIndex = waterDict["map_data"]["map_points"].index(closestNode)
+#                     print(closestNodeWaterIndex)
+#                     print(len(waterDict["map_data"]["map_water"]))
+#                     print(waterDict["map_data"]["map_water"][index][closestNodeWaterIndex])
+#                     normalWaterValue = waterDict[normalKey]["water"][index]
+#                     if not np.isnan(normalWaterValue):
+#                         waterlineKey = normalKey
+#                         break
+#                 normalStation = normalDict[waterlineKey]
+#                 tangentStation = tangentDict[waterlineKey]
+#                 print("Normal, tangent stations", normalStation, tangentStation)
 #             print(offshoreWater, offshoreSwh, offshoreMwd, offshoreMwp, shorelineElevation, offshoreElevation)
 #             print("max time, water, swg, mwd, mwp, and elevation shoreline offshore", max(offshoreWater), max(offshoreSwh), max(offshoreMwd), max(offshoreMwp), shorelineElevation, offshoreElevation)
     #                             distance and threshold in kilometers
@@ -127,9 +273,8 @@ class GetRunup:
             print("average slope", averageSlope)
 #             averageSlope = 0.025
 #             averageSlope = 
-            g = 9.81
+
 #             Convert mean wave period to deepwater wavelength
-            offshoreWavelength = (g * np.array(offshorePwp)**2) / (2 * math.pi)
 #             print("offshoreWavelength", offshoreWavelength)
             
 #             Iribarren number
@@ -138,8 +283,6 @@ class GetRunup:
 #             iribarren200 = averageSlope / (np.sqrt(swh200 / wavelength200))
 #             print("swh200", swh200, "wavelength200", wavelength200)
 #             print("IRIBARREN NUMBER AT INDEX 200:", iribarren200)
-            offshoreSteepness = np.array(offshoreSwh) / offshoreWavelength
-            iribarren = (averageSlope / (np.sqrt(offshoreSteepness)))
 #             First, calculate offshore node index from given runup station location (Can be hardcoded to a specific v18 node index)
 #               A way to find the shoreline and offshore point elevation, water level, and wave parameters,
 #               Observational stations can be set for the shoreline and offshore point. Then the values will be interpolated onto the points as
@@ -223,17 +366,63 @@ class GetRunup:
 
 #           Water levels look wack. Don't match up with observation at all. Rerunning with fixed sea level offset.
 
+#           I dont know whats wrong with water obs getBuoyWater program. 
+#           The problem of telling what location the runup prediction is valid for is a seperate issue.
+#           This problem is already solved by looking at the wet and dry nodes for a given timestamp
+#             The prediction for how much runup is independent of the location? No its not. But its probbably defined as static.
+#              I mean, what is being calculated is the average slope. So technically is the waterline moves inshore, then the average slope would
+#               increase.
+
+#           Basically, i thought of it.
+#            A map of the beach, showing the waterline changing with each timestamp.
+#              Then also a line parallel to the waterline. Showing the 2% exceddence of runup.
+
+#           To accomplish this, the tangent of the waterline has to be calculated at each timestep.
+#           Then, the tangent is translated in space by a distance of tue 2% exceedence of runup.
+#           This runup tangent line is then visualized in the maps for each timestep.
+#           Along with this, a timeseries of the runup value will also be produced.
+#             Similar to other products. Map + timeseries
+
+#              Whats the first problem? How can I calculate the tangent line? the current method is creating a set of interpolated stations
+#               that is normal to the waterline. 
+#               
+#              The idea, probbably repeating myself, is to create a hyerresolution set of interpolated stations, all along the beach.
+#             Then iterate through these hyperstations, and find the first one (starting from oceanside) that has a waterlevel of nan or 0.
+#              This hyperstation is the waterline point.
+
+#              Another stations can be defined alongside the waterline station.
+#                 This station can be called the tangent station, and geometrically defines a waterline on the beach.
+#               The tangent stations will be hyperresolutionized along with the normal stations, forming a pair of points
+#               At each hyerresolution grid step.
+    
+#               Given the hyperresolution point, the corresponding hyperresolutions tangent point can be used to construct a waterline tangent.
+#                  Implement this ASAP. this is what I will present for seminar.
+
+
+#           Now, how to construct tangent line?
+#            It would be easy to construct a tangent line by reading the water map directly. 
+#              The hyperstation will have a closestNode attribute, signifying what node is the closest to it.
+
             predictionLocations = []
 
             runupDict[key] = {}
             runupDict[key]["surfDistance"] = surfDistance
             runupDict[key]["offshoreDistance"] = offshoreDistance
+            runupDict[key]["waterlineKeys"] = waterlineKeys
             runupDict[key]["averageSlope"] = averageSlope
+            runupDict[key]["averageSlopes"] = averageSlopes
             runupDict[key]["times"] = runupTimes
-            runupDict[key]["runup"] = iribarren
+            runupDict[key]["runupWaterlineLatitudes"] = runupWaterlineLatitudes
+            runupDict[key]["runupWaterlineLongitudes"] = runupWaterlineLongitudes
+            runupDict[key]["runupTangentLatitudes"] = runupTangentLatitudes
+            runupDict[key]["runupTangentLongitudes"] = runupTangentLongitudes
+            runupDict[key]["runup"] = runupValues
+            runupDict[key]["runupHolmanHigh"] = runupValuesHolmanHigh
+            runupDict[key]["runupHolmanMid"] = runupValuesHolmanMid
+            runupDict[key]["runupHolmanLow"] = runupValuesHolmanLow
             runupDict[key]["wavelength"] = offshoreWavelength
             runupDict[key]["steepness"] = offshoreSteepness
-            runupDict[key]["iribarren"] = iribarren
+            runupDict[key]["iribarren"] = iribarrenNumbers
             runupDict[key]["predictionLocations"] = predictionLocations
             runupDict[key]["nodeIndex"] = stationName
             runupDict[key]["latitude"] = shorelineCoordinates[0]

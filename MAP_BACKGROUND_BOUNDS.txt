@@ -205,3 +205,8 @@ Atlantic Beach Park
 "lat long of center", "(41.325, -71.81000000000002)"
 "lat long of north east", "(41.36366259899496, -71.75850158691408)"
 "lat long of south west", "(41.28631444735617, -71.86149841308595)"
+
+Napatree Beach
+"lat long of center", "(41.30899999999999, -71.876)"
+"lat long of north east", "(41.31020885039359, -71.87439067459107)"
+"lat long of south west", "(41.30779112719234, -71.87760932540894)"

@@ -1,6 +1,9 @@
 import json
 import math
 
+HYPERRESOLUTION = 1
+HYPERPOINTS = 120
+
 def calculate_bearing(lat1, lon1, lat2, lon2):
     # Convert latitude and longitude to radians
     lat1_rad, lon1_rad = math.radians(lat1), math.radians(lon1)
@@ -31,15 +34,22 @@ def calculate_new_point(lat, lon, bearing, distance):
     
     return math.degrees(new_lat), math.degrees(new_lon)
 
-def generate_points_along_line(json_data, resolution=1, points_count=20):
-    point_counter = 0  # Counter for unique keys
+def generate_points_along_line(json_data, resolution=HYPERRESOLUTION, points_count=HYPERPOINTS):
+    # Initialize NORMAL section if it doesn't exist
+    if 'NORMAL' not in json_data:
+        json_data['NORMAL'] = {}
+    
     for runup_id, runup_data in json_data['RUNUP'].items():
         shoreline_lat, shoreline_lon = float(runup_data['latitude']), float(runup_data['longitude'])
         surf_lat, surf_lon = float(runup_data['surfLatitude']), float(runup_data['surfLongitude'])
         
         bearing = calculate_bearing(shoreline_lat, shoreline_lon, surf_lat, surf_lon)
         
-        for i in range(-points_count // 2, points_count // 2 + 1):
+        # Initialize the runup_id entry in NORMAL
+        json_data['NORMAL'][runup_id] = {}
+        point_counter = 0
+        
+        for i in range(-points_count // 4, 3 * points_count // 4 + 1):
             distance = i * resolution  # Fixed step size as given by resolution
             new_lat, new_lon = calculate_new_point(shoreline_lat, shoreline_lon, bearing, distance)
     
@@ -48,17 +58,21 @@ def generate_points_along_line(json_data, resolution=1, points_count=20):
                 "id": "RUNUP",
                 "source": "RUNUP",
                 "distance": str(distance),
-                "name": f"{runup_data['name']} {distance:.1f} m",  # Use scientific notation for distance
+                "name": f"{runup_data['name']} {distance:.3f} m",
                 "latitude": f"{new_lat:.6f}",
                 "longitude": f"{new_lon:.6f}"
             }
     
-            # Add to each relevant section with a new key based on sequential numbering
-            new_key = f"{runup_id}{point_counter:03d}"  # Unique key using counter
-            for section in ['ASSET', 'NDBC', 'NOS']:
-                json_data[section][new_key] = new_point
-            point_counter += 1  # Increment counter for next iteration
+            # Add to NORMAL section with sequential numbering
+            new_key = f"{runup_id}{point_counter:03d}"
+            json_data['NORMAL'][runup_id][new_key] = new_point
             
+            # Add to existing sections (ASSET, NDBC, NOS)
+            for section in ['ASSET', 'NOS']:
+                json_data[section][f"{runup_id}{point_counter:03d}"] = new_point
+            point_counter += 1
+
+# 3KM Points
 def offshore_generate_points_along_line(json_data, resolution=200, points_count=15):
     point_counter = 0  # Counter for unique keys
     for runup_id, runup_data in json_data['RUNUP'].items():
@@ -76,7 +90,7 @@ def offshore_generate_points_along_line(json_data, resolution=200, points_count=
                 "id": "RUNUP",
                 "source": "RUNUP",
                 "distance": str(distance),
-                "name": f"{runup_data['name']} {distance:.1f} m",  # Use scientific notation for distance
+                "name": f"{runup_data['name']} {distance:.1f} m",
                 "latitude": f"{new_lat:.6f}",
                 "longitude": f"{new_lon:.6f}"
             }
@@ -85,24 +99,55 @@ def offshore_generate_points_along_line(json_data, resolution=200, points_count=
             new_key = f"{runup_id}{point_counter:03d}"  # Unique key using counter
             for section in ['ASSET', 'NDBC', 'NOS']:
                 json_data[section][new_key] = new_point
-            point_counter += 1  # Increment counter for next iteration
+            point_counter += 1
 
-# Load JSON data
+def generate_tangent_points(json_data, resolution=HYPERRESOLUTION, points_count=HYPERPOINTS):
+    # Initialize TANGENT section if it doesn't exist
+    if 'TANGENT' not in json_data:
+        json_data['TANGENT'] = {}
+    
+    for runup_id, runup_data in json_data['RUNUP'].items():
+        shoreline_lat, shoreline_lon = float(runup_data['latitude']), float(runup_data['longitude'])
+        surf_lat, surf_lon = float(runup_data['surfLatitude']), float(runup_data['surfLongitude'])
+        tangent_lat, tangent_lon = float(runup_data['tangentLatitude']), float(runup_data['tangentLongitude'])
+        bearing = calculate_bearing(shoreline_lat, shoreline_lon, surf_lat, surf_lon)
+        
+        # Initialize the runup_id entry in TANGENT
+        json_data['TANGENT'][runup_id] = {}
+        point_counter = 0
+        
+        for i in range(-points_count // 4, 3 * points_count // 4 + 1):
+            distance = i * resolution
+            new_lat, new_lon = calculate_new_point(tangent_lat, tangent_lon, bearing, distance)
+            
+            # Create new point entry
+            new_point = {
+                "id": "RUNUP",
+                "source": "RUNUP",
+                "distance": str(distance),
+                "name": f"{runup_data['name']} Tangent {distance:.3f} m",
+                "latitude": f"{new_lat:.6f}",
+                "longitude": f"{new_lon:.6f}"
+            }
+            
+            # Add to TANGENT section with sequential numbering
+            new_key = f"{runup_id}{point_counter:03d}"
+            json_data['TANGENT'][runup_id][new_key] = new_point
+            point_counter += 1
+
+# Load main JSON data
 with open('RUNUP_NAPATREE_STATIONS.json', 'r') as file:
     data = json.load(file)
 
-
+# Generate points for shoreline
 generate_points_along_line(data)
 
-# Write modified JSON back to file
+# Generate points for offshore
+# offshore_generate_points_along_line(data)
+
+# Generate points for tangent
+generate_tangent_points(data)
+
+# Write modified main JSON (shoreline, offshore, and tangent)
 with open('NAPATREE_NORMAL_STATIONS.json', 'w') as file:
-    json.dump(data, file, indent=2)
-
-with open('RUNUP_NAPATREE_STATIONS.json', 'r') as file:
-    data = json.load(file)
-        # Generate points and modify JSON
-offshore_generate_points_along_line(data)
-
-# Write modified JSON back to file
-with open('NAPATREE_3KM_STATIONS.json', 'w') as file:
     json.dump(data, file, indent=2)

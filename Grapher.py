@@ -275,9 +275,17 @@ class Grapher:
         
         self.runupTimes = []
         self.datapointsRunup = []
+        self.datapointsRunupHolmanHigh = []
+        self.datapointsRunupHolmanMid = []
+        self.datapointsRunupHolmanLow = []
         self.datapointsWavelength = []
         self.datapointsIribarren = []
         self.datapointsSteepness = []
+        self.datapointsWaterlineLongitudes = []
+        self.datapointsWaterlineLatitudes = []
+        self.datapointsRunupLongitudes = []
+        self.datapointsRunupLatitudes = []
+        self.runupAverageSlopes = []
     
 
 #        So loading obs, wind, and waves should be able to cover and set all available data
@@ -764,6 +772,14 @@ class Grapher:
                 datapointWavelength = []
                 datapointIribarren = []
                 datapointSteepness = []
+                tangentLatitudes = []
+                tangentLongitudes = []
+                runupLatitudes = []
+                runupLongitudes = []
+                datapointAverageSlopes = []
+                datapointHolmanHigh = []
+                datapointHolmanMid = []
+                datapointHolmanLow = []
                 for index in range(len(runupDataset[stationKey]["times"])):
                     if(self.runupStartDate == None):
                         self.runupStartDate = datetime.fromtimestamp(int(runupDataset[stationKey]["times"][index]), timezone.utc)
@@ -773,14 +789,37 @@ class Grapher:
                     datapointWavelength.append(runupDataset[stationKey]["wavelength"][index])
                     datapointIribarren.append(runupDataset[stationKey]["iribarren"][index])
                     datapointSteepness.append(runupDataset[stationKey]["steepness"][index])
+                    waterlineKey = runupDataset[stationKey]["waterlineKeys"][index]
+                    waterlineLatitude = float(self.obsMetadata["NORMAL"][stationKey][waterlineKey]["latitude"])
+                    waterlineLongitude = float(self.obsMetadata["NORMAL"][stationKey][waterlineKey]["longitude"])
+                    waterlineTangentLatitude = float(self.obsMetadata["TANGENT"][stationKey][waterlineKey]["latitude"])
+                    waterlineTangentLongitude = float(self.obsMetadata["TANGENT"][stationKey][waterlineKey]["longitude"])
+                    tangentLatitude = [waterlineLatitude, waterlineTangentLatitude]
+                    tangentLongitude = [waterlineLongitude, waterlineTangentLongitude]
+                    tangentLatitudes.append(tangentLatitude)
+                    tangentLongitudes.append(tangentLongitude)
+                    runupLatitudes.append([runupDataset[stationKey]["runupWaterlineLatitudes"][index], runupDataset[stationKey]["runupTangentLatitudes"][index]])
+                    runupLongitudes.append([runupDataset[stationKey]["runupWaterlineLongitudes"][index], runupDataset[stationKey]["runupTangentLongitudes"][index]])
+                    datapointAverageSlopes.append(runupDataset[stationKey]["averageSlopes"][index])
+                    datapointHolmanHigh.append(runupDataset[stationKey]["runupHolmanHigh"][index])
+                    datapointHolmanMid.append(runupDataset[stationKey]["runupHolmanMid"][index])
+                    datapointHolmanLow.append(runupDataset[stationKey]["runupHolmanLow"][index])
                 runupTimestampsInitialized = True
                 self.datapointsRunup.append(datapointRunup)    
                 self.datapointsWavelength.append(datapointWavelength)
                 self.datapointsIribarren.append(datapointIribarren)
-                self.datapointsSteepness.append(datapointSteepness)                
+                self.datapointsSteepness.append(datapointSteepness)   
+                self.datapointsWaterlineLatitudes.append(tangentLatitudes)
+                self.datapointsWaterlineLongitudes.append(tangentLongitudes)   
+                self.datapointsRunupLatitudes.append(runupLatitudes)
+                self.datapointsRunupLongitudes.append(runupLongitudes)
+                self.runupAverageSlopes.append(datapointAverageSlopes)
+                self.datapointsRunupHolmanHigh.append(datapointHolmanHigh)
+                self.datapointsRunupHolmanMid.append(datapointHolmanMid)
+                self.datapointsRunupHolmanLow.append(datapointHolmanLow)
 
     def generateGraphs(self):
-        graph_directory = "graphs/"
+        graph_directory = "/Volumes/ssd/ObservationalWind/graphs/"
         
         numberOfWindDatapoints = 0
         numberOfRainDatapoints = 0
@@ -1112,7 +1151,7 @@ class Grapher:
             plt.savefig(graph_directory + 'map_eta_swath.png')
             plt.close()
             gc.collect()
-        if(len(self.mapWaterTimes) > 0):
+        if(len(self.mapWaterTimes) > 0 and False):
             vmin = -1
             vminSwath = 0
 #             vmax = math.ceil(self.maxWater)
@@ -1146,7 +1185,12 @@ class Grapher:
 #                 Plot points
                 if(self.meshExists):
                     ax.scatter(self.assetLongitudes, self.assetLatitudes, label="Assets", zorder=3, alpha=0.7, marker=".", s=40, color="black")
-
+                    
+                if(self.runupExists):
+                    for runupIndex, runupLabel in enumerate(self.runupLabels):
+#                         print("datapointsWaterlineLongitudes", type(self.datapointsWaterlineLongitudes[runupIndex][index]))
+                        ax.plot(self.datapointsWaterlineLongitudes[runupIndex][index], self.datapointsWaterlineLatitudes[runupIndex][index], label=runupLabel, zorder=3, alpha=0.7, marker=".", color="green")
+                        ax.plot(self.datapointsRunupLongitudes[runupIndex][index], self.datapointsRunupLatitudes[runupIndex][index], label=runupLabel, zorder=3, alpha=0.7, marker=".", color="red")
 #               Todo: Fix triangulation errors
 #                 contourset = ax.tripcolor(self.mapWaterPointsLongitudes, self.mapWaterPointsLatitudes, self.mapWaters[index], shading='gouraud', cmap="jet", vmin=vmin, vmax=vmax, zorder=1)
                 plt.axis(plotAxis)
@@ -1619,8 +1663,14 @@ class Grapher:
 #         Graph values generated by GetRunup step
         for index in range(numberOfRunupDatapoints):
             if(len(self.datapointsRunup) > 0):
+#             Iterate through runup times to graph a map of the waterline
+            
                 fig, ax = plt.subplots(figsize=(16,9))
-                ax.plot(self.runupTimes, self.datapointsRunup[index])
+#                 ax.plot(self.runupTimes, self.datapointsRunup[index], label="runup")
+                ax.plot(self.runupTimes, self.datapointsRunupHolmanHigh[index], label="Holman High Tide")
+                ax.plot(self.runupTimes, self.datapointsRunupHolmanMid[index], label="Holman Mid Tide")
+                ax.plot(self.runupTimes, self.datapointsRunupHolmanLow[index], label="Holman Low Tide")
+
 #                 ax.legend(loc="upper left")
                 ax.format_xdata = mdates.DateFormatter('%d')
                 plt.xticks(fontsize=12)
@@ -1672,5 +1722,69 @@ class Grapher:
                 plt.ylabel("iribarren number", fontsize=14)
                 plt.savefig(graph_directory + stationName + '_iribarren.png')
                 plt.close()
+                fig, ax = plt.subplots(figsize=(16,9))
+                ax.plot(self.runupTimes, self.runupAverageSlopes[index])
+                ax.set_ylim([0, 2])
+#                 ax.legend(loc="upper left")
+                ax.format_xdata = mdates.DateFormatter('%d')
+                plt.xticks(fontsize=12)
+                plt.yticks(fontsize=12)
+                stationName = self.runupLabels[index]
+                maxAverageSlope = str(round(max(self.runupAverageSlopes[index]), 2))
+                plt.title(self.titlePrefix + stationName + " station average slope (waterline to surf) max: " + maxAverageSlope, fontsize=18)
+#                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
+                plt.ylabel("average slope", fontsize=14)
+                plt.savefig(graph_directory + stationName + '_slope.png')
+                plt.close()
                 
+                
+        if(len(self.runupTimes) > 0):
+            vmin = -1
+            vminSwath = 0
+#             vmax = math.ceil(self.maxWater)
+            vmax = 5
+#             vmax = 20
+            levels = 100
+            levelBoundaries = np.linspace(vmin, vmax, levels + 1)
+            levelBoundariesSwath = np.linspace(vminSwath, vmax, levels + 1)
+#             waterTriangulation = Triangulation(self.mapWaterPointsLongitudes, self.mapWaterPointsLatitudes, triangles=self.mapWaterTriangles, mask=self.mapWaterMaskedTriangles)
+            for index in range(len(self.runupTimes)):
+                fig, ax = plt.subplots(figsize=(9,9))
+    #             print(self.endWavePointsLongitudes)
+    #             print(self.endWavePointsLatitudes)
+    #             print(self.endSWH)
+                plt.imshow(img, extent=self.backgroundAxis, alpha=0.6, aspect=aspectRatio, zorder=2)
+                
+#                 Plot points
+                if(self.meshExists):
+                    ax.scatter(self.assetLongitudes, self.assetLatitudes, label="Assets", zorder=3, alpha=0.7, marker=".", s=40, color="black")
+                    
+                if(self.runupExists):
+                    for runupIndex, runupLabel in enumerate(self.runupLabels):
+#                         print("datapointsWaterlineLongitudes", type(self.datapointsWaterlineLongitudes[runupIndex][index]))
+                        ax.plot(self.datapointsWaterlineLongitudes[runupIndex][index], self.datapointsWaterlineLatitudes[runupIndex][index], label=runupLabel, zorder=3, alpha=0.7, marker=".", color="green")
+                        ax.plot(self.datapointsRunupLongitudes[runupIndex][index], self.datapointsRunupLatitudes[runupIndex][index], label=runupLabel, zorder=3, alpha=0.7, marker=".", color="red")
+
+#               Todo: Fix triangulation errors
+#                 contourset = ax.tripcolor(self.mapWaterPointsLongitudes, self.mapWaterPointsLatitudes, self.mapWaters[index], shading='gouraud', cmap="jet", vmin=vmin, vmax=vmax, zorder=1)
+                plt.axis(plotAxis)
+                plt.title(self.titlePrefix + "Runup Waterline")
+                plt.xlabel(self.runupTimes[index])
+    #             plt.gca().invert_yaxis()
+
+                plt.savefig(graph_directory + 'map_runup_' + str(index) + '.png')
+                plt.close()
+                gc.collect()
+            with imageio.get_writer(graph_directory + 'runup.gif', mode='I') as writer:
+                for index in range(len(self.runupTimes)):
+                    filename = "map_runup_" + str(index) + ".png"
+                    image = imageio.imread(graph_directory + filename)
+                    writer.append_data(image)
+                for index in range(len(self.runupTimes)):
+                    filename = "map_runup_" + str(index) + ".png"
+                    os.remove(graph_directory + filename)
+            plt.close()
+            gc.collect()
            
+           
+        

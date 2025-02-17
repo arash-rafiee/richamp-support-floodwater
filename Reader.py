@@ -961,7 +961,8 @@ class Reader:
             stationsDict = json.load(stations_file)
             
         data = {}
-        data = self.getMap(dataset, dataType, times, spaceSparseness, timeSparseness, data)
+        if(dataType == "water"):
+            data = self.getMap(dataset, dataType, times, spaceSparseness, timeSparseness, data)
                 
         print("Interpolating", dataType, flush=True)
         nodesIndex = []
@@ -1236,7 +1237,7 @@ class Fort63Reader:
         initializeClosestWaterNodes = True
         if(initializeClosestWaterNodes):
 #             thresholdDistance = 10
-            thresholdDistance = 3
+            thresholdDistance = 0.5
             self.reader.initializeClosestNodes(waterDataset, thresholdDistance, "water")
         spaceSparseness = 1
 #         spaceSparseness = 10
