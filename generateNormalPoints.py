@@ -2,7 +2,7 @@ import json
 import math
 
 HYPERRESOLUTION = 1
-HYPERPOINTS = 120
+HYPERPOINTS = 180
 
 def calculate_bearing(lat1, lon1, lat2, lon2):
     # Convert latitude and longitude to radians
@@ -49,7 +49,7 @@ def generate_points_along_line(json_data, resolution=HYPERRESOLUTION, points_cou
         json_data['NORMAL'][runup_id] = {}
         point_counter = 0
         
-        for i in range(-points_count // 4, 3 * points_count // 4 + 1):
+        for i in range(-points_count // 3, 2 * points_count // 3 + 1):
             distance = i * resolution  # Fixed step size as given by resolution
             new_lat, new_lon = calculate_new_point(shoreline_lat, shoreline_lon, bearing, distance)
     
@@ -116,7 +116,7 @@ def generate_tangent_points(json_data, resolution=HYPERRESOLUTION, points_count=
         json_data['TANGENT'][runup_id] = {}
         point_counter = 0
         
-        for i in range(-points_count // 4, 3 * points_count // 4 + 1):
+        for i in range(-points_count // 3, 2 * points_count // 3 + 1):
             distance = i * resolution
             new_lat, new_lon = calculate_new_point(tangent_lat, tangent_lon, bearing, distance)
             
