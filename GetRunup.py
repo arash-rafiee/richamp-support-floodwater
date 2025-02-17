@@ -106,7 +106,7 @@ class GetRunup:
             offshoreCoordinates = (float(stationDict["offshoreLatitude"]), float(stationDict["offshoreLongitude"]))
             surfKey = stationDict["surfKey"]
             surfCoordinates = (float(stationDict["surfLatitude"]), float(stationDict["surfLongitude"]))
-            deeplineKey = stationDist["deeplineKey"]
+            deeplineKey = stationDict["deeplineKey"]
             
             runupTimes = waterDict[offshoreKey]["times"]
 #             runupTimes = swhDict[offshoreKey]["times"]
