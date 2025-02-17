@@ -1257,7 +1257,7 @@ class Grapher:
             plt.savefig(graph_directory + 'map_water_swath.png')
             plt.close()
             gc.collect()
-        if(len(self.mapWaveTimes) > 0):
+        if(len(self.mapWaveTimes) > 0 and False):
             vmin = 0
             vmax = math.ceil(self.maxSWH)
             vmax = 5
