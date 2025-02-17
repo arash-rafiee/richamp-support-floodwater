@@ -223,7 +223,7 @@ class GetRunup:
                 runupHolmanHigh = self.calculateHolmanHighRunup(iribarren)
                 runupHolmanMid = self.calculateHolmanMidRunup(iribarren)
                 runupHolmanLow = self.calculateHolmanLowRunup(iribarren)
-                runupValues.append(runupHolmanHigh)
+                runupValues.append(runupHolmanLow)
                 runupValuesHolmanHigh.append(runupHolmanHigh)
                 runupValuesHolmanMid.append(runupHolmanMid)
                 runupValuesHolmanLow.append(runupHolmanLow)
