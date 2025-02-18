@@ -121,7 +121,7 @@ python generateGraphs.py --stations NAPATREE_NORMAL_STATIONS.json \
 --waterExists true --water /scratch3/workspace/pranav_sai_uri_edu-manrun/Jan92024RunupRun/forecast_RI_track/fort.63.nc \
 --meshExists true --mesh /scratch3/workspace/pranav_sai_uri_edu-manrun/Jan92024RunupRun/forecast_RI_track/fort.14 \
 --generateRunup true \
---tempDir /scratch3/workspace/pranav_sai_uri_edu-manrun/temp/ --backgroundChoice NAPATREE_BEACH_2
+--tempDir /scratch3/workspace/pranav_sai_uri_edu-manrun/temp/ --backgroundChoice NAPATREE_BEACH
 
 # python generateGraphs.py --stations NAPATREE_NORMAL_STATIONS.json \
 # --wavesExists true \
