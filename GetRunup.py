@@ -223,7 +223,7 @@ class GetRunup:
 
 
                 waterlineDistance = haversine.haversine(waterlineCoordinates, adjacentWaterlineCoordinates) * 1000
-                averageSlope = math.atan((shorelineElevation - adjacentWaterlineElevation) / waterlineDistance)
+                averageSlope = math.atan((waterlineCoordinates - adjacentWaterlineElevation) / waterlineDistance)
                 averageSlopes.append(averageSlope)
                 #           Then I need to calculate the wave parameters
 #           That can happen outside of the loop
