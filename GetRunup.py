@@ -214,11 +214,16 @@ class GetRunup:
                 waterlineCoordinates = (float(waterlineStation["latitude"]), float(waterlineStation["longitude"]))
                 waterlineElevation = float(meshDict[waterlineKey]["elevation"])
                 
+                adjacentWaterlineKey = str(int(waterlineKey) + 1)
+                adjacentWaterlineStation = normalDict[adjacentWaterlineKey]
+                adjacentWaterlineCoordinates = (float(adjacentWaterlineStation["latitude"]), float(adjacentWaterlineStation["longitude"]))
+                adjacentWaterlineElevation = meshDict[adjacentWaterlineKey]["elevation"]
+                
 #                 Now I need to calculate the averageSlope using the waterlineKey point
 
 
-                waterlineDistance = haversine.haversine(waterlineCoordinates, shorelineCoordinates) * 1000
-                averageSlope = math.atan((shorelineElevation - waterlineElevation) / waterlineDistance)
+                waterlineDistance = haversine.haversine(waterlineCoordinates, adjacentWaterlineCoordinates) * 1000
+                averageSlope = math.atan((shorelineElevation - adjacentWaterlineElevation) / waterlineDistance)
                 averageSlopes.append(averageSlope)
                 #           Then I need to calculate the wave parameters
 #           That can happen outside of the loop
