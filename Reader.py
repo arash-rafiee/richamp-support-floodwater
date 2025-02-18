@@ -7,6 +7,7 @@ import os
 import scipy.interpolate
 from Encoders import NumpyEncoder
 
+BACKGROUND_MARGIN = 0.5
 
 # Here I will write about the fort files
 
@@ -374,8 +375,8 @@ class Reader:
 # Example background axis
 # SOUTH_NEW_ENGLAND_AXIS = [-71.905117442267496, -71.0339945492675, 42.200717972845119, 41.028319358056874]
     def isOutsideBackground(self, point):
-        if(point[0] > self.BACKGROUND_AXIS[0] and point[0] < self.BACKGROUND_AXIS[1]):
-            if(point[1] > self.BACKGROUND_AXIS[3] and point[1] < self.BACKGROUND_AXIS[2]):
+        if(point[0] > self.BACKGROUND_AXIS[0] + BACKGROUND_MARGIN and point[0] < self.BACKGROUND_AXIS[1] + BACKGROUND_MARGIN):
+            if(point[1] > self.BACKGROUND_AXIS[3] + BACKGROUND_MARGIN and point[1] < self.BACKGROUND_AXIS[2] + BACKGROUND_MARGIN):
                 return False
         return True
    
