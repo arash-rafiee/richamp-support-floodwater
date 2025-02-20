@@ -11,6 +11,21 @@ from geographiclib.geodesic import Geodesic
         
 class GetRunup:
 
+#     The holmann runup formula defines runup excent
+#   as Atotalof 154runuptimeseriesarediscusseidn thispaper.Afterdigiti- zation of a runup time seriesand transformationto the verti- cal component,the mean (r/) and the standard deviation a arefound.From thisthesetup• iscalculatedas((r/)-tide) and the significantswashheightRsvas4a.
+#   4 times the standard deviation of mean runup from the observations
+# Also, iribarren number under 0.3 is parameterized differencly
+# Also, setup is parameterized independent of swash.
+# Even though the parameterization of swash depends on setup, a single coeficcient is used to model the process
+# Unlike stockdon which includes a parameterization for setup seperatley.
+# In practice, the stockdon swash can just be not included to the empirical formula
+# However, holman doesn't allow for that because they calculated the constant including swasg
+
+# Holman also provides formula for the incident and infragravity swash height
+#  He mentions that the incident swash will cap because of saturation, but the infragravity will keep growing.
+# Maybe can see this by plotting the incident band swash ontop of the infragravity band swash.
+# This isin't runup nessesarily, beacuse runup is incident and infragravity combined, like how stickdon does it.
+# What I should see in the swash bands graph is that infragravity swash keeps growing, while incident swash stops growing as the magnitude of the runup increases.
     def calculateHolmanHighRunup(self, iribarrenNumber):
         slope = 0.80
         intercept = 0.11
@@ -225,6 +240,7 @@ class GetRunup:
                 waterlineDistance = haversine.haversine(waterlineCoordinates, adjacentWaterlineCoordinates) * 1000
                 averageSlope = math.atan((waterlineElevation - adjacentWaterlineElevation) / waterlineDistance)
                 averageSlopes.append(averageSlope)
+#                 print("waterlineDistance, averageSlope, coordinates", waterlineDistance, averageSlope, waterlineCoordinates, adjacentWaterlineCoordinates)
                 #           Then I need to calculate the wave parameters
 #           That can happen outside of the loop
 
