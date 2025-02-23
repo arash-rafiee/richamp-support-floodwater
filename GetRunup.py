@@ -26,20 +26,93 @@ class GetRunup:
 # Maybe can see this by plotting the incident band swash ontop of the infragravity band swash.
 # This isin't runup nessesarily, beacuse runup is incident and infragravity combined, like how stickdon does it.
 # What I should see in the swash bands graph is that infragravity swash keeps growing, while incident swash stops growing as the magnitude of the runup increases.
-    def calculateHolmanHighRunup(self, iribarrenNumber):
+    def calculateHolmanHighRunup(self, iribarrenNumber, waveHeight):
         slope = 0.80
         intercept = 0.11
-        return (iribarrenNumber * slope) + intercept
+        return ((iribarrenNumber * slope) + intercept) * waveHeight
 
-    def calculateHolmanMidRunup(self, iribarrenNumber):
+    def calculateHolmanMidRunup(self, iribarrenNumber, waveHeight):
         slope = 0.93
         intercept = 0.04
-        return (iribarrenNumber * slope) + intercept
+        return ((iribarrenNumber * slope) + intercept) * waveHeight
 
-    def calculateHolmanLowRunup(self, iribarrenNumber):
+    def calculateHolmanLowRunup(self, iribarrenNumber, waveHeight):
         slope = 0.24
         intercept = 0.65
-        return (iribarrenNumber * slope) + intercept
+        return ((iribarrenNumber * slope) + intercept) * waveHeight
+
+    def calculateHolmanHighSetup(self, iribarrenNumber, waveHeight):
+        slope = 0.35
+        intercept = 0.14
+        return ((iribarrenNumber * slope) + intercept) * waveHeight
+
+    def calculateHolmanMidSetup(self, iribarrenNumber, waveHeight):
+        slope = 0.46
+        intercept = 0.06
+        return ((iribarrenNumber * slope) + intercept) * waveHeight
+
+    def calculateHolmanLowSetup(self, iribarrenNumber, waveHeight):
+        slope = -0.20
+        intercept = 0.73
+        return ((iribarrenNumber * slope) + intercept) * waveHeight
+        
+    def calculateHolmanHighSwash(self, iribarrenNumber, waveHeight):
+        slope = 0.88
+        intercept = -0.06
+        return ((iribarrenNumber * slope) + intercept) * waveHeight
+
+    def calculateHolmanMidSwash(self, iribarrenNumber, waveHeight):
+        slope = 0.92
+        intercept = -0.03
+        return ((iribarrenNumber * slope) + intercept) * waveHeight
+
+    def calculateHolmanLowSwash(self, iribarrenNumber, waveHeight):
+        slope = 0.87
+        intercept = -0.15
+        return ((iribarrenNumber * slope) + intercept) * waveHeight
+               
+    def calculateHolmanIncidentSwash(self, iribarrenNumber, waveHeight):
+        slope = 0.69
+        intercept = -0.19
+        return ((iribarrenNumber * slope) + intercept) * waveHeight
+
+    def calculateHolmanInfragravitySwash(self, iribarrenNumber, waveHeight):
+        slope = 0.53
+        intercept = 0.09
+        return ((iribarrenNumber * slope) + intercept) * waveHeight
+        
+# Stockdon parameterizations
+    def calculateStockdonSetup(self, averageSlope, waveHeight, deepwaterWavelength):
+        slope = 0.35
+        return (np.sqrt(waveHeight * deepwaterWavelength)) * averageSlope
+    def calculateStockdonIncidentSwash(self, averageSlope, waveHeight, deepwaterWavelength):
+        slope = 0.75
+        return (np.sqrt(waveHeight * deepwaterWavelength)) * averageSlope
+    def calculateStockdonInfragravitySwash(self, waveHeight, deepwaterWavelength):
+        slope = 0.06
+        return (np.sqrt(waveHeight * deepwaterWavelength))
+    def calculateStockdonLowSetup(self, waveHeight, deepwaterWavelength):
+        slope = 0.016
+        return (np.sqrt(waveHeight * deepwaterWavelength))
+    def calculateStockdonLowSwash(self, waveHeight, deepwaterWavelength):
+        slope = 0.046
+        return (np.sqrt(waveHeight * deepwaterWavelength))
+        
+    def calculateStockdonRunup(self, averageSlope, waveHeight, deepwaterWavelength):
+        setup = self.calculateStockdonSetup(averageSlope, waveHeight, deepwaterWavelength)
+        swash = np.sqrt(waveHeight * deepwaterWavelength * (((averageSlope**2) * 0.563) + 0.004))
+        return setup + (swash/2.0)
+        
+        
+        
+    def calculateStockdonRunupNoSetup(self, averageSlope, waveHeight, deepwaterWavelength):
+        swash = np.sqrt(waveHeight * deepwaterWavelength * (((averageSlope**2) * 0.563) + 0.004))
+        return (swash/2.0)
+        
+    def calculateStockdonLowRunup(self, waveHeight, deepwaterWavelength):
+        slope = 0.043
+        return (np.sqrt(waveHeight * deepwaterWavelength))
+
         
     def calculateRunupWaterline(self, waterlineCoordinates, tangentCoordinates, runup):
         # Extract coordinates (latitude, longitude)
@@ -196,6 +269,22 @@ class GetRunup:
             runupValuesHolmanHigh = []
             runupValuesHolmanMid = []
             runupValuesHolmanLow = []
+            swashValuesHolmanHigh = []
+            swashValuesHolmanMid = []
+            swashValuesHolmanLow = []
+            setupValuesHolmanHigh = []
+            setupValuesHolmanMid = []
+            setupValuesHolmanLow = []
+            swashValuesHolmanIncident = []
+            swashValuesHolmanInfragravity = []
+            setupValuesStockdon = []
+            swashValuesStockdonIncident = []
+            swashValuesStockdonInfragravity = []
+            setupValuesStockdonLow = []
+            swashValuesStockdonLow = []
+            runupValuesStockdon = []
+            runupValuesStockdonNoSetup = []
+            runupValuesStockdonLow = []
             runupWaterlineLatitudes = [] 
             runupWaterlineLongitudes = [] 
             runupTangentLatitudes = [] 
@@ -247,13 +336,47 @@ class GetRunup:
 #           Then calculate the irribarren number
                 iribarren = (averageSlope / (np.sqrt(offshoreSteepness[index])))
                 iribarrenNumbers.append(iribarren)
-                runupHolmanHigh = self.calculateHolmanHighRunup(iribarren) * offshoreSwh[index]
-                runupHolmanMid = self.calculateHolmanMidRunup(iribarren) * offshoreSwh[index]
-                runupHolmanLow = self.calculateHolmanLowRunup(iribarren) * offshoreSwh[index]
+                runupHolmanHigh = self.calculateHolmanHighRunup(iribarren, offshoreSwh[index])
+                runupHolmanMid = self.calculateHolmanMidRunup(iribarren, offshoreSwh[index])
+                runupHolmanLow = self.calculateHolmanLowRunup(iribarren, offshoreSwh[index])
+                setupHolmanHigh = self.calculateHolmanHighSetup(iribarren, offshoreSwh[index])
+                setupHolmanMid = self.calculateHolmanMidSetup(iribarren, offshoreSwh[index])
+                setupHolmanLow = self.calculateHolmanLowSetup(iribarren, offshoreSwh[index])
+                swashHolmanHigh = self.calculateHolmanHighSwash(iribarren, offshoreSwh[index])
+                swashHolmanMid = self.calculateHolmanMidSwash(iribarren, offshoreSwh[index])
+                swashHolmanLow = self.calculateHolmanLowSwash(iribarren, offshoreSwh[index])
+                swashHolmanIncident = self.calculateHolmanIncidentSwash(iribarren, offshoreSwh[index])
+                swashHolmanInfragravity = self.calculateHolmanInfragravitySwash(iribarren, offshoreSwh[index])
+                
+                stockdonSetup = self.calculateStockdonSetup(averageSlope, offshoreSwh[index], offshoreWavelength[index])
+                stockdonSwashIncident = self.calculateStockdonIncidentSwash(averageSlope, offshoreSwh[index], offshoreWavelength[index])
+                stockdonSwashInfragravity = self.calculateStockdonInfragravitySwash(offshoreSwh[index], offshoreWavelength[index])          
+                stockdonSetupLow = self.calculateStockdonLowSetup(offshoreSwh[index], offshoreWavelength[index])                
+                stockdonSwashLow = self.calculateStockdonLowSwash(offshoreSwh[index], offshoreWavelength[index])
+                stockdonRunup = self.calculateStockdonRunup(averageSlope, offshoreSwh[index], offshoreWavelength[index])
+                stockdonRunupNoSetup = self.calculateStockdonRunupNoSetup(averageSlope, offshoreSwh[index], offshoreWavelength[index])
+                stockdonRunupLow = self.calculateStockdonLowRunup(offshoreSwh[index], offshoreWavelength[index]) 
                 runupValues.append(runupHolmanLow)
                 runupValuesHolmanHigh.append(runupHolmanHigh)
                 runupValuesHolmanMid.append(runupHolmanMid)
                 runupValuesHolmanLow.append(runupHolmanLow)
+                swashValuesHolmanHigh.append(swashHolmanHigh)
+                swashValuesHolmanMid.append(swashHolmanMid)
+                swashValuesHolmanLow.append(swashHolmanLow)
+                setupValuesHolmanHigh.append(setupHolmanHigh)
+                setupValuesHolmanMid.append(setupHolmanMid)
+                setupValuesHolmanLow.append(setupHolmanLow)
+                swashValuesHolmanIncident.append(swashHolmanIncident)
+                swashValuesHolmanInfragravity.append(swashHolmanInfragravity)
+                
+                setupValuesStockdon.append(stockdonSetup)
+                swashValuesStockdonIncident.append(stockdonSwashIncident)
+                swashValuesStockdonInfragravity.append(stockdonSwashInfragravity)
+                setupValuesStockdonLow.append(stockdonSetupLow)
+                swashValuesStockdonLow.append(stockdonSwashLow)
+                runupValuesStockdon.append(stockdonRunup)
+                runupValuesStockdonNoSetup.append(stockdonRunupNoSetup)
+                runupValuesStockdonLow.append(stockdonRunupLow)
                 
                 runupWaterlineCoordinates, runupTangentCoordinates = self.calculateRunupWaterline(waterlineCoordinates, tangentCoordinates, runupHolmanLow)
                 runupWaterlineLatitudes.append(runupWaterlineCoordinates[0])
@@ -447,6 +570,24 @@ class GetRunup:
             runupDict[key]["runupHolmanHigh"] = runupValuesHolmanHigh
             runupDict[key]["runupHolmanMid"] = runupValuesHolmanMid
             runupDict[key]["runupHolmanLow"] = runupValuesHolmanLow
+            runupDict[key]["setupHolmanHigh"] = setupValuesHolmanHigh
+            runupDict[key]["setupHolmanMid"] = setupValuesHolmanMid
+            runupDict[key]["setupHolmanLow"] = setupValuesHolmanLow
+            runupDict[key]["swashHolmanHigh"] = swashValuesHolmanHigh
+            runupDict[key]["swashHolmanMid"] = swashValuesHolmanMid
+            runupDict[key]["swashHolmanLow"] = swashValuesHolmanLow
+            runupDict[key]["swashHolmanIncident"] = swashValuesHolmanIncident
+            runupDict[key]["swashHolmanInfragravity"] = swashValuesHolmanInfragravity
+            
+            runupDict[key]["setupStockdon"] = setupValuesStockdon
+            runupDict[key]["swashStockdonIncident"] = swashValuesStockdonIncident
+            runupDict[key]["swashStockdonInfragravity"] = swashValuesStockdonInfragravity
+            runupDict[key]["setupStockdonLow"] = setupValuesStockdonLow
+            runupDict[key]["swashStockdonLow"] = swashValuesStockdonLow
+            runupDict[key]["runupStockdon"] = runupValuesStockdon
+            runupDict[key]["runupStockdonNoSetup"] = runupValuesStockdonNoSetup
+            runupDict[key]["runupStockdonLow"] = runupValuesStockdonLow
+
             runupDict[key]["wavelength"] = offshoreWavelength
             runupDict[key]["steepness"] = offshoreSteepness
             runupDict[key]["iribarren"] = iribarrenNumbers

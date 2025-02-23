@@ -278,6 +278,23 @@ class Grapher:
         self.datapointsRunupHolmanHigh = []
         self.datapointsRunupHolmanMid = []
         self.datapointsRunupHolmanLow = []
+        self.datapointsSetupHolmanHigh = []
+        self.datapointsSetupHolmanMid = []
+        self.datapointsSetupHolmanLow = []
+        self.datapointsSwashHolmanHigh = []
+        self.datapointsSwashHolmanMid = []
+        self.datapointsSwashHolmanLow = []
+        self.datapointsSwashHolmanIncident = []
+        self.datapointsSwashHolmanInfragravity = []
+        self.datapointsSetupStockdon = []
+        self.datapointsSetupStockdonLow = []
+        self.datapointsSwashStockdonIncident = []
+        self.datapointsSwashStockdonInfragravity = []
+        self.datapointsSwashStockdonLow = []
+        self.datapointsRunupStockdon = []
+        self.datapointsRunupStockdonNoSetup = []
+        self.datapointsRunupStockdonLow = []
+        
         self.datapointsWavelength = []
         self.datapointsIribarren = []
         self.datapointsSteepness = []
@@ -780,6 +797,23 @@ class Grapher:
                 datapointHolmanHigh = []
                 datapointHolmanMid = []
                 datapointHolmanLow = []
+                datapointHolmanHighSetup = []
+                datapointHolmanMidSetup = []
+                datapointHolmanLowSetup = []
+                datapointHolmanHighSwash = []
+                datapointHolmanMidSwash = []
+                datapointHolmanLowSwash = []
+                datapointHolmanSwashIncident = []
+                datapointHolmanSwashInfragravity = []
+                datapointStockdonSetup = []
+                datapointStockdonSetupLow = []
+                datapointStockdonSwashIncident = []
+                datapointStockdonSwashInfragravity = []
+                datapointStockdonSwashLow = []
+                datapointStockdonRunup = []
+                datapointStockdonRunupNoSetup = []
+                datapointStockdonRunupLow = []
+                
                 for index in range(len(runupDataset[stationKey]["times"])):
                     if(self.runupStartDate == None):
                         self.runupStartDate = datetime.fromtimestamp(int(runupDataset[stationKey]["times"][index]), timezone.utc)
@@ -804,6 +838,22 @@ class Grapher:
                     datapointHolmanHigh.append(runupDataset[stationKey]["runupHolmanHigh"][index])
                     datapointHolmanMid.append(runupDataset[stationKey]["runupHolmanMid"][index])
                     datapointHolmanLow.append(runupDataset[stationKey]["runupHolmanLow"][index])
+                    datapointHolmanHighSetup.append(runupDataset[stationKey]["setupHolmanHigh"][index])
+                    datapointHolmanMidSetup.append(runupDataset[stationKey]["setupHolmanMid"][index])
+                    datapointHolmanLowSetup.append(runupDataset[stationKey]["setupHolmanLow"][index])
+                    datapointHolmanHighSwash.append(runupDataset[stationKey]["swashHolmanHigh"][index])
+                    datapointHolmanMidSwash.append(runupDataset[stationKey]["swashHolmanMid"][index])
+                    datapointHolmanLowSwash.append(runupDataset[stationKey]["swashHolmanLow"][index])
+                    datapointHolmanSwashIncident.append(runupDataset[stationKey]["swashHolmanIncident"][index])
+                    datapointHolmanSwashInfragravity.append(runupDataset[stationKey]["swashHolmanInfragravity"][index])
+                    datapointStockdonSetup.append(runupDataset[stationKey]["setupStockdon"][index])
+                    datapointStockdonSetupLow.append(runupDataset[stationKey]["setupStockdonLow"][index])
+                    datapointStockdonSwashIncident.append(runupDataset[stationKey]["swashStockdonIncident"][index])
+                    datapointStockdonSwashInfragravity.append(runupDataset[stationKey]["swashStockdonInfragravity"][index])
+                    datapointStockdonSwashLow.append(runupDataset[stationKey]["swashStockdonLow"][index])
+                    datapointStockdonRunup.append(runupDataset[stationKey]["runupStockdon"][index])
+                    datapointStockdonRunupNoSetup.append(runupDataset[stationKey]["runupStockdonNoSetup"][index])
+                    datapointStockdonRunupLow.append(runupDataset[stationKey]["runupStockdonLow"][index])
                 runupTimestampsInitialized = True
                 self.datapointsRunup.append(datapointRunup)    
                 self.datapointsWavelength.append(datapointWavelength)
@@ -817,6 +867,23 @@ class Grapher:
                 self.datapointsRunupHolmanHigh.append(datapointHolmanHigh)
                 self.datapointsRunupHolmanMid.append(datapointHolmanMid)
                 self.datapointsRunupHolmanLow.append(datapointHolmanLow)
+                self.datapointsSetupHolmanHigh.append(datapointHolmanHighSetup)
+                self.datapointsSetupHolmanMid.append(datapointHolmanMidSetup)
+                self.datapointsSetupHolmanLow.append(datapointHolmanLowSetup)
+                self.datapointsSwashHolmanHigh.append(datapointHolmanHighSwash)
+                self.datapointsSwashHolmanMid.append(datapointHolmanMidSwash)
+                self.datapointsSwashHolmanLow.append(datapointHolmanLowSwash)
+                self.datapointsSwashHolmanIncident.append(datapointHolmanSwashIncident)
+                self.datapointsSwashHolmanInfragravity.append(datapointHolmanSwashInfragravity)
+                self.datapointsSetupStockdon.append(datapointStockdonSetup)
+                self.datapointsSetupStockdonLow.append(datapointStockdonSetupLow)
+                self.datapointsSwashStockdonIncident.append(datapointStockdonSwashIncident)
+                self.datapointsSwashStockdonInfragravity.append(datapointStockdonSwashInfragravity)
+                self.datapointsSwashStockdonLow.append(datapointStockdonSwashLow)
+                self.datapointsRunupStockdon.append(datapointStockdonRunup)
+                self.datapointsRunupStockdonNoSetup.append(datapointStockdonRunupNoSetup)
+                self.datapointsRunupStockdonLow.append(datapointStockdonRunupLow)
+                
 
     def generateGraphs(self):
         graph_directory = "graphs/"
@@ -1671,6 +1738,9 @@ class Grapher:
                 ax.plot(self.runupTimes, self.datapointsRunupHolmanHigh[index], label="Holman High Tide")
                 ax.plot(self.runupTimes, self.datapointsRunupHolmanMid[index], label="Holman Mid Tide")
                 ax.plot(self.runupTimes, self.datapointsRunupHolmanLow[index], label="Holman Low Tide")
+                ax.plot(self.runupTimes, self.datapointsRunupStockdon[index], label="Stockdon")
+                ax.plot(self.runupTimes, self.datapointsRunupStockdonNoSetup[index], label="Stockdon No Setup")
+                ax.plot(self.runupTimes, self.datapointsRunupStockdonLow[index], label="Stockdon Low")
 
                 ax.legend(loc="upper left")
                 ax.format_xdata = mdates.DateFormatter('%d')
@@ -1683,6 +1753,52 @@ class Grapher:
                 plt.ylabel("runup (meters)", fontsize=14)
                 plt.savefig(graph_directory + stationName + '_runup.png')
                 plt.close()
+                
+#                 Graph setup
+                fig, ax = plt.subplots(figsize=(16,9))
+#                 ax.plot(self.runupTimes, self.datapointsRunup[index], label="runup")
+                ax.plot(self.runupTimes, self.datapointsSetupHolmanHigh[index], label="Holman High Tide")
+                ax.plot(self.runupTimes, self.datapointsSetupHolmanMid[index], label="Holman Mid Tide")
+                ax.plot(self.runupTimes, self.datapointsSetupHolmanLow[index], label="Holman Low Tide")
+                ax.plot(self.runupTimes, self.datapointsSetupStockdon[index], label="Stockdon")
+                ax.plot(self.runupTimes, self.datapointsSetupStockdonLow[index], label="Stockdon Low")
+
+
+                ax.legend(loc="upper left")
+                ax.format_xdata = mdates.DateFormatter('%d')
+                plt.xticks(fontsize=12)
+                plt.yticks(fontsize=12)
+                stationName = self.runupLabels[index]
+                maxSetup = str(round(max(self.datapointsSetupHolmanLow[index]), 2))
+                plt.title(self.titlePrefix + stationName + " station low setup max: " + maxSetup, fontsize=18)
+#                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
+                plt.ylabel("setup (meters)", fontsize=14)
+                plt.savefig(graph_directory + stationName + '_setup.png')
+                plt.close()
+                
+#                 Graph setup
+                fig, ax = plt.subplots(figsize=(16,9))
+#                 ax.plot(self.runupTimes, self.datapointsRunup[index], label="runup")
+                ax.plot(self.runupTimes, self.datapointsSwashHolmanHigh[index], label="Holman High Tide")
+                ax.plot(self.runupTimes, self.datapointsSwashHolmanMid[index], label="Holman Mid Tide")
+                ax.plot(self.runupTimes, self.datapointsSwashHolmanLow[index], label="Holman Low Tide")
+                ax.plot(self.runupTimes, self.datapointsSwashHolmanIncident[index], label="Holman Incident")
+                ax.plot(self.runupTimes, self.datapointsSwashHolmanInfragravity[index], label="Holman Infragravity")
+                ax.plot(self.runupTimes, self.datapointsSwashStockdonIncident[index], label="Stockdon Incident")
+                ax.plot(self.runupTimes, self.datapointsSwashStockdonInfragravity[index], label="Stockdon Infragravity")
+                ax.plot(self.runupTimes, self.datapointsSwashStockdonLow[index], label="Stockdon Low")
+                ax.legend(loc="upper left")
+                ax.format_xdata = mdates.DateFormatter('%d')
+                plt.xticks(fontsize=12)
+                plt.yticks(fontsize=12)
+                stationName = self.runupLabels[index]
+                maxSwash = str(round(max(self.datapointsSwashHolmanLow[index]), 2))
+                plt.title(self.titlePrefix + stationName + " station low swash max: " + maxSwash, fontsize=18)
+#                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
+                plt.ylabel("swash (meters)", fontsize=14)
+                plt.savefig(graph_directory + stationName + '_swash.png')
+                plt.close()
+            
                 fig, ax = plt.subplots(figsize=(16,9))
                 ax.plot(self.runupTimes, self.datapointsWavelength[index])
 #                 ax.legend(loc="upper left")

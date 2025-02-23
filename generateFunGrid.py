@@ -20,10 +20,15 @@ CHARLESTOWN_MAP = "Charlestown.png"
 CHARLESTOWN_OUTLINE_MAP = "CharlestownOutline.png"
 CHARLESTOWN_AXIS = [-71.67074920654298, -71.61925079345704, 41.38432229342453, 41.34567196713463]
 
-backgroundMap = CHARLESTOWN_MAP
-backgroundAxis = CHARLESTOWN_AXIS
+NAPATREE_MAP = "Napatree.png"
+NAPATREE_AXIS = [-71.88687460327148, -71.86112539672851, 41.31967002720852, 41.30032853828529]
+
+# backgroundMap = CHARLESTOWN_MAP
+# backgroundAxis = CHARLESTOWN_AXIS
 # backgroundMap = RHODE_ISLAND_CHAMP_MAP
 # backgroundAxis = RHODE_ISLAND_CHAMP_AXIS
+backgroundMap = NAPATREE_MAP
+backgroundAxis = NAPATREE_AXIS
 
 def downloadBathymetryData(north, south, east, west, dem_type="GEBCOIceTopo", output_format="AAIGrid", api_key=API_KEY):
     params = {
@@ -150,8 +155,19 @@ northCornerBathymetry = 41.5384
 southCornerBathymetry = 41.0
 eastCornerBathymetry = -71.42847
 westCornerBathymetry = -71.64847
-# downloadElevationData(northCorner, southCorner, eastCorner, westCorner)
-# downloadBathymetryData(northCornerBathymetry, southCornerBathymetry, eastCornerBathymetry, westCornerBathymetry)
+
+# NAPATREE bounds
+northCorner = 41.32
+southCorner = 41.29
+eastCorner = -71.85
+westCorner = -71.90
+
+northCornerBathymetry = 41.32
+southCornerBathymetry = 41.29
+eastCornerBathymetry = -71.85
+westCornerBathymetry = -71.90
+downloadElevationData(northCorner, southCorner, eastCorner, westCorner)
+downloadBathymetryData(northCornerBathymetry, southCornerBathymetry, eastCornerBathymetry, westCornerBathymetry)
 # elevationData[0:1]
 
 elevationValues = []
@@ -220,13 +236,16 @@ with open(BATHYMETRY_FILE, 'r') as file:
     
 offshorePoint = (-71.64, 41.35)
 shorelinePoint = (-71.64081, 41.35584)
+# Napatree bathymetry 10m to 20m
+offshorePoint = (-71.876028, 41.308975)
+shorelinePoint = (-71.876089, 41.309053)
 offshoreElevation = InterpolatePoint(bathymetryValues, bathymetryLatitudes, bathymetryLongitudes, offshorePoint)
 print(offshoreElevation)
 # quit()
 
 shorelineElevation = InterpolatePoint(bathymetryValues, bathymetryLatitudes, bathymetryLongitudes, offshorePoint)
 averageSlope = calculateAverageSlope(np.array(bathymetryValues), np.array(bathymetryLatitudes), np.array(bathymetryLongitudes), np.array(elevationValues), np.array(latitudes), np.array(longitudes), offshorePoint, shorelinePoint)
-print(averageSlope)
+print("AVERAGE SLOPE:", averageSlope)
 
 
 # quit()
