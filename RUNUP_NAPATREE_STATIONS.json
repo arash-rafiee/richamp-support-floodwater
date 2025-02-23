@@ -102,8 +102,8 @@
         "id": "RUNUP",
         "source": "RUNUP",
         "name": "Napatree1 Surfline",
-        "latitude": "41.305804",
-        "longitude": "-71.868499"
+        "latitude": "41.302815",
+        "longitude": "-71.866260"
     },
     "13": {
       "id": "RUNUP",
@@ -277,8 +277,8 @@
       "longitude": "-71.865238",
       "tangentLatitude": "41.310932",
       "tangentLongitude": "-71.865158",
-      "surfLatitude": "41.305804",
-      "surfLongitude": "-71.868499",
+      "surfLatitude": "41.302815",
+      "surfLongitude": "-71.866260",
       "offshoreLatitude": "41.302815",
       "offshoreLongitude": "-71.866260"
     }
