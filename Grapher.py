@@ -1740,7 +1740,7 @@ class Grapher:
                 ax.plot(self.runupTimes, self.datapointsRunupHolmanLow[index], label="Holman Low Tide")
                 ax.plot(self.runupTimes, self.datapointsRunupStockdon[index], label="Stockdon")
                 ax.plot(self.runupTimes, self.datapointsRunupStockdonNoSetup[index], label="Stockdon No Setup")
-                ax.plot(self.runupTimes, self.datapointsRunupStockdonLow[index], label="Stockdon Low")
+#                 ax.plot(self.runupTimes, self.datapointsRunupStockdonLow[index], label="Stockdon Low")
 
                 ax.legend(loc="upper left")
                 ax.format_xdata = mdates.DateFormatter('%d')
@@ -1761,7 +1761,7 @@ class Grapher:
                 ax.plot(self.runupTimes, self.datapointsSetupHolmanMid[index], label="Holman Mid Tide")
                 ax.plot(self.runupTimes, self.datapointsSetupHolmanLow[index], label="Holman Low Tide")
                 ax.plot(self.runupTimes, self.datapointsSetupStockdon[index], label="Stockdon")
-                ax.plot(self.runupTimes, self.datapointsSetupStockdonLow[index], label="Stockdon Low")
+#                 ax.plot(self.runupTimes, self.datapointsSetupStockdonLow[index], label="Stockdon Low")
 
 
                 ax.legend(loc="upper left")
@@ -1786,7 +1786,7 @@ class Grapher:
                 ax.plot(self.runupTimes, self.datapointsSwashHolmanInfragravity[index], label="Holman Infragravity")
                 ax.plot(self.runupTimes, self.datapointsSwashStockdonIncident[index], label="Stockdon Incident")
                 ax.plot(self.runupTimes, self.datapointsSwashStockdonInfragravity[index], label="Stockdon Infragravity")
-                ax.plot(self.runupTimes, self.datapointsSwashStockdonLow[index], label="Stockdon Low")
+#                 ax.plot(self.runupTimes, self.datapointsSwashStockdonLow[index], label="Stockdon Low")
                 ax.legend(loc="upper left")
                 ax.format_xdata = mdates.DateFormatter('%d')
                 plt.xticks(fontsize=12)
