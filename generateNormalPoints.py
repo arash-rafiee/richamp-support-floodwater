@@ -151,3 +151,15 @@ generate_tangent_points(data)
 # Write modified main JSON (shoreline, offshore, and tangent)
 with open('NAPATREE_NORMAL_STATIONS.json', 'w') as file:
     json.dump(data, file, indent=2)
+    
+# Load main JSON data
+with open('RUNUP_NAPATREE_STATIONS.json', 'r') as file:
+    data = json.load(file)
+
+# Generate points for offshore
+offshore_generate_points_along_line(data)
+
+
+# Write modified main JSON (shoreline, offshore, and tangent)
+with open('NAPATREE_LONG_STATIONS.json', 'w') as file:
+    json.dump(data, file, indent=2)
