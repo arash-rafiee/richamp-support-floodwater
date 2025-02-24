@@ -114,6 +114,9 @@ class GetRunup:
         return (np.sqrt(waveHeight * deepwaterWavelength))
 
         
+    def calculateRunupDistance(self, runupHeight, averageSlope):
+        return runupHeight * np.sqrt((1/(averageSlope**2)) + 1)
+        
     def calculateRunupWaterline(self, waterlineCoordinates, tangentCoordinates, runup):
         # Extract coordinates (latitude, longitude)
         lat1, lon1 = waterlineCoordinates
@@ -356,7 +359,7 @@ class GetRunup:
                 stockdonRunup = self.calculateStockdonRunup(averageSlope, offshoreSwh[index], offshoreWavelength[index])
                 stockdonRunupNoSetup = self.calculateStockdonRunupNoSetup(averageSlope, offshoreSwh[index], offshoreWavelength[index])
                 stockdonRunupLow = self.calculateStockdonLowRunup(offshoreSwh[index], offshoreWavelength[index]) 
-                runupValues.append(stockdonRunup)
+#                 runupValues.append(stockdonRunup)
                 runupValuesHolmanHigh.append(runupHolmanHigh)
                 runupValuesHolmanMid.append(runupHolmanMid)
                 runupValuesHolmanLow.append(runupHolmanLow)
@@ -378,7 +381,9 @@ class GetRunup:
                 runupValuesStockdonNoSetup.append(stockdonRunupNoSetup)
                 runupValuesStockdonLow.append(stockdonRunupLow)
                 
-                runupWaterlineCoordinates, runupTangentCoordinates = self.calculateRunupWaterline(waterlineCoordinates, tangentCoordinates, runupHolmanLow)
+                runupDistance = self.calculateRunupDistance(stockdonRunup, averageSlope)
+                runupValues.append(runupDistance)
+                runupWaterlineCoordinates, runupTangentCoordinates = self.calculateRunupWaterline(waterlineCoordinates, tangentCoordinates, runupDistance)
                 runupWaterlineLatitudes.append(runupWaterlineCoordinates[0])
                 runupWaterlineLongitudes.append(runupWaterlineCoordinates[1])
                 runupTangentLatitudes.append(runupTangentCoordinates[0])
