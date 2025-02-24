@@ -11,8 +11,8 @@
         "id": "RUNUP",
         "source": "RUNUP",
         "name": "Napatree4 Surfline",
-        "latitude": "41.30353",
-        "longitude": "-71.87175"
+        "latitude": "41.303166",
+        "longitude": "-71.872899"
     },
     "42": {
       "id": "RUNUP",
@@ -60,8 +60,8 @@
         "id": "RUNUP",
         "source": "RUNUP",
         "name": "Napatree3 Surfline",
-        "latitude": "41.305311",
-        "longitude": "-71.869857"
+        "latitude": "41.303533",
+        "longitude": "-71.869495"
     },
     "33": {
       "id": "RUNUP",
@@ -213,8 +213,8 @@
       "longitude": "-71.87615",
       "tangentLatitude": "41.30924",
       "tangentLongitude": "-71.87583",
-      "surfLatitude": "41.30353",
-      "surfLongitude": "-71.87175",
+      "surfLatitude": "41.303166",
+      "surfLongitude": "-71.872899",
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623"
     },
@@ -245,8 +245,8 @@
       "longitude": "-71.872394",
       "tangentLatitude": "41.310266",
       "tangentLongitude": "-71.872291",
-      "surfLatitude": "41.305311",
-      "surfLongitude": "-71.869857",
+      "surfLatitude": "41.303533",
+      "surfLongitude": "-71.869495",
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623"
     },
