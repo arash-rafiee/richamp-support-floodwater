@@ -10,6 +10,8 @@ from matplotlib.tri import Triangulation
 from datetime import datetime, timezone
 import imageio
 import gc
+from geographiclib.geodesic import Geodesic
+
 
 class Grapher:
     DATE_FORMAT = "%m/%d/%y-%HZ"    
@@ -44,6 +46,71 @@ class Grapher:
         return windVelocity
     #     WIND_PROFILE_EXPONENT = 0.11
     #     return windVelocity * ((10.0/altitude)**WIND_PROFILE_EXPONENT)
+    
+    def plotExtendedLines(self, ax, runupIndex, index, runupLabel):
+        # Get original coordinates
+        waterline_lon = self.datapointsWaterlineLongitudes[runupIndex][index]
+        waterline_lat = self.datapointsWaterlineLatitudes[runupIndex][index]
+        runup_lon = self.datapointsRunupLongitudes[runupIndex][index]
+        runup_lat = self.datapointsRunupLatitudes[runupIndex][index]
+    
+        # Initialize geodesic calculator
+        geod = Geodesic.WGS84
+    
+        # Calculate original line properties
+        g = geod.Inverse(waterline_lat, waterline_lon, runup_lat, runup_lon)
+        original_length = g['s12']  # Distance in meters
+        forward_azi = g['azi1']     # Forward azimuth
+        backward_azi = g['azi2']    # Backward azimuth (at runup point)
+    
+        # Calculate extension distance (10x original length)
+        extension_distance = original_length * 10
+    
+        # Calculate extended points beyond waterline (backward direction)
+        backward_water = geod.Direct(waterline_lat, waterline_lon, 
+                                   forward_azi + 180,  # Reverse direction
+                                   extension_distance)
+        water_extend_back_lon = backward_water['lon2']
+        water_extend_back_lat = backward_water['lat2']
+    
+        # Calculate extended points beyond runup (forward direction)
+        forward_runup = geod.Direct(runup_lat, runup_lon,
+                                  forward_azi,
+                                  extension_distance)
+        water_extend_forward_lon = forward_runup['lon2']
+        water_extend_forward_lat = forward_runup['lat2']
+    
+        # Create lists for plotting waterline extension
+        waterline_lons = [water_extend_back_lon, waterline_lon, water_extend_forward_lon]
+        waterline_lats = [water_extend_back_lat, waterline_lat, water_extend_forward_lat]
+    
+        # Calculate extended points for runup line
+        backward_runup = geod.Direct(waterline_lat, waterline_lon,
+                                   backward_azi + 180,
+                                   extension_distance)
+        runup_extend_back_lon = backward_runup['lon2']
+        runup_extend_back_lat = backward_runup['lat2']
+    
+        forward_runup = geod.Direct(runup_lat, runup_lon,
+                                  backward_azi,
+                                  extension_distance)
+        runup_extend_forward_lon = forward_runup['lon2']
+        runup_extend_forward_lat = forward_runup['lat2']
+    
+        # Create lists for plotting runup extension
+        runup_lons = [runup_extend_back_lon, runup_lon, runup_extend_forward_lon]
+        runup_lats = [runup_extend_back_lat, runup_lat, runup_extend_forward_lat]
+    
+        # Plot the extended lines
+        ax.plot(waterline_lons, waterline_lats,
+                label=runupLabel, zorder=3, alpha=0.7, 
+                marker=".", color="green")
+        ax.plot(runup_lons, runup_lats,
+                label=runupLabel, zorder=3, alpha=0.7,
+                marker=".", color="red")
+
+    # Usage example:
+    # plot_extended_lines(self, ax, runupIndex, index, runupLabel)
 
     def __init__(self, dataToGraph={}, STATIONS_FILE="", backgroundMap="", backgroundAxis=[], titlePrefix=""):
         print("Initializing grapher", flush=True)
@@ -1255,9 +1322,10 @@ class Grapher:
                     
                 if(self.runupExists):
                     for runupIndex, runupLabel in enumerate(self.runupLabels):
+                        self.plotExtendedLines(ax, runupIndex, index, runupLabel)
 #                         print("datapointsWaterlineLongitudes", type(self.datapointsWaterlineLongitudes[runupIndex][index]))
-                        ax.plot(self.datapointsWaterlineLongitudes[runupIndex][index], self.datapointsWaterlineLatitudes[runupIndex][index], label=runupLabel, zorder=3, alpha=0.7, marker=".", color="green")
-                        ax.plot(self.datapointsRunupLongitudes[runupIndex][index], self.datapointsRunupLatitudes[runupIndex][index], label=runupLabel, zorder=3, alpha=0.7, marker=".", color="red")
+#                         ax.plot(self.datapointsWaterlineLongitudes[runupIndex][index], self.datapointsWaterlineLatitudes[runupIndex][index], label=runupLabel, zorder=3, alpha=0.7, marker=".", color="green")
+#                         ax.plot(self.datapointsRunupLongitudes[runupIndex][index], self.datapointsRunupLatitudes[runupIndex][index], label=runupLabel, zorder=3, alpha=0.7, marker=".", color="red")
 #               Todo: Fix triangulation errors
 #                 contourset = ax.tripcolor(self.mapWaterPointsLongitudes, self.mapWaterPointsLatitudes, self.mapWaters[index], shading='gouraud', cmap="jet", vmin=vmin, vmax=vmax, zorder=1)
                 plt.axis(plotAxis)
@@ -1747,7 +1815,7 @@ class Grapher:
                 plt.xticks(fontsize=12)
                 plt.yticks(fontsize=12)
                 stationName = self.runupLabels[index]
-                maxRunup = str(round(max(self.datapointsRunup[index]), 2))
+                maxRunup = str(round(max(self.datapointsRunupStockdon[index]), 2))
                 plt.title(self.titlePrefix + stationName + " station runup max: " + maxRunup, fontsize=18)
 #                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
                 plt.ylabel("runup (meters)", fontsize=14)
@@ -1907,9 +1975,10 @@ class Grapher:
                     
                 if(self.runupExists):
                     for runupIndex, runupLabel in enumerate(self.runupLabels):
+                        self.plotExtendedLines(ax, runupIndex, index, runupLabel)
 #                         print("datapointsWaterlineLongitudes", type(self.datapointsWaterlineLongitudes[runupIndex][index]))
-                        ax.plot(self.datapointsWaterlineLongitudes[runupIndex][index], self.datapointsWaterlineLatitudes[runupIndex][index], label=runupLabel, zorder=3, alpha=0.7, marker=".", color="green")
-                        ax.plot(self.datapointsRunupLongitudes[runupIndex][index], self.datapointsRunupLatitudes[runupIndex][index], label=runupLabel, zorder=3, alpha=0.7, marker=".", color="red")
+#                         ax.plot(self.datapointsWaterlineLongitudes[runupIndex][index], self.datapointsWaterlineLatitudes[runupIndex][index], label=runupLabel, zorder=3, alpha=0.7, marker=".", color="green")
+#                         ax.plot(self.datapointsRunupLongitudes[runupIndex][index], self.datapointsRunupLatitudes[runupIndex][index], label=runupLabel, zorder=3, alpha=0.7, marker=".", color="red")
 
 #               Todo: Fix triangulation errors
 #                 contourset = ax.tripcolor(self.mapWaterPointsLongitudes, self.mapWaterPointsLatitudes, self.mapWaters[index], shading='gouraud', cmap="jet", vmin=vmin, vmax=vmax, zorder=1)
