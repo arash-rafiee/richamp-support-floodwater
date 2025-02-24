@@ -356,7 +356,7 @@ class GetRunup:
                 stockdonRunup = self.calculateStockdonRunup(averageSlope, offshoreSwh[index], offshoreWavelength[index])
                 stockdonRunupNoSetup = self.calculateStockdonRunupNoSetup(averageSlope, offshoreSwh[index], offshoreWavelength[index])
                 stockdonRunupLow = self.calculateStockdonLowRunup(offshoreSwh[index], offshoreWavelength[index]) 
-                runupValues.append(runupHolmanLow)
+                runupValues.append(stockdonRunup)
                 runupValuesHolmanHigh.append(runupHolmanHigh)
                 runupValuesHolmanMid.append(runupHolmanMid)
                 runupValuesHolmanLow.append(runupHolmanLow)

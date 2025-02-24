@@ -48,67 +48,70 @@ class Grapher:
     #     return windVelocity * ((10.0/altitude)**WIND_PROFILE_EXPONENT)
     
     def plotExtendedLines(self, ax, runupIndex, index, runupLabel):
-        # Get original coordinates
-        waterline_lon = self.datapointsWaterlineLongitudes[runupIndex][index]
-        waterline_lat = self.datapointsWaterlineLatitudes[runupIndex][index]
-        runup_lon = self.datapointsRunupLongitudes[runupIndex][index]
-        runup_lat = self.datapointsRunupLatitudes[runupIndex][index]
+        # Get coordinates for waterline (two points)
+        waterline_lon1 = float(self.datapointsWaterlineLongitudes[runupIndex][index][0])
+        waterline_lat1 = float(self.datapointsWaterlineLatitudes[runupIndex][index][0])
+        waterline_lon2 = float(self.datapointsWaterlineLongitudes[runupIndex][index][1])
+        waterline_lat2 = float(self.datapointsWaterlineLatitudes[runupIndex][index][1])
+    
+        # Get coordinates for runup line (two points)
+        runup_lon1 = float(self.datapointsRunupLongitudes[runupIndex][index][0])
+        runup_lat1 = float(self.datapointsRunupLatitudes[runupIndex][index][0])
+        runup_lon2 = float(self.datapointsRunupLongitudes[runupIndex][index][1])
+        runup_lat2 = float(self.datapointsRunupLatitudes[runupIndex][index][1])
     
         # Initialize geodesic calculator
         geod = Geodesic.WGS84
     
-        # Calculate original line properties
-        g = geod.Inverse(waterline_lat, waterline_lon, runup_lat, runup_lon)
-        original_length = g['s12']  # Distance in meters
-        forward_azi = g['azi1']     # Forward azimuth
-        backward_azi = g['azi2']    # Backward azimuth (at runup point)
+        # Calculate waterline properties
+        water_g = geod.Inverse(waterline_lat1, waterline_lon1, waterline_lat2, waterline_lon2)
+        water_length = water_g['s12']
+        water_azi1 = water_g['azi1']  # Forward azimuth from point 1
+        water_azi2 = water_g['azi2']  # Forward azimuth from point 2
+    
+        # Calculate runup line properties
+        runup_g = geod.Inverse(runup_lat1, runup_lon1, runup_lat2, runup_lon2)
+        runup_length = runup_g['s12']
+        runup_azi1 = runup_g['azi1']
+        runup_azi2 = runup_g['azi2']
     
         # Calculate extension distance (10x original length)
-        extension_distance = original_length * 10
+        water_ext_dist = water_length * 10
+        runup_ext_dist = runup_length * 10
     
-        # Calculate extended points beyond waterline (backward direction)
-        backward_water = geod.Direct(waterline_lat, waterline_lon, 
-                                   forward_azi + 180,  # Reverse direction
-                                   extension_distance)
-        water_extend_back_lon = backward_water['lon2']
-        water_extend_back_lat = backward_water['lat2']
+        # Extend waterline - backward from point 1
+        water_back = geod.Direct(waterline_lat1, waterline_lon1, water_azi1 + 180, water_ext_dist)
+        water_extend_back_lon = water_back['lon2']
+        water_extend_back_lat = water_back['lat2']
     
-        # Calculate extended points beyond runup (forward direction)
-        forward_runup = geod.Direct(runup_lat, runup_lon,
-                                  forward_azi,
-                                  extension_distance)
-        water_extend_forward_lon = forward_runup['lon2']
-        water_extend_forward_lat = forward_runup['lat2']
+        # Extend waterline - forward from point 2
+        water_forward = geod.Direct(waterline_lat2, waterline_lon2, water_azi2, water_ext_dist)
+        water_extend_forward_lon = water_forward['lon2']
+        water_extend_forward_lat = water_forward['lat2']
     
-        # Create lists for plotting waterline extension
-        waterline_lons = [water_extend_back_lon, waterline_lon, water_extend_forward_lon]
-        waterline_lats = [water_extend_back_lat, waterline_lat, water_extend_forward_lat]
+        # Extend runup - backward from point 1
+        runup_back = geod.Direct(runup_lat1, runup_lon1, runup_azi1 + 180, runup_ext_dist)
+        runup_extend_back_lon = runup_back['lon2']
+        runup_extend_back_lat = runup_back['lat2']
     
-        # Calculate extended points for runup line
-        backward_runup = geod.Direct(waterline_lat, waterline_lon,
-                                   backward_azi + 180,
-                                   extension_distance)
-        runup_extend_back_lon = backward_runup['lon2']
-        runup_extend_back_lat = backward_runup['lat2']
+        # Extend runup - forward from point 2
+        runup_forward = geod.Direct(runup_lat2, runup_lon2, runup_azi2, runup_ext_dist)
+        runup_extend_forward_lon = runup_forward['lon2']
+        runup_extend_forward_lat = runup_forward['lat2']
     
-        forward_runup = geod.Direct(runup_lat, runup_lon,
-                                  backward_azi,
-                                  extension_distance)
-        runup_extend_forward_lon = forward_runup['lon2']
-        runup_extend_forward_lat = forward_runup['lat2']
-    
-        # Create lists for plotting runup extension
-        runup_lons = [runup_extend_back_lon, runup_lon, runup_extend_forward_lon]
-        runup_lats = [runup_extend_back_lat, runup_lat, runup_extend_forward_lat]
+        # Create lists for plotting
+        waterline_lons = [water_extend_back_lon, waterline_lon1, waterline_lon2, water_extend_forward_lon]
+        waterline_lats = [water_extend_back_lat, waterline_lat1, waterline_lat2, water_extend_forward_lat]
+        runup_lons = [runup_extend_back_lon, runup_lon1, runup_lon2, runup_extend_forward_lon]
+        runup_lats = [runup_extend_back_lat, runup_lat1, runup_lat2, runup_extend_forward_lat]
     
         # Plot the extended lines
         ax.plot(waterline_lons, waterline_lats,
-                label=runupLabel, zorder=3, alpha=0.7, 
+                label=runupLabel, zorder=3, alpha=0.7,
                 marker=".", color="green")
         ax.plot(runup_lons, runup_lats,
                 label=runupLabel, zorder=3, alpha=0.7,
                 marker=".", color="red")
-
     # Usage example:
     # plot_extended_lines(self, ax, runupIndex, index, runupLabel)
 
