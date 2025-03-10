@@ -1482,7 +1482,7 @@ class Grapher:
         # Plot wind speed over time
         for index in range(numberOfWindDatapoints):
             if(len(self.datapointsSpeeds) > 0):
-                fig, ax = plt.subplots()
+                fig, ax = plt.subplots(figsize=(16,9))
                 ax.scatter(self.windTimes, self.datapointsSpeeds[index], marker=".", label="Forecast")
                 if(self.obsExists):
                     ax.scatter(self.obsDatapointsTimes[index], self.obsDatapointsSpeeds[index], marker=".", label="Obs")
@@ -1491,12 +1491,10 @@ class Grapher:
                 plt.title(stationName + " station wind speed")
                 plt.xlabel("Hours since " + self.windStartDate.strftime(self.DATE_FORMAT))
                 plt.ylabel("wind speed (m/s)")
-#                 Add date formatter for wind
-                ax.format_xdata = mdates.DateFormatter('%d')
                 plt.savefig(graph_directory + stationName + '_wind_speed.png')
                 plt.close()
             if(len(self.datapointsDirections) > 0):
-                fig, ax = plt.subplots()
+                fig, ax = plt.subplots(figsize=(16,9))
                 ax.scatter(self.windTimes, self.datapointsDirections[index], marker=".", label="Forecast")
                 if(self.obsExists):
                     ax.scatter(self.obsDatapointsTimes[index], self.obsDatapointsDirections[index], marker=".", label="Obs")
@@ -1505,8 +1503,6 @@ class Grapher:
                 plt.title(stationName + " station wind directions")
                 plt.xlabel("Hours since " + self.windStartDate.strftime(self.DATE_FORMAT))
                 plt.ylabel("wind direction (degrees)")
-#                 Add date formatter for wind
-                ax.format_xdata = mdates.DateFormatter('%d')
                 plt.savefig(graph_directory + stationName + '_wind_direction.png')
                 plt.close()
         for index in range(numberOfRainDatapoints):
