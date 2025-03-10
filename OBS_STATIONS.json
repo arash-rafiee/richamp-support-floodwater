@@ -313,5 +313,13 @@
       "longitude": "-72.044303894043",
       "elevation": "6.15100002288818"
     }
+    "59": {
+      "id": "0",
+      "source": "ASSET",
+      "name": "New Bedford Hurricane Barrier",
+      "latitude": "41.615317",
+      "longitude": "-70.921544",
+      "elevation": "0"
+    }
   }
 }
