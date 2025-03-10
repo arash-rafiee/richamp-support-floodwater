@@ -1491,6 +1491,8 @@ class Grapher:
                 plt.title(stationName + " station wind speed")
                 plt.xlabel("Hours since " + self.windStartDate.strftime(self.DATE_FORMAT))
                 plt.ylabel("wind speed (m/s)")
+#                 Add date formatter for wind
+                ax.format_xdata = mdates.DateFormatter('%d')
                 plt.savefig(graph_directory + stationName + '_wind_speed.png')
                 plt.close()
             if(len(self.datapointsDirections) > 0):
@@ -1503,6 +1505,8 @@ class Grapher:
                 plt.title(stationName + " station wind directions")
                 plt.xlabel("Hours since " + self.windStartDate.strftime(self.DATE_FORMAT))
                 plt.ylabel("wind direction (degrees)")
+#                 Add date formatter for wind
+                ax.format_xdata = mdates.DateFormatter('%d')
                 plt.savefig(graph_directory + stationName + '_wind_direction.png')
                 plt.close()
         for index in range(numberOfRainDatapoints):
