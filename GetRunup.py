@@ -101,13 +101,16 @@ class GetRunup:
     def calculateStockdonRunup(self, averageSlope, waveHeight, deepwaterWavelength):
         setup = self.calculateStockdonSetup(averageSlope, waveHeight, deepwaterWavelength)
         swash = np.sqrt(waveHeight * deepwaterWavelength * (((averageSlope**2) * 0.563) + 0.004))
-        return setup + (swash/2.0)
+        return 1.1 * (setup + (swash/2.0))
         
         
         
     def calculateStockdonRunupNoSetup(self, averageSlope, waveHeight, deepwaterWavelength):
         swash = np.sqrt(waveHeight * deepwaterWavelength * (((averageSlope**2) * 0.563) + 0.004))
         return (swash/2.0)
+        
+    def calculateAdcircRunup(self, adcircSetup, stockdonSwash):
+        return 1.1 * (adcircSetup + stockdonSwash)
         
     def calculateStockdonLowRunup(self, waveHeight, deepwaterWavelength):
         slope = 0.043
@@ -288,6 +291,7 @@ class GetRunup:
             runupValuesStockdon = []
             runupValuesStockdonNoSetup = []
             runupValuesStockdonLow = []
+            runupValuesAdcirc = []
             runupWaterlineLatitudes = [] 
             runupWaterlineLongitudes = [] 
             runupTangentLatitudes = [] 
@@ -332,6 +336,11 @@ class GetRunup:
                 waterlineDistance = haversine.haversine(waterlineCoordinates, adjacentWaterlineCoordinates) * 1000
                 averageSlope = math.atan((waterlineElevation - adjacentWaterlineElevation) / waterlineDistance)
                 averageSlopes.append(averageSlope)
+                
+#                 Get the water elevation at the waterline point.
+#                  The minimum of this should just be the elevation of the point itself
+#                   The wet dry algorithim is also important here
+                waterlineWaterValue = waterDict[normalKey]["water"][index]
 #                 print("waterlineDistance, averageSlope, coordinates", waterlineDistance, averageSlope, waterlineCoordinates, adjacentWaterlineCoordinates)
                 #           Then I need to calculate the wave parameters
 #           That can happen outside of the loop
@@ -359,6 +368,21 @@ class GetRunup:
                 stockdonRunup = self.calculateStockdonRunup(averageSlope, offshoreSwh[index], offshoreWavelength[index])
                 stockdonRunupNoSetup = self.calculateStockdonRunupNoSetup(averageSlope, offshoreSwh[index], offshoreWavelength[index])
                 stockdonRunupLow = self.calculateStockdonLowRunup(offshoreSwh[index], offshoreWavelength[index]) 
+                
+#                 Add the waterline water value
+#                 The "adrircSetup" is a value that is the still water level 
+#                  Assumed to be 0 in stockdon because the data is time averaged
+#                   But is usually nonzero in adcirc runs, because of 1. sea level offset 2. tidal forcing 3. Wind induced storm surge 4. The motions of the GWCE
+#               Basically the still water level is the level at equilibrium
+#               The setup is what SWAN adds, and the adcircSetup is the value after adding the still water level + setup
+#               So stockdon has the still water level as 0, so its doing its runup calculation relative to the still water level
+#               My runup calculation is relative to the geoid NAVD88. 
+#               You cant seperate the setup from the still water level offset yet, that is what I am trying to compile
+#               padcswan for.
+#               Theres a slight problem though. In the stockdon formula, there is a factor of 1.1. This factor should 
+#               only be applied to the setup! not the still water level also. The still water level should be added without the 
+#               1.1 factor. this is a meme level situation.
+                adcircRunup = calculateAdcircRunup(adcircSetup, stockdonSwash)
 #                 runupValues.append(stockdonRunup)
                 runupValuesHolmanHigh.append(runupHolmanHigh)
                 runupValuesHolmanMid.append(runupHolmanMid)
@@ -380,6 +404,8 @@ class GetRunup:
                 runupValuesStockdon.append(stockdonRunup)
                 runupValuesStockdonNoSetup.append(stockdonRunupNoSetup)
                 runupValuesStockdonLow.append(stockdonRunupLow)
+                
+                runupValuesAdcirc.append(adcircRunup)
                 
                 runupDistance = self.calculateRunupDistance(stockdonRunup, averageSlope)
                 runupValues.append(runupDistance)
@@ -592,6 +618,7 @@ class GetRunup:
             runupDict[key]["runupStockdon"] = runupValuesStockdon
             runupDict[key]["runupStockdonNoSetup"] = runupValuesStockdonNoSetup
             runupDict[key]["runupStockdonLow"] = runupValuesStockdonLow
+            runupDict[key]["runupAdcirc"] = runupValuesAdcirc
 
             runupDict[key]["wavelength"] = offshoreWavelength
             runupDict[key]["steepness"] = offshoreSteepness

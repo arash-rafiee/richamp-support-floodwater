@@ -364,6 +364,7 @@ class Grapher:
         self.datapointsRunupStockdon = []
         self.datapointsRunupStockdonNoSetup = []
         self.datapointsRunupStockdonLow = []
+        self.datapointsRunupAdcirc = []
         
         self.datapointsWavelength = []
         self.datapointsIribarren = []
@@ -883,6 +884,7 @@ class Grapher:
                 datapointStockdonRunup = []
                 datapointStockdonRunupNoSetup = []
                 datapointStockdonRunupLow = []
+                datapointAdcircRunup = []
                 
                 for index in range(len(runupDataset[stationKey]["times"])):
                     if(self.runupStartDate == None):
@@ -924,6 +926,8 @@ class Grapher:
                     datapointStockdonRunup.append(runupDataset[stationKey]["runupStockdon"][index])
                     datapointStockdonRunupNoSetup.append(runupDataset[stationKey]["runupStockdonNoSetup"][index])
                     datapointStockdonRunupLow.append(runupDataset[stationKey]["runupStockdonLow"][index])
+                    datapointAdcircRunup.append(runupDataset[stationKey]["runupAdcirc"][index])
+                    
                 runupTimestampsInitialized = True
                 self.datapointsRunup.append(datapointRunup)    
                 self.datapointsWavelength.append(datapointWavelength)
@@ -953,6 +957,7 @@ class Grapher:
                 self.datapointsRunupStockdon.append(datapointStockdonRunup)
                 self.datapointsRunupStockdonNoSetup.append(datapointStockdonRunupNoSetup)
                 self.datapointsRunupStockdonLow.append(datapointStockdonRunupLow)
+                self.datapointsRunupAdcirc.append(datapointAdcircRunup)
                 
 
     def generateGraphs(self):
@@ -1826,19 +1831,21 @@ class Grapher:
             
                 fig, ax = plt.subplots(figsize=(16,9))
 #                 ax.plot(self.runupTimes, self.datapointsRunup[index], label="runup")
-                ax.plot(self.runupTimes, self.datapointsRunupHolmanHigh[index], label="Holman High Tide ξ")
-                ax.plot(self.runupTimes, self.datapointsRunupHolmanMid[index], label="Holman Mid Tide ξ")
-                ax.plot(self.runupTimes, self.datapointsRunupHolmanLow[index], label="Holman Low Tide ξ")
-                ax.plot(self.runupTimes, self.datapointsRunupStockdon[index], label="Stockdon 1.1(<η> + S/2)")
+#                 ax.plot(self.runupTimes, self.datapointsRunupHolmanHigh[index], label="Holman High Tide ξ")
+#                 ax.plot(self.runupTimes, self.datapointsRunupHolmanMid[index], label="Holman Mid Tide ξ")
+#                 ax.plot(self.runupTimes, self.datapointsRunupHolmanLow[index], label="Holman Low Tide ξ")
+#                 ax.plot(self.runupTimes, self.datapointsRunupStockdon[index], label="Stockdon 1.1(<η> + S/2)")
 #                 ax.plot(self.runupTimes, self.datapointsRunupStockdonNoSetup[index], label="Stockdon No Setup 1.1(S/2)")
 #                 ax.plot(self.runupTimes, self.datapointsRunupStockdonLow[index], label="Stockdon Low")
+                ax.plot(self.runupTimes, self.datapointsRunupAdcirc[index], label="1.1([still water + setup] + swash)")
+
 
                 ax.legend(loc="upper left")
                 ax.format_xdata = mdates.DateFormatter('%d')
                 plt.xticks(fontsize=12)
                 plt.yticks(fontsize=12)
                 stationName = self.runupLabels[index]
-                maxRunup = str(round(max(self.datapointsRunupStockdon[index]), 2))
+                maxRunup = str(round(max(self.datapointsRunupAdcirc[index]), 2))
                 plt.title(self.titlePrefix + stationName + " station runup max: " + maxRunup, fontsize=18)
 #                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
                 plt.ylabel("runup (meters)", fontsize=14)
