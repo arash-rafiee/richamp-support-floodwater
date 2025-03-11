@@ -112,10 +112,11 @@ class GetRunup:
         
     def calculateStockdonRunupNoSetup(self, averageSlope, waveHeight, deepwaterWavelength):
         swash = np.sqrt(waveHeight * deepwaterWavelength * (((averageSlope**2) * 0.563) + 0.004))
-        return (swash/2.0)
+        return 1.1 * (swash/2.0)
         
     def calculateAdcircRunup(self, adcircSetup, stockdonSwash):
-        return 1.1 * (adcircSetup + stockdonSwash)
+        stockdonCorrectedSwash = stockdonSwash / 1.1
+        return 1.1 * (adcircSetup + stockdonCorrectedSwash)
         
     def calculateStockdonLowRunup(self, waveHeight, deepwaterWavelength):
         slope = 0.043
@@ -412,7 +413,7 @@ class GetRunup:
                 
                 runupValuesAdcirc.append(adcircRunup)
                 
-                runupDistance = self.calculateRunupDistance(stockdonRunup, averageSlope)
+                runupDistance = self.calculateRunupDistance(stockdonRunupNoSetup, averageSlope)
                 runupValues.append(runupDistance)
                 runupWaterlineCoordinates, runupTangentCoordinates = self.calculateRunupWaterline(waterlineCoordinates, tangentCoordinates, runupDistance)
                 runupWaterlineLatitudes.append(runupWaterlineCoordinates[0])
