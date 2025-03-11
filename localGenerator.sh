@@ -149,4 +149,10 @@
 # python generateGraphs.py --stations OBS_STATIONS.json --obsExists true --waterExists true --water /Volumes/ssd/ObservationalWind/Dec172023WaveData/fort.63.nc --tempDir /Volumes/ssd/temp/
 
 
-python generateGraphs.py --stations OBS_STATIONS.json --gfsExists true --wind /project/pi_iginis_uri_edu/pranav_sai_uri_edu/scenario_files/19383725.nc --backgroundChoice CAPE_COD_BAY_OUTLINE --tempDir /scratch3/workspace/pranav_sai_uri_edu-manrun/temp/
+python generateGraphs.py --stations OBS_STATIONS.json --gfsExists true --wind /project/pi_iginis_uri_edu/pranav_sai_uri_edu/scenario_files/1938392025.nc --backgroundChoice CAPE_COD_BAY_OUTLINE --tempDir /scratch3/workspace/pranav_sai_uri_edu-manrun/temp/
+# python generateGraphs.py --stations OBS_STATIONS.json --gfsExists true --wind /project/pi_iginis_uri_edu/pranav_sai_uri_edu/scenario_files/1938Modified3725.nc --backgroundChoice CAPE_COD_BAY_OUTLINE --tempDir /scratch3/workspace/pranav_sai_uri_edu-manrun/temp/
+
+# python generateGraphs.py --stations OBS_STATIONS.json --waterExists true --water /work/pi_iginis_uri_edu/pranav_sai_uri_edu/scenario_files/v18Runs/FinalWaterFiles/1938_modified_night.fort.63.nc --backgroundChoice CAPE_COD_BAY_OUTLINE --tempDir /scratch3/workspace/pranav_sai_uri_edu-manrun/temp/
+
+# python generateGraphs.py --stations OBS_STATIONS.json --waterExists true --water /work/pi_iginis_uri_edu/pranav_sai_uri_edu/scenario_files/v18Runs/FinalWaterFiles/1938.fort.63.nc --backgroundChoice CAPE_COD_BAY_OUTLINE --tempDir /scratch3/workspace/pranav_sai_uri_edu-manrun/temp/
+

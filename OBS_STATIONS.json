@@ -320,6 +320,14 @@
       "latitude": "41.615317",
       "longitude": "-70.921544",
       "elevation": "0"
+    },
+    "60": {
+      "id": "0",
+      "source": "ASSET",
+      "name": "New Bedford",
+      "latitude": "41.59124",
+      "longitude": "-70.90082",
+      "elevation": "0"
     }
   }
 }
