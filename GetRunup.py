@@ -386,7 +386,7 @@ class GetRunup:
 #               Theres a slight problem though. In the stockdon formula, there is a factor of 1.1. This factor should 
 #               only be applied to the setup! not the still water level also. The still water level should be added without the 
 #               1.1 factor. this is a meme level situation.
-                adcircRunup = self.calculateAdcircRunup(adcircSetup, stockdonSwash)
+                adcircRunup = self.calculateAdcircRunup(waterlineWaterValue, stockdonSwash)
 #                 runupValues.append(stockdonRunup)
                 runupValuesHolmanHigh.append(runupHolmanHigh)
                 runupValuesHolmanMid.append(runupHolmanMid)
