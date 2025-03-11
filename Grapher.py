@@ -1835,9 +1835,9 @@ class Grapher:
 #                 ax.plot(self.runupTimes, self.datapointsRunupHolmanMid[index], label="Holman Mid Tide ξ")
 #                 ax.plot(self.runupTimes, self.datapointsRunupHolmanLow[index], label="Holman Low Tide ξ")
 #                 ax.plot(self.runupTimes, self.datapointsRunupStockdon[index], label="Stockdon 1.1(<η> + S/2)")
-#                 ax.plot(self.runupTimes, self.datapointsRunupStockdonNoSetup[index], label="Stockdon No Setup 1.1(S/2)")
+                ax.plot(self.runupTimes, self.datapointsRunupStockdonNoSetup[index], label="Stockdon Swash (S/2)")
 #                 ax.plot(self.runupTimes, self.datapointsRunupStockdonLow[index], label="Stockdon Low")
-                ax.plot(self.runupTimes, self.datapointsRunupAdcirc[index], label="1.1([still water + setup] + swash)")
+                ax.plot(self.runupTimes, self.datapointsRunupAdcirc[index], label="1.1([SWL + setup] + swash)")
 
 
                 ax.legend(loc="upper left")

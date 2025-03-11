@@ -102,6 +102,7 @@ class GetRunup:
         slope = 0.046
         return (np.sqrt(waveHeight * deepwaterWavelength))
         
+
     def calculateStockdonRunup(self, averageSlope, waveHeight, deepwaterWavelength):
         setup = self.calculateStockdonSetup(averageSlope, waveHeight, deepwaterWavelength)
         swash = np.sqrt(waveHeight * deepwaterWavelength * (((averageSlope**2) * 0.563) + 0.004))
@@ -386,7 +387,7 @@ class GetRunup:
 #               Theres a slight problem though. In the stockdon formula, there is a factor of 1.1. This factor should 
 #               only be applied to the setup! not the still water level also. The still water level should be added without the 
 #               1.1 factor. this is a meme level situation.
-                adcircRunup = self.calculateAdcircRunup(waterlineWaterValue, stockdonSwash)
+                adcircRunup = self.calculateAdcircRunup(waterlineWaterValue, stockdonRunupNoSetup)
 #                 runupValues.append(stockdonRunup)
                 runupValuesHolmanHigh.append(runupHolmanHigh)
                 runupValuesHolmanMid.append(runupHolmanMid)
