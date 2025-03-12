@@ -1834,10 +1834,10 @@ class Grapher:
 #                 ax.plot(self.runupTimes, self.datapointsRunupHolmanHigh[index], label="Holman High Tide ξ")
 #                 ax.plot(self.runupTimes, self.datapointsRunupHolmanMid[index], label="Holman Mid Tide ξ")
 #                 ax.plot(self.runupTimes, self.datapointsRunupHolmanLow[index], label="Holman Low Tide ξ")
-#                 ax.plot(self.runupTimes, self.datapointsRunupStockdon[index], label="Stockdon 1.1(<η> + S/2)")
+                ax.plot(self.runupTimes, self.datapointsRunupStockdon[index], label="Stockdon 1.1(<η> + S/2)")
                 ax.plot(self.runupTimes, self.datapointsRunupStockdonNoSetup[index], label="Stockdon Swash (S/2)")
 #                 ax.plot(self.runupTimes, self.datapointsRunupStockdonLow[index], label="Stockdon Low")
-                ax.plot(self.runupTimes, self.datapointsRunupAdcirc[index], label="1.1([SWL + setup] + swash)")
+                ax.plot(self.runupTimes, self.datapointsRunupAdcirc[index], label="[SWL + setup] + 1.1(S/2)")
 
 
                 ax.legend(loc="upper left")
@@ -1868,7 +1868,7 @@ class Grapher:
                 plt.yticks(fontsize=12)
                 stationName = self.runupLabels[index]
                 maxSetup = str(round(max(self.datapointsSetupHolmanLow[index]), 2))
-                plt.title(self.titlePrefix + stationName + " station low setup max: " + maxSetup, fontsize=18)
+                plt.title(self.titlePrefix + stationName + " station setup max: " + maxSetup, fontsize=18)
 #                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
                 plt.ylabel("setup (meters)", fontsize=14)
                 plt.savefig(graph_directory + stationName + '_setup.png')
