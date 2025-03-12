@@ -1,8 +1,9 @@
 # Calculates runup with a set of json data files, then writes the runup to a json file
-# Running the postprocessing takes ~2 hr
+# Running the postprocessing takes >2 hr
 # The majority of the time spent finding the closest nodes to all the points on the tangent
 # Interpolating the water data to each point, to find the waterline point
 # *Wet dry nodes are binary* *The wet dry algorithim is crucial*
+# Also, generating both water and wave maps takes alot of time, as well as runup distance map
 # pranav 1/16/2024
 
 from datetime import datetime, timedelta, timezone
@@ -115,8 +116,9 @@ class GetRunup:
         return 1.1 * (swash/2.0)
         
     def calculateAdcircRunup(self, adcircSetup, stockdonSwash):
-        stockdonCorrectedSwash = stockdonSwash / 1.1
-        return 1.1 * (adcircSetup + stockdonCorrectedSwash)
+#         stockdonCorrectedSwash = stockdonSwash / 1.1
+#         return 1.1 * (adcircSetup + stockdonCorrectedSwash)
+        return adcircSetup  + stockdonSwash
         
     def calculateStockdonLowRunup(self, waveHeight, deepwaterWavelength):
         slope = 0.043
