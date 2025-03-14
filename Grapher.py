@@ -976,7 +976,7 @@ class Grapher:
                 self.datapointsRunupStockdon.append(datapointStockdonRunup)
                 self.datapointsRunupStockdonNoSetup.append(datapointStockdonRunupNoSetup)
                 self.datapointsRunupStockdonLow.append(datapointStockdonRunupLow)
-                self.datapointsRunupSetup.append(datapointAdcircSetup)
+                self.datapointsSetupAdcirc.append(datapointAdcircSetup)
                 self.datapointsRunupAdcirc.append(datapointAdcircRunup)
                 
 
