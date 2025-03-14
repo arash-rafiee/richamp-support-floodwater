@@ -625,6 +625,7 @@ class Grapher:
                                 if(not stillwaterTimestampsInitialized):
                                     self.stillwaterTimes.append(self.unixTimeToDeltaHours(stillwaterDataset[stationKey]["times"][index], self.waterStartDate))
                                 datapointStillwaters.append(stillwaterDataset[stationKey]["water"][index])
+                            stillwaterTimestampsInitialized = True
                             self.datapointsStillwaters.append(datapointStillwaters)
                         if(self.tideExists):
                             tideTimes = []
