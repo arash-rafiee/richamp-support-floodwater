@@ -583,6 +583,7 @@ class Grapher:
                     stillwaterDataset = json.load(outfile)
                 
             waterTimestampsInitialized = False
+            stillwaterTimestampsInitialized = False
             for stationKey in waterDataset.keys():
                 if(stationKey == "map_data"):
                     self.mapWaterTriangles = waterDataset["map_data"]["map_triangles"]
@@ -621,7 +622,7 @@ class Grapher:
                         if(self.stillwaterExists):
                             datapointStillwaters = []
                             for index in range(len(stillwaterDataset[stationKey]["times"])):
-                                if(not waterTimestampsInitialized):
+                                if(not stillwaterTimestampsInitialized):
                                     self.stillwaterTimes.append(self.unixTimeToDeltaHours(stillwaterDataset[stationKey]["times"][index], self.waterStartDate))
                                 datapointStillwaters.append(stillwaterDataset[stationKey]["water"][index])
                             self.datapointsStillwaters.append(datapointStillwaters)
