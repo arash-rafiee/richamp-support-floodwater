@@ -157,6 +157,7 @@ python generateGraphs.py --stations NAPATREE_NORMAL_STATIONS.json \
 --wavemwp /scratch3/workspace/pranav_sai_uri_edu-manrun/Dec172023RunupRun/forecast_RI_track_master_build/swan_TMM10.63.nc \
 --wavepwp /scratch3/workspace/pranav_sai_uri_edu-manrun/Dec172023RunupRun/forecast_RI_track_master_build/swan_TPS.63.nc \
 --waterExists true --water /scratch3/workspace/pranav_sai_uri_edu-manrun/Dec172023RunupRun/forecast_RI_track_master_build/fort.63.nc \
+--stillwaterExists true --stillwater /scratch3/workspace/pranav_sai_uri_edu-manrun/Dec172023RunupRun/forecast_RI_track_padcirc_master_build/fort.63.nc \
 --meshExists true --mesh /scratch3/workspace/pranav_sai_uri_edu-manrun/Dec172023RunupRun/forecast_RI_track_master_build/fort.14 \
 --generateRunup true \
 --tempDir /scratch3/workspace/pranav_sai_uri_edu-manrun/temp/ --backgroundChoice NAPATREE

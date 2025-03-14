@@ -160,6 +160,8 @@ class Grapher:
             self.rainExists = True
         if("WATER" in dataToGraph):
             self.waterExists = True
+        if("STILLWATER" in dataToGraph):
+            self.stillwaterExists = True
         if("ETA" in dataToGraph):
             self.etaExists = True
         if("MESH" in dataToGraph):
@@ -251,6 +253,9 @@ class Grapher:
         self.mapWaters = []
         
         self.datapointsWaters = []
+        
+        self.stillwaterTimes = []
+        self.datapointsStillwaters = []
         
         self.etaLongitudes = []
         self.etaLatitudes = []
@@ -364,6 +369,7 @@ class Grapher:
         self.datapointsRunupStockdon = []
         self.datapointsRunupStockdonNoSetup = []
         self.datapointsRunupStockdonLow = []
+        self.datapointsSetupAdcirc = []
         self.datapointsRunupAdcirc = []
         
         self.datapointsWavelength = []
@@ -572,6 +578,10 @@ class Grapher:
             with open(dataToGraph["WATER"]) as outfile:
                 waterDataset = json.load(outfile)
                 
+            if(self.stillwaterExists):
+                with open(dataToGraph["STILLWATER"]) as outfile:
+                    stillwaterDataset = json.load(outfile)
+                
             waterTimestampsInitialized = False
             for stationKey in waterDataset.keys():
                 if(stationKey == "map_data"):
@@ -608,6 +618,13 @@ class Grapher:
                             datapointWaters.append(waterDataset[stationKey]["water"][index])
                         waterTimestampsInitialized = True
                         self.datapointsWaters.append(datapointWaters)
+                        if(self.stillwaterExists):
+                            datapointStillwaters = []
+                            for index in range(len(stillwaterDataset[stationKey]["times"])):
+                                if(not waterTimestampsInitialized):
+                                    self.stillwaterTimes.append(self.unixTimeToDeltaHours(stillwaterDataset[stationKey]["times"][index], self.waterStartDate))
+                                datapointStillwaters.append(stillwaterDataset[stationKey]["water"][index])
+                            self.datapointsStillwaters.append(datapointStillwaters)
                         if(self.tideExists):
                             tideTimes = []
                             tideWaters = []
@@ -884,6 +901,7 @@ class Grapher:
                 datapointStockdonRunup = []
                 datapointStockdonRunupNoSetup = []
                 datapointStockdonRunupLow = []
+                datapointAdcircSetup = []
                 datapointAdcircRunup = []
                 
                 for index in range(len(runupDataset[stationKey]["times"])):
@@ -926,6 +944,7 @@ class Grapher:
                     datapointStockdonRunup.append(runupDataset[stationKey]["runupStockdon"][index])
                     datapointStockdonRunupNoSetup.append(runupDataset[stationKey]["runupStockdonNoSetup"][index])
                     datapointStockdonRunupLow.append(runupDataset[stationKey]["runupStockdonLow"][index])
+                    datapointAdcircSetup.append(runupDataset[stationKey]["setupAdcirc"][index])
                     datapointAdcircRunup.append(runupDataset[stationKey]["runupAdcirc"][index])
                     
                 runupTimestampsInitialized = True
@@ -957,6 +976,7 @@ class Grapher:
                 self.datapointsRunupStockdon.append(datapointStockdonRunup)
                 self.datapointsRunupStockdonNoSetup.append(datapointStockdonRunupNoSetup)
                 self.datapointsRunupStockdonLow.append(datapointStockdonRunupLow)
+                self.datapointsRunupSetup.append(datapointAdcircSetup)
                 self.datapointsRunupAdcirc.append(datapointAdcircRunup)
                 
 
@@ -1562,6 +1582,8 @@ class Grapher:
             if(len(self.datapointsWaters) > 0):
                 fig, ax = plt.subplots(figsize=(16,9))
                 ax.plot(self.waterTimes, self.datapointsWaters[index], label="Forecast")
+                if(self.stillwaterExists):
+                    ax.plot(self.stillwaterTimes, self.datapointsStillwaters[index], label="Forecast")
                 if(self.tideExists):
                     ax.plot(self.tideDatapointsTimes[index], self.tideDatapointsWaters[index], label="Station")
 #                     ax.plot(self.tideDatapointsPredictionTimes[index], self.tideDatapointsPredictionWaters[index], label="Prediction")
@@ -1778,15 +1800,18 @@ class Grapher:
         if len(self.datapointsWaters) > 0:
             fig, ax = plt.subplots(figsize=(16, 9))
     
-            for index in range(numberOfWaterDatapoints):
+            for index in range(numberOfWaterDatapoints, 10):
                 if(not np.isnan(np.min(self.datapointsWaters[index]))):
                     stationName = self.tideLabels[index]
                     # Plot forecast data for each station
                     ax.plot(self.waterTimes, self.datapointsWaters[index], label=f"Forecast {stationName}")
-        
+                    
+                    if(self.stillwaterExists):
+                        ax.plot(self.stillwaterTimes, self.datapointsStillwaters[index], label="Forecast")
                     # Plot tide data if available
                     if self.tideExists:
                         ax.plot(self.tideDatapointsTimes[index], self.tideDatapointsWaters[index], label=f"Station {stationName}")
+                    
                     # Note: Prediction data plotting is commented out in the original code, so it remains commented here:
                     # ax.plot(self.tideDatapointsPredictionTimes[index], self.tideDatapointsPredictionWaters[index], label=f"Prediction {stationName}")
 
@@ -1831,6 +1856,8 @@ class Grapher:
             
                 fig, ax = plt.subplots(figsize=(16,9))
 #                 ax.plot(self.runupTimes, self.datapointsRunup[index], label="runup")
+                ax.plot(self.runupTimes, self.datapointsRunupHolmanHigh[index], label="1.1(setup + S)")
+                ax.plot(self.runupTimes, self.datapointsRunupHolmanMid[index], label="1.1(setup + S/2)")
 #                 ax.plot(self.runupTimes, self.datapointsRunupHolmanHigh[index], label="Holman High Tide ξ")
 #                 ax.plot(self.runupTimes, self.datapointsRunupHolmanMid[index], label="Holman Mid Tide ξ")
 #                 ax.plot(self.runupTimes, self.datapointsRunupHolmanLow[index], label="Holman Low Tide ξ")
@@ -1859,6 +1886,7 @@ class Grapher:
                 ax.plot(self.runupTimes, self.datapointsSetupHolmanMid[index], label="Holman Mid Tide ξ")
                 ax.plot(self.runupTimes, self.datapointsSetupHolmanLow[index], label="Holman Low Tide ξ")
                 ax.plot(self.runupTimes, self.datapointsSetupStockdon[index], label="Stockdon βf√(HₒLₒ)")
+                ax.plot(self.runupTimes, self.datapointsSetupAdcirc[index], label="Adcirc (water - stillwater)")
 #                 ax.plot(self.runupTimes, self.datapointsSetupStockdonLow[index], label="Stockdon Low")
 
 
@@ -1911,6 +1939,7 @@ class Grapher:
                 plt.savefig(graph_directory + stationName + '_incident_swash.png')
                 plt.close()
                 
+                fig, ax = plt.subplots(figsize=(16,9))
                 ax.plot(self.runupTimes, self.datapointsSwashHolmanInfragravity[index], label="Holman Infragravity ξ")
                 ax.plot(self.runupTimes, self.datapointsSwashStockdonInfragravity[index], label="Stockdon Infragravity √(HₒLₒ)")
 #                 ax.plot(self.runupTimes, self.datapointsSwashStockdonLow[index], label="Stockdon Low")

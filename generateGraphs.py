@@ -142,6 +142,9 @@ def main():
         "--water", help="Water elevation netcdf file", type=str
     )
     p.add_argument(
+        "--stillwater", help="Water elevation netcdf file", type=str
+    )
+    p.add_argument(
         "--rain", help="Rain netcdf file", type=str
     )
     p.add_argument(
@@ -179,6 +182,9 @@ def main():
         "--waterExists", type=bool, help="Graph adcirc water elevation data"
     )
     p.add_argument(
+        "--stillwaterExists", type=bool, help="Graph adcirc still water elevation data"
+    )
+    p.add_argument(
         "--wavesExists", type=bool, help="Graph adcirc wave data"
     )
     p.add_argument(
@@ -194,7 +200,7 @@ def main():
         "--tempDir", type=str, help="Temp json data file directory"
     )
     p.add_argument(
-        "--prefix", type=str, help="Prefix for title of graphs"
+        "--prefix", type=str, help="Prefix for title of graphs" 
     )
     p.add_argument(
         "--generateRunup", type=bool, help="Generate runup predictions from runup stations"
@@ -228,6 +234,7 @@ def main():
         titlePrefix = ""
     else:
         titlePrefix = args.prefix
+        
         
     backgroundMap = None
     backgroundAxis = None
@@ -450,7 +457,21 @@ def main():
 #         waterEndDateObject = datetime.datetime(year=2024, month=11, day=20, hour=0, tzinfo=datetime.timezone.utc)
         dataToGraph["WATER"] = ADCIRC_WATER_DATA_FILE
 #         dataToGraph["DIFF"] = ADCIRC_DIFF_WATER_DATA_FILE
-       
+
+    print("args.stillwaterExists", args.stillwaterExists, flush=True)
+    if(args.stillwaterExists):
+        ADCIRC_WATER_FILE = args.stillwater
+#         ADCIRC_WATER_DATA_FILE = water_temp_directory + "sandy_deb_adcirc_water_data_file" + ".json"
+#         ADCIRC_DIFF_WATER_DATA_FILE = water_temp_directory + "sandy_deb_adcirc_water_data_file" + ".json"
+
+        ADCIRC_STILLWATER_DATA_FILE = water_temp_directory + "adcirc_stillwater_data_file" + ".json"
+
+        (stillwaterStartDateObject, stillwaterEndDateObject) = Fort63Reader(ADCIRC_WATER_FILE=ADCIRC_STILLWATER_FILE, STATIONS_FILE=STATIONS_FILE, ADCIRC_WATER_DATA_FILE=ADCIRC_STILLWATER_DATA_FILE, BACKGROUND_AXIS=backgroundAxis).generateWindDataForStations()
+#         waterStartDateObject = datetime.datetime(year=2024, month=11, day=15, hour=0, tzinfo=datetime.timezone.utc)
+#         waterEndDateObject = datetime.datetime(year=2024, month=11, day=20, hour=0, tzinfo=datetime.timezone.utc)
+        dataToGraph["STILLWATER"] = ADCIRC_STILLWATER_DATA_FILE
+#         dataToGraph["DIFF"] = ADCIRC_DIFF_WATER_DATA_FILE
+
     print("args.meshExists", args.meshExists, flush=True)
     if(args.meshExists):
         ADCIRC_MESH_FILE = args.mesh
@@ -550,6 +571,7 @@ def main():
                 WAVE_MWD_DATA_FILE=dataToGraph["MWD"],
                 WAVE_PWP_DATA_FILE=dataToGraph["PWP"],
                 ADCIRC_MESH_DATA_FILE=dataToGraph["MESH"],
+                ADCIRC_STILLWATER_DATA_FILE=dataToGraph["STILLWATER"]
                 RUNUP_DATA_FILE = RUNUP_DATA_FILE
             )
             dataToGraph["RUNUP"] = RUNUP_DATA_FILE
