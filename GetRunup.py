@@ -129,10 +129,10 @@ class GetRunup:
         return (np.sqrt(waveHeight * deepwaterWavelength))
         
 
-    def calculateStockdonRunup(self, averageSlope, waveHeight, deepwaterWavelength):
+    def calculateStockdonRunup(self, averageSlope, waveHeight, deepwaterWavelength, stillwaterLevel):
         setup = self.calculateStockdonSetup(averageSlope, waveHeight, deepwaterWavelength)
         swash = np.sqrt(waveHeight * deepwaterWavelength * (((averageSlope**2) * 0.563) + 0.004))
-        return 1.1 * (setup + (swash/2.0))
+        return (1.1 * (setup + (swash/2.0))) + stillwaterLevel
         
         
         
@@ -415,7 +415,7 @@ class GetRunup:
                 stockdonSwashInfragravity = self.calculateStockdonInfragravitySwash(offshoreSwh[index], offshoreWavelength[index])          
                 stockdonSetupLow = self.calculateStockdonLowSetup(offshoreSwh[index], offshoreWavelength[index])                
                 stockdonSwashLow = self.calculateStockdonLowSwash(offshoreSwh[index], offshoreWavelength[index])
-                stockdonRunup = self.calculateStockdonRunup(averageSlope, offshoreSwh[index], offshoreWavelength[index])
+                stockdonRunup = self.calculateStockdonRunup(averageSlope, offshoreSwh[index], offshoreWavelength[index], waterlineStillwaterValue)
                 stockdonRunupNoSetup = self.calculateStockdonRunupNoSetup(averageSlope, offshoreSwh[index], offshoreWavelength[index])
                 stockdonRunupLow = self.calculateStockdonLowRunup(offshoreSwh[index], offshoreWavelength[index]) 
                 
