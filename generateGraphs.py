@@ -460,7 +460,7 @@ def main():
 
     print("args.stillwaterExists", args.stillwaterExists, flush=True)
     if(args.stillwaterExists):
-        ADCIRC_WATER_FILE = args.stillwater
+        ADCIRC_STILLWATER_FILE = args.stillwater
         ADCIRC_STILLWATER_DATA_FILE = water_temp_directory + "adcirc_stillwater_data_file" + ".json"
         (stillwaterStartDateObject, stillwaterEndDateObject) = Fort63Reader(ADCIRC_WATER_FILE=ADCIRC_STILLWATER_FILE, STATIONS_FILE=STATIONS_FILE, ADCIRC_WATER_DATA_FILE=ADCIRC_STILLWATER_DATA_FILE, BACKGROUND_AXIS=backgroundAxis).generateWindDataForStations()
         dataToGraph["STILLWATER"] = ADCIRC_STILLWATER_DATA_FILE
