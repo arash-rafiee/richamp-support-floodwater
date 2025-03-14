@@ -49,6 +49,13 @@ class GetRunup:
 # Maybe can see this by plotting the incident band swash ontop of the infragravity band swash.
 # This isin't runup nessesarily, beacuse runup is incident and infragravity combined, like how stickdon does it.
 # What I should see in the swash bands graph is that infragravity swash keeps growing, while incident swash stops growing as the magnitude of the runup increases.
+
+# Pi Day Update
+# I did a forecast using padcirc
+# The setup, the water - still water, is pretty low
+# Whaat are the concequences of this?
+# Using stockdon's parameterization of 1.1(setup  + S/2) results in low values
+
     def calculateHolmanHighRunup(self, iribarrenNumber, waveHeight):
         slope = 0.80
         intercept = 0.11
@@ -139,13 +146,13 @@ class GetRunup:
 #         return 1.1 * (adcircSetup + stockdonCorrectedSwash)
         return adcircWaterLevel  + stockdonCorrectedSwash
         
-    def calculateAdcircRunupUsingSetup(self, adcircSetup, stockdonSwash):
+    def calculateAdcircRunupUsingSetup(self, adcircSetup, stockdonSwash, stillwaterLevel):
         stockdonCorrectedSwash = (stockdonSwash / 1.1)
-        return 1.1 * (adcircSetup + stockdonCorrectedSwash)
+        return (1.1 * (adcircSetup + stockdonCorrectedSwash)) + stillwaterLevel
     
-    def calculateAdcircRunupUsingSetupFullSwash(self, adcircSetup, stockdonSwash):
+    def calculateAdcircRunupUsingSetupFullSwash(self, adcircSetup, stockdonSwash, stillwaterLevel):
         stockdonCorrectedSwash = (stockdonSwash / 1.1) * 2
-        return 1.1 * (adcircSetup + stockdonCorrectedSwash)
+        return 1.1 * (adcircSetup + stockdonCorrectedSwash) + stillwaterLevel
         
     def calculateStockdonLowRunup(self, waveHeight, deepwaterWavelength):
         slope = 0.043
@@ -428,8 +435,8 @@ class GetRunup:
                 adcircRunup = self.calculateAdcircRunup(waterlineWaterValue, stockdonRunupNoSetup)
                 
 #                 Hijack some existing variables
-                runupHolmanHigh = self.calculateAdcircRunupUsingSetupFullSwash(adcircSetup, stockdonRunupNoSetup)
-                runupHolmanMid = self.calculateAdcircRunupUsingSetup(adcircSetup, stockdonRunupNoSetup)
+                runupHolmanHigh = self.calculateAdcircRunupUsingSetupFullSwash(adcircSetup, stockdonRunupNoSetup, waterlineWaterValue)
+                runupHolmanMid = self.calculateAdcircRunupUsingSetup(adcircSetup, stockdonRunupNoSetup, waterlineWaterValue)
 #                 runupValues.append(stockdonRunup)
                 runupValuesHolmanHigh.append(runupHolmanHigh)
                 runupValuesHolmanMid.append(runupHolmanMid)

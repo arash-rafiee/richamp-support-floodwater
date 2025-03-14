@@ -1802,7 +1802,7 @@ class Grapher:
         if len(self.datapointsWaters) > 0:
             fig, ax = plt.subplots(figsize=(16, 9))
     
-            for index in range(numberOfWaterDatapoints, 10):
+            for index in range(numberOfWaterDatapoints):
                 if(not np.isnan(np.min(self.datapointsWaters[index]))):
                     stationName = self.tideLabels[index]
                     # Plot forecast data for each station
@@ -1858,15 +1858,15 @@ class Grapher:
             
                 fig, ax = plt.subplots(figsize=(16,9))
 #                 ax.plot(self.runupTimes, self.datapointsRunup[index], label="runup")
-                ax.plot(self.runupTimes, self.datapointsRunupHolmanHigh[index], label="1.1(setup + S)")
-                ax.plot(self.runupTimes, self.datapointsRunupHolmanMid[index], label="1.1(setup + S/2)")
+#                 ax.plot(self.runupTimes, self.datapointsRunupHolmanHigh[index], label="1.1(setup + S)")
+                ax.plot(self.runupTimes, self.datapointsRunupHolmanMid[index], label="1.1(setup + S/2) + SWL")
 #                 ax.plot(self.runupTimes, self.datapointsRunupHolmanHigh[index], label="Holman High Tide ξ")
 #                 ax.plot(self.runupTimes, self.datapointsRunupHolmanMid[index], label="Holman Mid Tide ξ")
 #                 ax.plot(self.runupTimes, self.datapointsRunupHolmanLow[index], label="Holman Low Tide ξ")
                 ax.plot(self.runupTimes, self.datapointsRunupStockdon[index], label="Stockdon 1.1(<η> + S/2)")
-                ax.plot(self.runupTimes, self.datapointsRunupStockdonNoSetup[index], label="Stockdon Swash (S/2)")
+#                 ax.plot(self.runupTimes, self.datapointsRunupStockdonNoSetup[index], label="Stockdon Swash (S/2)")
 #                 ax.plot(self.runupTimes, self.datapointsRunupStockdonLow[index], label="Stockdon Low")
-                ax.plot(self.runupTimes, self.datapointsRunupAdcirc[index], label="[SWL + setup] + 1.1(S/2)")
+                ax.plot(self.runupTimes, self.datapointsRunupAdcirc[index], label="[SWL + setup] + S")
 
 
                 ax.legend(loc="upper left")
