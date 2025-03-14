@@ -142,9 +142,10 @@ class GetRunup:
         
 #     Adds the swash (S) to the "adcircSetup", in this case is just the stil;l
     def calculateAdcircRunup(self, adcircWaterLevel, stockdonSwash):
-        stockdonCorrectedSwash = (stockdonSwash / 1.1) * 2.0
+        return adcircWaterLevel + stockdonSwash
+#         stockdonCorrectedSwash = (stockdonSwash / 1.1) * 2.0
 #         return 1.1 * (adcircSetup + stockdonCorrectedSwash)
-        return adcircWaterLevel  + stockdonCorrectedSwash
+#         return adcircWaterLevel  + stockdonCorrectedSwash
         
     def calculateAdcircRunupUsingSetup(self, adcircSetup, stockdonSwash, stillwaterLevel):
         stockdonCorrectedSwash = (stockdonSwash / 1.1)
@@ -435,8 +436,8 @@ class GetRunup:
                 adcircRunup = self.calculateAdcircRunup(waterlineWaterValue, stockdonRunupNoSetup)
                 
 #                 Hijack some existing variables
-                runupHolmanHigh = self.calculateAdcircRunupUsingSetupFullSwash(adcircSetup, stockdonRunupNoSetup, waterlineWaterValue)
-                runupHolmanMid = self.calculateAdcircRunupUsingSetup(adcircSetup, stockdonRunupNoSetup, waterlineWaterValue)
+                runupHolmanHigh = self.calculateAdcircRunupUsingSetupFullSwash(adcircSetup, stockdonRunupNoSetup, waterlineStillwaterValue)
+                runupHolmanMid = self.calculateAdcircRunupUsingSetup(adcircSetup, stockdonRunupNoSetup, waterlineStillwaterValue)
 #                 runupValues.append(stockdonRunup)
                 runupValuesHolmanHigh.append(runupHolmanHigh)
                 runupValuesHolmanMid.append(runupHolmanMid)

@@ -1866,7 +1866,7 @@ class Grapher:
                 ax.plot(self.runupTimes, self.datapointsRunupStockdon[index], label="Stockdon 1.1(<η> + S/2)")
 #                 ax.plot(self.runupTimes, self.datapointsRunupStockdonNoSetup[index], label="Stockdon Swash (S/2)")
 #                 ax.plot(self.runupTimes, self.datapointsRunupStockdonLow[index], label="Stockdon Low")
-                ax.plot(self.runupTimes, self.datapointsRunupAdcirc[index], label="[SWL + setup] + S")
+                ax.plot(self.runupTimes, self.datapointsRunupAdcirc[index], label="[SWL + setup] + 1.1(S/2)")
 
 
                 ax.legend(loc="upper left")
@@ -1910,6 +1910,8 @@ class Grapher:
                 ax.plot(self.runupTimes, self.datapointsSwashHolmanHigh[index], label="Holman High Tide ξ")
                 ax.plot(self.runupTimes, self.datapointsSwashHolmanMid[index], label="Holman Mid Tide ξ")
                 ax.plot(self.runupTimes, self.datapointsSwashHolmanLow[index], label="Holman Low Tide ξ")
+                ax.plot(self.runupTimes, self.datapointsSwashStockdonIncident[index], label="Stockdon Incident βf√(HₒLₒ)")
+                ax.plot(self.runupTimes, self.datapointsSwashStockdonInfragravity[index], label="Stockdon Infragravity √(HₒLₒ)")
 #                 ax.plot(self.runupTimes, self.datapointsSwashStockdonLow[index], label="Stockdon Low")
                 ax.legend(loc="upper left")
                 ax.format_xdata = mdates.DateFormatter('%d')
@@ -1917,7 +1919,7 @@ class Grapher:
                 plt.yticks(fontsize=12)
                 stationName = self.runupLabels[index]
                 maxSwash = str(round(max(self.datapointsSwashHolmanLow[index]), 2))
-                plt.title(self.titlePrefix + stationName + " station low swash max: " + maxSwash, fontsize=18)
+                plt.title(self.titlePrefix + stationName + " station swash max: " + maxSwash, fontsize=18)
 #                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
                 plt.ylabel("swash (meters)", fontsize=14)
                 plt.savefig(graph_directory + stationName + '_swash.png')
