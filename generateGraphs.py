@@ -557,16 +557,16 @@ def main():
     if(args.generateRunup):
         if(args.wavesExists and args.meshExists):
             RUNUP_DATA_FILE = wind_temp_directory + "runup_data_file.json"
-            GetRunup(
-                STATIONS_FILE = STATIONS_FILE,
-                ADCIRC_WATER_DATA_FILE=dataToGraph["WATER"], 
-                WAVE_SWH_DATA_FILE=dataToGraph["SWH"],
-                WAVE_MWD_DATA_FILE=dataToGraph["MWD"],
-                WAVE_PWP_DATA_FILE=dataToGraph["PWP"],
-                ADCIRC_MESH_DATA_FILE=dataToGraph["MESH"],
-                ADCIRC_STILLWATER_DATA_FILE=dataToGraph["STILLWATER"],
-                RUNUP_DATA_FILE = RUNUP_DATA_FILE
-            )
+#             GetRunup(
+#                 STATIONS_FILE = STATIONS_FILE,
+#                 ADCIRC_WATER_DATA_FILE=dataToGraph["WATER"], 
+#                 WAVE_SWH_DATA_FILE=dataToGraph["SWH"],
+#                 WAVE_MWD_DATA_FILE=dataToGraph["MWD"],
+#                 WAVE_PWP_DATA_FILE=dataToGraph["PWP"],
+#                 ADCIRC_MESH_DATA_FILE=dataToGraph["MESH"],
+#                 ADCIRC_STILLWATER_DATA_FILE=dataToGraph["STILLWATER"],
+#                 RUNUP_DATA_FILE = RUNUP_DATA_FILE
+#             )
             dataToGraph["RUNUP"] = RUNUP_DATA_FILE
         else:
             print("Missing one or more data files needed for runup calculation!")
