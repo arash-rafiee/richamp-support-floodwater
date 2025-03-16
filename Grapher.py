@@ -1970,7 +1970,7 @@ class Grapher:
                     datapointsWaterRunupIndices = self.findMatchingIndices(self.tideLabels, self.runupLabels[index][0:9])
                     print("Finding Water stations corresponding to runup station")
                     print("Searching for water labels with string: ", self.runupLabels[index][0:9])
-                    print("Found indices count:", len(datapointWaterRunupIndices))
+                    print("Found indices count:", len(datapointsWaterRunupIndices))
                     for datapointsWaterRunupIndex in datapointsWaterRunupIndices:
                         
                         fig, ax = plt.subplots(figsize=(16, 9))
