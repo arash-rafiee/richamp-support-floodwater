@@ -1323,7 +1323,7 @@ class Grapher:
             vmin = -1
             vminSwath = 0
 #             vmax = math.ceil(self.maxWater)
-            vmax = 5
+            vmax = 2
 #             vmax = 20
             levels = 100
             levelBoundaries = np.linspace(vmin, vmax, levels + 1)
@@ -1878,7 +1878,7 @@ class Grapher:
                 plt.xticks(fontsize=12)
                 plt.yticks(fontsize=12)
                 stationName = self.runupLabels[index]
-                maxRunup = str(round(max(self.datapointsRunupHolmanMid[index]), 2) = ", " + round(max(self.datapointsRunupStockdon[index]), 2))
+                maxRunup = str(round(max(self.datapointsRunupHolmanMid[index]), 2) + ", " + round(max(self.datapointsRunupStockdon[index]), 2))
                 plt.title(self.titlePrefix + stationName + " station runup (adcirc, stockdon): " + maxRunup, fontsize=18)
 #                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
                 plt.ylabel("runup (meters)", fontsize=14)
