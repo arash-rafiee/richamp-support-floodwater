@@ -1935,14 +1935,14 @@ class Grapher:
                         
                         # Add vertical bars for incident swash (e.g., in red)
                         ax.vlines(self.waterTimes, 
-                                  self.datapointsWaters[index] - 0.5 * self.datapointsSwashStockdonIncident[index], 
-                                  self.datapointsWaters[index] + 0.5 * self.datapointsSwashStockdonIncident[index], 
+                                  self.datapointsWaters[index] - 0.5 * np.array(self.datapointsSwashStockdonIncident[index]), 
+                                  self.datapointsWaters[index] + 0.5 * np.array(self.datapointsSwashStockdonIncident[index]), 
                                   colors='red', label="Stockdon Incident βf√(HₒLₒ)", linewidth=1.5)
                         
                         # Add vertical bars for infragravity swash (e.g., in blue)
                         ax.vlines(self.waterTimes, 
-                                  self.datapointsWaters[index] - 0.5 * self.datapointsSwashStockdonInfragravity[index], 
-                                  self.datapointsWaters[index] + 0.5 * self.datapointsSwashStockdonInfragravity[index], 
+                                  self.datapointsWaters[index] - 0.5 * np.array(self.datapointsSwashStockdonInfragravity[index]), 
+                                  self.datapointsWaters[index] + 0.5 * np.array(self.datapointsSwashStockdonInfragravity[index]), 
                                   colors='blue', label="Stockdon Infragravity √(HₒLₒ)", linewidth=1.5)
                         
                         # Calculate the maximum elevation including the bars
