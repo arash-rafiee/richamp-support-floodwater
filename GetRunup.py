@@ -393,8 +393,8 @@ class GetRunup:
 #                 Get the water elevation at the waterline point.
 #                  The minimum of this should just be the elevation of the point itself
 #                   The wet dry algorithim is also important here
-                waterlineWaterValue = waterDict[normalKey]["water"][index]
-                waterlineStillwaterValue = stillwaterDict[normalKey]["water"][index]
+                waterlineWaterValue = waterDict[waterlineKey]["water"][index]
+                waterlineStillwaterValue = stillwaterDict[waterlineKey]["water"][index]
                 print("waterlineWaterValue, waterlineStillWaterValue", waterlineWaterValue, waterlineStillwaterValue)
 #                 print("waterlineDistance, averageSlope, coordinates", waterlineDistance, averageSlope, waterlineCoordinates, adjacentWaterlineCoordinates)
                 #           Then I need to calculate the wave parameters
