@@ -1947,9 +1947,9 @@ class Grapher:
                         
                         # Calculate the maximum elevation including the bars
                         # Upper extent of incident swash bars
-                        incident_upper = self.datapointsWaters[index] + 0.5 * self.datapointsSwashStockdonIncident[index]
+                        incident_upper = self.datapointsWaters[index] + 0.5 * np.array(self.datapointsSwashStockdonIncident[index])
                         # Upper extent of infragravity swash bars
-                        infragravity_upper = self.datapointsWaters[index] + 0.5 * self.datapointsSwashStockdonInfragravity[index]
+                        infragravity_upper = self.datapointsWaters[index] + 0.5 * np.array(self.datapointsSwashStockdonInfragravity[index])
                         # Find the maximum across water elevation, incident, and infragravity upper bounds
                         maxElevation = str(round(max(max(self.datapointsWaters[index]), 
                                                      max(incident_upper), 
