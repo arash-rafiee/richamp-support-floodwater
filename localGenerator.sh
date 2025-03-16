@@ -183,3 +183,6 @@ python generateGraphs.py --stations NAPATREE_NORMAL_STATIONS.json \
 
 # python generateGraphs.py --stations OBS_STATIONS.json --waterExists true --water /work/pi_iginis_uri_edu/pranav_sai_uri_edu/scenario_files/v18Runs/FinalWaterFiles/1938.fort.63.nc --backgroundChoice CAPE_COD_BAY_OUTLINE --tempDir /scratch3/workspace/pranav_sai_uri_edu-manrun/temp/
 
+
+# python generateGraphs.py --stations MIDWEST_STATIONS.json --gfsExists true --wind ../WeatherVisualizer/wind_gfs.nc --backgroundChoice MIDWEST --tempDir temp/
+

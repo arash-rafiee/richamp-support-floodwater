@@ -114,19 +114,20 @@ class GetRunup:
 # Stockdon parameterizations
     def calculateStockdonSetup(self, averageSlope, waveHeight, deepwaterWavelength):
         slope = 0.35
-        return (np.sqrt(waveHeight * deepwaterWavelength)) * averageSlope
+        return slope * (np.sqrt(waveHeight * deepwaterWavelength)) * averageSlope
+        
     def calculateStockdonIncidentSwash(self, averageSlope, waveHeight, deepwaterWavelength):
         slope = 0.75
-        return (np.sqrt(waveHeight * deepwaterWavelength)) * averageSlope
+        return slope * (np.sqrt(waveHeight * deepwaterWavelength)) * averageSlope
     def calculateStockdonInfragravitySwash(self, waveHeight, deepwaterWavelength):
         slope = 0.06
-        return (np.sqrt(waveHeight * deepwaterWavelength))
+        return slope * (np.sqrt(waveHeight * deepwaterWavelength))
     def calculateStockdonLowSetup(self, waveHeight, deepwaterWavelength):
         slope = 0.016
-        return (np.sqrt(waveHeight * deepwaterWavelength))
+        return slope * (np.sqrt(waveHeight * deepwaterWavelength))
     def calculateStockdonLowSwash(self, waveHeight, deepwaterWavelength):
         slope = 0.046
-        return (np.sqrt(waveHeight * deepwaterWavelength))
+        return slope * (np.sqrt(waveHeight * deepwaterWavelength))
         
 
     def calculateStockdonRunup(self, averageSlope, waveHeight, deepwaterWavelength, stillwaterLevel):
@@ -157,7 +158,7 @@ class GetRunup:
         
     def calculateStockdonLowRunup(self, waveHeight, deepwaterWavelength):
         slope = 0.043
-        return (np.sqrt(waveHeight * deepwaterWavelength))
+        return slope * (np.sqrt(waveHeight * deepwaterWavelength))
 
         
     def calculateRunupDistance(self, runupHeight, averageSlope):
@@ -348,6 +349,7 @@ class GetRunup:
 #             From this point, iterate through each timestep in the wave file.
             for index, waterValue in enumerate(offshoreWater):
                 waterlineKey = None
+#                Find the waterline key
                 for normalKey in normalDict:
                     normalStationWaterValue = waterDict[normalKey]["water"][index]
 #                     print("normalStationWaterValue, index", index, normalStationWaterValue)
@@ -361,11 +363,14 @@ class GetRunup:
                     print("DID NOT FIND WATERLINE! Appending previous waterline key.")
                     print("If no previous key exists, will error out.")
                     waterlineKeys.append(waterlineKey[-1])
-                
 #                 Now I have the waterline key
+                
+#                 Because I am having issues with the waterline key advancing in the SWAN vs the padcirc run,
+#                   I can't get SWL values for the timestamps where there is no data at that node for padcirc, but is for SWAN
+#               So, just going to hardcode to use waterlineKey to be the first waterline key it finds.
+                waterlineKey = waterlineKeys[0]
 
 #                   The corresponding tangent key
-
                 tangentStation = tangentDict[waterlineKey]
                 tangentCoordinates = (float(tangentStation["latitude"]), float(tangentStation["longitude"]))
                 
