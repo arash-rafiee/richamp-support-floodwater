@@ -1968,9 +1968,9 @@ class Grapher:
                 if(len(self.datapointsWaters) > 0):
                     # Assuming self.findMatchingIndices is defined as per your earlier request
                     datapointsWaterRunupIndices = self.findMatchingIndices(self.tideLabels, self.runupLabels[index][0:9])
-                    print("Finding Water stations corresponding to runup station")
-                    print("Searching for water labels with string: ", self.runupLabels[index][0:9])
-                    print("Found indices count:", len(datapointsWaterRunupIndices))
+#                     print("Finding Water stations corresponding to runup station")
+#                     print("Searching for water labels with string: ", self.runupLabels[index][0:9])
+#                     print("Found indices count:", len(datapointsWaterRunupIndices))
                     for datapointsWaterRunupIndex in datapointsWaterRunupIndices:
                         
                         fig, ax = plt.subplots(figsize=(16, 9))
@@ -2004,7 +2004,7 @@ class Grapher:
                         plt.xticks(fontsize=12)
                         plt.yticks(fontsize=12)
                         stationName = self.tideLabels[datapointsWaterRunupIndex]
-                        print("stationName of corresponding water station: ", stationName)
+#                         print("stationName of corresponding water station: ", stationName)
                         plt.title(self.titlePrefix + stationName + " station elevation max (water, swash): " + maxElevation, fontsize=18)
                         plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
                         plt.ylabel("elevation (meters)", fontsize=14)
