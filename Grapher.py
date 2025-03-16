@@ -1924,50 +1924,6 @@ class Grapher:
                 plt.ylabel("swash (meters)", fontsize=14)
                 plt.savefig(graph_directory + stationName + '_swash.png')
                 plt.close()
-                
-#                 Graph water timeseries for all stations with swash bar
-                for index in range(numberOfWaterDatapoints):
-                    if(len(self.datapointsWaters) > 0):
-                        fig, ax = plt.subplots(figsize=(16,9))
-                        
-                        # Plot the water elevation time series
-                        ax.plot(self.waterTimes, self.datapointsWaters[index], label="SWL + setup")
-                        
-                        # Add vertical bars for incident swash (e.g., in red)
-                        ax.vlines(self.waterTimes, 
-                                  self.datapointsWaters[index] - 0.5 * np.array(self.datapointsSwashStockdonIncident[index]), 
-                                  self.datapointsWaters[index] + 0.5 * np.array(self.datapointsSwashStockdonIncident[index]), 
-                                  colors='red', label="Stockdon Incident βf√(HₒLₒ)", linewidth=1.5)
-                        
-                        # Add vertical bars for infragravity swash (e.g., in blue)
-                        ax.vlines(self.waterTimes, 
-                                  self.datapointsWaters[index] - 0.5 * np.array(self.datapointsSwashStockdonInfragravity[index]), 
-                                  self.datapointsWaters[index] + 0.5 * np.array(self.datapointsSwashStockdonInfragravity[index]), 
-                                  colors='blue', label="Stockdon Infragravity √(HₒLₒ)", linewidth=1.5)
-                        
-                        # Calculate the maximum elevation including the bars
-                        # Upper extent of incident swash bars
-                        incident_upper = self.datapointsWaters[index] + 0.5 * np.array(self.datapointsSwashStockdonIncident[index])
-                        # Upper extent of infragravity swash bars
-                        infragravity_upper = self.datapointsWaters[index] + 0.5 * np.array(self.datapointsSwashStockdonInfragravity[index])
-                        # Find the maximum across water elevation, incident, and infragravity upper bounds
-                        maxElevation = str(round(max(max(self.datapointsWaters[index]), 
-                                                     max(incident_upper), 
-                                                     max(infragravity_upper)), 2))
-                        
-                        # Customize the plot
-                        ax.legend(loc="upper left")
-                        ax.format_xdata = mdates.DateFormatter('%d')
-                        plt.xticks(fontsize=12)
-                        plt.yticks(fontsize=12)
-                        stationName = self.tideLabels[index]
-                        plt.title(self.titlePrefix + stationName + " station elevation (setup, S_inc, S_ig): " + maxElevation, fontsize=18)
-                        plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
-                        plt.ylabel("elevation (meters)", fontsize=14)
-                        
-                        # Save and close the plot
-                        plt.savefig(graph_directory + stationName + '_water_swash.png')
-                        plt.close()
                         
 #                 Graph setup
                 fig, ax = plt.subplots(figsize=(16,9))
@@ -2108,5 +2064,49 @@ class Grapher:
             plt.close()
             gc.collect()
            
+           
+       #                 Graph water timeseries for all stations with swash bar
+            for index in range(numberOfWaterDatapoints):
+                if(len(self.datapointsWaters) > 0):
+                    fig, ax = plt.subplots(figsize=(16,9))
+                    
+                    # Plot the water elevation time series
+                    ax.plot(self.waterTimes, self.datapointsWaters[index], label="SWL + setup")
+                    
+                    # Add vertical bars for incident swash (e.g., in red)
+                    ax.vlines(self.waterTimes, 
+                              self.datapointsWaters[index] - 0.5 * np.array(self.datapointsSwashStockdonIncident[index]), 
+                              self.datapointsWaters[index] + 0.5 * np.array(self.datapointsSwashStockdonIncident[index]), 
+                              colors='red', label="Stockdon Incident βf√(HₒLₒ)", linewidth=1.5)
+                    
+                    # Add vertical bars for infragravity swash (e.g., in blue)
+                    ax.vlines(self.waterTimes, 
+                              self.datapointsWaters[index] - 0.5 * np.array(self.datapointsSwashStockdonInfragravity[index]), 
+                              self.datapointsWaters[index] + 0.5 * np.array(self.datapointsSwashStockdonInfragravity[index]), 
+                              colors='blue', label="Stockdon Infragravity √(HₒLₒ)", linewidth=1.5)
+                    
+                    # Calculate the maximum elevation including the bars
+                    # Upper extent of incident swash bars
+                    incident_upper = self.datapointsWaters[index] + 0.5 * np.array(self.datapointsSwashStockdonIncident[index])
+                    # Upper extent of infragravity swash bars
+                    infragravity_upper = self.datapointsWaters[index] + 0.5 * np.array(self.datapointsSwashStockdonInfragravity[index])
+                    # Find the maximum across water elevation, incident, and infragravity upper bounds
+                    maxElevation = str(round(max(max(self.datapointsWaters[index]), 
+                                                 max(incident_upper), 
+                                                 max(infragravity_upper)), 2))
+                    
+                    # Customize the plot
+                    ax.legend(loc="upper left")
+                    ax.format_xdata = mdates.DateFormatter('%d')
+                    plt.xticks(fontsize=12)
+                    plt.yticks(fontsize=12)
+                    stationName = self.tideLabels[index]
+                    plt.title(self.titlePrefix + stationName + " station elevation (setup, S_inc, S_ig): " + maxElevation, fontsize=18)
+                    plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
+                    plt.ylabel("elevation (meters)", fontsize=14)
+                    
+                    # Save and close the plot
+                    plt.savefig(graph_directory + stationName + '_water_swash.png')
+                    plt.close()
            
         
