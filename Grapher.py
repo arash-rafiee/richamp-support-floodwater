@@ -1878,7 +1878,7 @@ class Grapher:
                 plt.xticks(fontsize=12)
                 plt.yticks(fontsize=12)
                 stationName = self.runupLabels[index]
-                maxRunup = str(round(max(self.datapointsRunupHolmanMid[index]), 2) + ", " + round(max(self.datapointsRunupStockdon[index]), 2))
+                maxRunup = str(ound(max(self.datapointsRunupHolmanMid[index]), 2)) + ", " + str(round(max(self.datapointsRunupStockdon[index]), 2))
                 plt.title(self.titlePrefix + stationName + " station runup (adcirc, stockdon): " + maxRunup, fontsize=18)
 #                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
                 plt.ylabel("runup (meters)", fontsize=14)
@@ -1901,7 +1901,7 @@ class Grapher:
                 plt.xticks(fontsize=12)
                 plt.yticks(fontsize=12)
                 stationName = self.runupLabels[index]
-                maxSetup = str(round(max(self.datapointsSetupAdcirc[index]), 2) + ", " + round(max(self.datapointsSetupStockdon[index]), 2))
+                maxSetup = str(round(max(self.datapointsSetupAdcirc[index]), 2)) + ", " + str(round(max(self.datapointsSetupStockdon[index]), 2))
                 plt.title(self.titlePrefix + stationName + " station setup max (adcirc, stockdon): " + maxSetup, fontsize=18)
 #                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
                 plt.ylabel("setup (meters)", fontsize=14)
@@ -1922,7 +1922,7 @@ class Grapher:
                 plt.xticks(fontsize=12)
                 plt.yticks(fontsize=12)
                 stationName = self.runupLabels[index]
-                maxSwash = str(round(max(self.datapointsSwashStockdonIncident[index]), 2) + ", " + round(max(self.datapointsSwashStockdonInfragravity[index]), 2))
+                maxSwash = str(round(max(self.datapointsSwashStockdonIncident[index]), 2)) + ", " + str(round(max(self.datapointsSwashStockdonInfragravity[index]), 2))
                 plt.title(self.titlePrefix + stationName + " station swash max (inc, ig): " + maxSwash, fontsize=18)
 #                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
                 plt.ylabel("swash (meters)", fontsize=14)
@@ -1993,7 +1993,7 @@ class Grapher:
                         # Calculate the maximum elevation including the swash
                         max_water_elevation = max(self.datapointsWaters[datapointsWaterRunupIndex])
                         max_swash_upper = max(upper_bound)
-                        maxElevation = str(round(max_water_elevation, 2) + ", " + round(max_swash_upper, 2))
+                        maxElevation = str(round(max_water_elevation, 2)) + ", " + str(round(max_swash_upper, 2))
                         
                         # Customize the plot
                         ax.legend(loc="upper left")
