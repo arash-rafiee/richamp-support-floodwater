@@ -365,10 +365,7 @@ class GetRunup:
                     waterlineKeys.append(waterlineKey[-1])
 #                 Now I have the waterline key
                 
-#                 Because I am having issues with the waterline key advancing in the SWAN vs the padcirc run,
-#                   I can't get SWL values for the timestamps where there is no data at that node for padcirc, but is for SWAN
-#               So, just going to hardcode to use waterlineKey to be the first waterline key it finds.
-                waterlineKey = waterlineKeys[0]
+
 
 #                   The corresponding tangent key
                 tangentStation = tangentDict[waterlineKey]
@@ -393,8 +390,15 @@ class GetRunup:
 #                 Get the water elevation at the waterline point.
 #                  The minimum of this should just be the elevation of the point itself
 #                   The wet dry algorithim is also important here
-                waterlineWaterValue = waterDict[waterlineKey]["water"][index]
-                waterlineStillwaterValue = stillwaterDict[waterlineKey]["water"][index]
+# #                 Because I am having issues with the waterline key advancing in the SWAN vs the padcirc run,
+#                   I can't get SWL values for the timestamps where there is no data at that node for padcirc, but is for SWAN
+#               So, just going to hardcode to use waterlineKey to be the first waterline key it finds.
+# Doing this everywhere messes up the lines, so just to pull the SWL and the SWL + setup water levels,
+#           I will always use the same node, which is the first waterline node in the timeseries.
+#           Doing this wont change the generated values that much, as the water elevation is very similar for all nodes along the normal of the beach.
+#                 waterlineKey = waterlineKeys[0]
+                waterlineWaterValue = waterDict[waterlineKeys[0]]["water"][index]
+                waterlineStillwaterValue = stillwaterDict[waterlineKeys[0]]["water"][index]
                 print("waterlineWaterValue, waterlineStillWaterValue", waterlineWaterValue, waterlineStillwaterValue)
 #                 print("waterlineDistance, averageSlope, coordinates", waterlineDistance, averageSlope, waterlineCoordinates, adjacentWaterlineCoordinates)
                 #           Then I need to calculate the wave parameters

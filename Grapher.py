@@ -1878,8 +1878,8 @@ class Grapher:
                 plt.xticks(fontsize=12)
                 plt.yticks(fontsize=12)
                 stationName = self.runupLabels[index]
-                maxRunup = str(round(max(self.datapointsRunupAdcirc[index]), 2))
-                plt.title(self.titlePrefix + stationName + " station runup max: " + maxRunup, fontsize=18)
+                maxRunup = str(round(max(self.datapointsRunupHolmanMid[index]), 2) = ", " + round(max(self.datapointsRunupStockdon[index]), 2))
+                plt.title(self.titlePrefix + stationName + " station runup (adcirc, stockdon): " + maxRunup, fontsize=18)
 #                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
                 plt.ylabel("runup (meters)", fontsize=14)
                 plt.savefig(graph_directory + stationName + '_runup.png')
@@ -1888,9 +1888,9 @@ class Grapher:
 #                 Graph setup
                 fig, ax = plt.subplots(figsize=(16,9))
 #                 ax.plot(self.runupTimes, self.datapointsRunup[index], label="runup")
-                ax.plot(self.runupTimes, self.datapointsSetupHolmanHigh[index], label="Holman High Tide ξ")
-                ax.plot(self.runupTimes, self.datapointsSetupHolmanMid[index], label="Holman Mid Tide ξ")
-                ax.plot(self.runupTimes, self.datapointsSetupHolmanLow[index], label="Holman Low Tide ξ")
+#                 ax.plot(self.runupTimes, self.datapointsSetupHolmanHigh[index], label="Holman High Tide ξ")
+#                 ax.plot(self.runupTimes, self.datapointsSetupHolmanMid[index], label="Holman Mid Tide ξ")
+#                 ax.plot(self.runupTimes, self.datapointsSetupHolmanLow[index], label="Holman Low Tide ξ")
                 ax.plot(self.runupTimes, self.datapointsSetupStockdon[index], label="Stockdon βf√(HₒLₒ)")
                 ax.plot(self.runupTimes, self.datapointsSetupAdcirc[index], label="Adcirc (water - stillwater)")
 #                 ax.plot(self.runupTimes, self.datapointsSetupStockdonLow[index], label="Stockdon Low")
@@ -1901,8 +1901,8 @@ class Grapher:
                 plt.xticks(fontsize=12)
                 plt.yticks(fontsize=12)
                 stationName = self.runupLabels[index]
-                maxSetup = str(round(max(self.datapointsSetupHolmanLow[index]), 2))
-                plt.title(self.titlePrefix + stationName + " station setup max: " + maxSetup, fontsize=18)
+                maxSetup = str(round(max(self.datapointsSetupAdcirc[index]), 2) + ", " + round(max(self.datapointsSetupStockdon[index]), 2))
+                plt.title(self.titlePrefix + stationName + " station setup max (adcirc, stockdon): " + maxSetup, fontsize=18)
 #                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
                 plt.ylabel("setup (meters)", fontsize=14)
                 plt.savefig(graph_directory + stationName + '_setup.png')
@@ -1922,8 +1922,8 @@ class Grapher:
                 plt.xticks(fontsize=12)
                 plt.yticks(fontsize=12)
                 stationName = self.runupLabels[index]
-                maxSwash = str(round(max(self.datapointsSwashHolmanLow[index]), 2))
-                plt.title(self.titlePrefix + stationName + " station swash max: " + maxSwash, fontsize=18)
+                maxSwash = str(round(max(self.datapointsSwashStockdonIncident[index]), 2) + ", " + round(max(self.datapointsSwashStockdonInfragravity[index]), 2))
+                plt.title(self.titlePrefix + stationName + " station swash max (inc, ig): " + maxSwash, fontsize=18)
 #                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
                 plt.ylabel("swash (meters)", fontsize=14)
                 plt.savefig(graph_directory + stationName + '_swash.png')
@@ -1966,48 +1966,50 @@ class Grapher:
             
                 
                 if(len(self.datapointsWaters) > 0):
+                    # Assuming self.findMatchingIndices is defined as per your earlier request
                     datapointsWaterRunupIndices = self.findMatchingIndices(self.tideLabels, self.runupLabels[index])
                     for datapointsWaterRunupIndex in datapointsWaterRunupIndices:
                         
-                        fig, ax = plt.subplots(figsize=(16,9))
+                        fig, ax = plt.subplots(figsize=(16, 9))
                         
                         # Plot the water elevation time series
-                        ax.plot(self.waterTimes, self.datapointsWaters[datapointsWaterRunupIndex], label="SWL + setup")
+                        ax.plot(self.waterTimes, self.datapointsWaters[datapointsWaterRunupIndex], label="SWL + setup", color='blue', linewidth=2)
                         
-                        # Add vertical bars for incident swash (e.g., in red)
-                        ax.vlines(self.waterTimes, 
-                                  self.datapointsWaters[datapointsWaterRunupIndex] - 0.5 * np.array(self.datapointsSwashStockdonIncident[index]), 
-                                  self.datapointsWaters[datapointsWaterRunupIndex] + 0.5 * np.array(self.datapointsSwashStockdonIncident[index]), 
-                                  colors='red', label="Stockdon Incident βf√(HₒLₒ)", linewidth=1.5)
+                        # Calculate total swash: sqrt(S_incident^2 + S_infragravity^2)
+                        total_swash = np.sqrt(np.array(self.datapointsSwashStockdonIncident[index])**2 + 
+                                              np.array(self.datapointsSwashStockdonInfragravity[index])**2)
                         
-                        # Add vertical bars for infragravity swash (e.g., in blue)
-                        ax.vlines(self.waterTimes, 
-                                  self.datapointsWaters[datapointsWaterRunupIndex] - 0.5 * np.array(self.datapointsSwashStockdonInfragravity[index]), 
-                                  self.datapointsWaters[datapointsWaterRunupIndex] + 0.5 * np.array(self.datapointsSwashStockdonInfragravity[index]), 
-                                  colors='blue', label="Stockdon Infragravity √(HₒLₒ)", linewidth=1.5)
+                        # Define the upper and lower bounds for the swash area
+                        lower_bound = self.datapointsWaters[datapointsWaterRunupIndex] - 0.5 * total_swash
+                        upper_bound = self.datapointsWaters[datapointsWaterRunupIndex] + 0.5 * total_swash
                         
-                        # Calculate the maximum elevation including the bars
-                        # Upper extent of incident swash bars
-                        incident_upper = self.datapointsWaters[datapointsWaterRunupIndex] + 0.5 * np.array(self.datapointsSwashStockdonIncident[index])
-                        # Upper extent of infragravity swash bars
-                        infragravity_upper = self.datapointsWaters[datapointsWaterRunupIndex] + 0.5 * np.array(self.datapointsSwashStockdonInfragravity[index])
-                        # Find the maximum across water elevation, incident, and infragravity upper bounds
-                        maxElevation = str(round(max(max(self.datapointsWaters[datapointsWaterRunupIndex]), 
-                                                     max(incident_upper), 
-                                                     max(infragravity_upper)), 2))
+                        # Fill the area between upper and lower bounds to highlight swash extent
+                        ax.fill_between(self.waterTimes, lower_bound, upper_bound, color='lightblue', alpha=0.4, label="Swash Extent")
+                        
+                        # Add dotted lines for maximum and minimum extents
+                        ax.plot(self.waterTimes, upper_bound, '--', color='red', label="+S/2", linewidth=1.5)
+                        ax.plot(self.waterTimes, lower_bound, '--', color='green', label="-S/2", linewidth=1.5)
+                        
+                        # Calculate the maximum elevation including the swash
+                        max_water_elevation = max(self.datapointsWaters[datapointsWaterRunupIndex])
+                        max_swash_upper = max(upper_bound)
+                        maxElevation = str(round(max_water_elevation, 2) + ", " + round(max_swash_upper, 2))
                         
                         # Customize the plot
                         ax.legend(loc="upper left")
                         ax.format_xdata = mdates.DateFormatter('%d')
                         plt.xticks(fontsize=12)
                         plt.yticks(fontsize=12)
-                        stationName = self.runupLabels[index]
-                        plt.title(self.titlePrefix + stationName + " station elevation (setup, S_inc, S_ig): " + maxElevation, fontsize=18)
+                        stationName = self.tideLabels[datapointsWaterRunupIndex]
+                        plt.title(self.titlePrefix + stationName + " station elevation max (water, swash): " + maxElevation, fontsize=18)
                         plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
                         plt.ylabel("elevation (meters)", fontsize=14)
                         
+                        # Adjust layout to prevent label cutoff
+                        plt.tight_layout()
+                        
                         # Save and close the plot
-                        plt.savefig(graph_directory + stationName + '_water_swash.png')
+                        plt.savefig(graph_directory + stationName + '_water_swash.png', dpi=300)
                         plt.close()
            
        
