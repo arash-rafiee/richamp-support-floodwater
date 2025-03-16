@@ -349,10 +349,14 @@ class GetRunup:
 #             From this point, iterate through each timestep in the wave file.
             for index, waterValue in enumerate(offshoreWater):
                 waterlineKey = None
+                stillwaterLineKey = None
 #                Find the waterline key
                 for normalKey in normalDict:
                     normalStationWaterValue = waterDict[normalKey]["water"][index]
+                    normalStationStillwaterValue = stillWaterDict[normalKey]["water"][index]
 #                     print("normalStationWaterValue, index", index, normalStationWaterValue)
+                    if(not np.isnan(normalStationStillwaterValue)):
+                        stillwaterLineKey = normalKey
                     if(not np.isnan(normalStationWaterValue)):
                         waterlineKey = normalKey
                         break
@@ -363,6 +367,14 @@ class GetRunup:
                     print("DID NOT FIND WATERLINE! Appending previous waterline key.")
                     print("If no previous key exists, will error out.")
                     waterlineKeys.append(waterlineKey[-1])
+                    
+#                 Find the stillwater line, so we can pull SWL data without any gaps
+                for normalKey in normalDict:
+                    normalStationStillwaterValue = stillWaterDict[normalKey]["water"][index]
+#                     print("normalStationWaterValue, index", index, normalStationWaterValue)
+                    if(not np.isnan(normalStationStillwaterValue)):
+                        stillwaterLineKey = normalKey
+                        break
 #                 Now I have the waterline key
                 
 
@@ -397,8 +409,8 @@ class GetRunup:
 #           I will always use the same node, which is the first waterline node in the timeseries.
 #           Doing this wont change the generated values that much, as the water elevation is very similar for all nodes along the normal of the beach.
 #                 waterlineKey = waterlineKeys[0]
-                waterlineWaterValue = waterDict[waterlineKeys[0]]["water"][index]
-                waterlineStillwaterValue = stillwaterDict[waterlineKeys[0]]["water"][index]
+                waterlineWaterValue = waterDict[stillwaterLineKey]["water"][index]
+                waterlineStillwaterValue = stillwaterDict[stillwaterLineKey]["water"][index]
                 print("waterlineWaterValue, waterlineStillWaterValue", waterlineWaterValue, waterlineStillwaterValue)
 #                 print("waterlineDistance, averageSlope, coordinates", waterlineDistance, averageSlope, waterlineCoordinates, adjacentWaterlineCoordinates)
                 #           Then I need to calculate the wave parameters
