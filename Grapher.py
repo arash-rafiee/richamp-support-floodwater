@@ -114,7 +114,7 @@ class Grapher:
                 marker=".", color="red")
                 
     def findMatchingIndices(self, string_array, match_string):
-        return [i for i, s in enumerate(string_array) if s == match_string]
+        return [i for i, s in enumerate(string_array) if match_string in s]
 
     # Usage example:
     # plot_extended_lines(self, ax, runupIndex, index, runupLabel)
