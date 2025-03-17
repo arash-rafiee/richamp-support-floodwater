@@ -353,7 +353,7 @@ class GetRunup:
 #                Find the waterline key
                 for normalKey in normalDict:
                     normalStationWaterValue = waterDict[normalKey]["water"][index]
-                    normalStationStillwaterValue = stillWaterDict[normalKey]["water"][index]
+                    normalStationStillwaterValue = stillwaterDict[normalKey]["water"][index]
 #                     print("normalStationWaterValue, index", index, normalStationWaterValue)
                     if(not np.isnan(normalStationStillwaterValue)):
                         stillwaterLineKey = normalKey
@@ -370,7 +370,7 @@ class GetRunup:
                     
 #                 Find the stillwater line, so we can pull SWL data without any gaps
                 for normalKey in normalDict:
-                    normalStationStillwaterValue = stillWaterDict[normalKey]["water"][index]
+                    normalStationStillwaterValue = stillwaterDict[normalKey]["water"][index]
 #                     print("normalStationWaterValue, index", index, normalStationWaterValue)
                     if(not np.isnan(normalStationStillwaterValue)):
                         stillwaterLineKey = normalKey
