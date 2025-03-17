@@ -299,13 +299,13 @@ class GetRunup:
 #             tideLabelsInitialized = True
             
             
-#             offshoreSwh = swhDict[offshoreKey]["swh"]
-#             offshoreMwd = mwdDict[offshoreKey]["mwd"]
-#             offshorePwp = pwpDict[offshoreKey]["pwp"]
+            offshoreSwh = swhDict[offshoreKey]["swh"]
+            offshoreMwd = mwdDict[offshoreKey]["mwd"]
+            offshorePwp = pwpDict[offshoreKey]["pwp"]
 #           Use wave parameters at 2Km away
-            offshoreSwh = swhDict[deeplineKey]["swh"]
-            offshoreMwd = mwdDict[deeplineKey]["mwd"]
-            offshorePwp = pwpDict[deeplineKey]["pwp"]
+#             offshoreSwh = swhDict[deeplineKey]["swh"]
+#             offshoreMwd = mwdDict[deeplineKey]["mwd"]
+#             offshorePwp = pwpDict[deeplineKey]["pwp"]
             shorelineElevation = float(meshDict[key]["elevation"])
             surfElevation = float(meshDict[surfKey]["elevation"])
             offshoreElevation = float(meshDict[offshoreKey]["elevation"])
