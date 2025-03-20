@@ -13,6 +13,7 @@ import math
 import numpy as np
 from Encoders import NumpyEncoder
 from geographiclib.geodesic import Geodesic
+from scipy.optimize import fsolve  # For solving the dispersion relation
         
 class GetRunup:
 
@@ -299,23 +300,53 @@ class GetRunup:
 #             tideLabelsInitialized = True
             
             
+            # Your existing code
             offshoreSwh = swhDict[offshoreKey]["swh"]
             offshoreMwd = mwdDict[offshoreKey]["mwd"]
             offshorePwp = pwpDict[offshoreKey]["pwp"]
-#           Use wave parameters at 2Km away
-#             offshoreSwh = swhDict[deeplineKey]["swh"]
-#             offshoreMwd = mwdDict[deeplineKey]["mwd"]
-#             offshorePwp = pwpDict[deeplineKey]["pwp"]
+
             shorelineElevation = float(meshDict[key]["elevation"])
             surfElevation = float(meshDict[surfKey]["elevation"])
             offshoreElevation = float(meshDict[offshoreKey]["elevation"])
-            
-            
-#             Calculating wave parameters perserved in arrays
-            g = 9.81
-            offshoreWavelength = (g * np.array(offshorePwp)**2) / (2 * math.pi)
-            offshoreSteepness = np.array(offshoreSwh) / offshoreWavelength
 
+            # Calculating wave parameters preserved in arrays
+            g = 9.81
+            offshoreWavelength = (g * np.array(offshorePwp)**2) / (2 * math.pi)  # Deepwater wavelength (L_0)
+            offshoreSteepness = np.array(offshoreSwh) / offshoreWavelength  # Initial steepness (will update later)
+
+            # New code for reverse shoaling
+            # Step 1: Deepwater group velocity
+            T = np.array(offshorePwp)  # Wave period
+            c_g0 = g * T / (4 * math.pi)  # Deepwater group velocity
+
+            # Step 2: Solve dispersion relation for k at offshore depth
+            h = offshoreElevation  # Assuming this is the depth (positive)
+            omega = 2 * math.pi / T  # Angular frequency
+
+            # Function to solve dispersion relation: omega^2 = gk * tanh(kh)
+            def dispersion(k, omega, h):
+                return omega**2 - g * k * np.tanh(k * h)
+
+            # Initial guess for k (using deepwater approximation)
+            k0 = omega**2 / g
+            k = np.zeros_like(T, dtype=float)
+            for i in range(len(T)):
+                k[i] = fsolve(dispersion, k0[i], args=(omega[i], h))[0]
+
+            # Step 3: Calculate local wavelength, phase speed, and group velocity
+            L = 2 * math.pi / k  # Local wavelength at offshore depth
+            c = omega / k  # Phase speed
+            n = 0.5 * (1 + (2 * k * h) / np.sinh(2 * k * h))  # Group velocity factor
+            c_g = n * c  # Local group velocity
+
+            # Step 4: Reverse shoal to get deepwaterSwh
+            deepwaterSwh = offshoreSwh * np.sqrt(c_g / c_g0)
+
+            # Step 5: Update offshoreSwh and recalculate steepness
+            offshoreSwh = deepwaterSwh  # As requested
+            offshoreSteepness = offshoreSwh / offshoreWavelength  # Updated steepness using deepwater values
+
+            # Now offshoreSwh represents the deepwater significant wave height
             waterlineKeys = []
             averageSlopes = []
             iribarrenNumbers = []
@@ -459,6 +490,7 @@ class GetRunup:
 #                 Hijack some existing variables
                 runupHolmanHigh = self.calculateAdcircRunupUsingSetupFullSwash(adcircSetup, stockdonRunupNoSetup, waterlineStillwaterValue)
                 runupHolmanMid = self.calculateAdcircRunupUsingSetup(adcircSetup, stockdonRunupNoSetup, waterlineStillwaterValue)
+                runupHolmanLow = offshoreSwh[index]
 #                 runupValues.append(stockdonRunup)
                 runupValuesHolmanHigh.append(runupHolmanHigh)
                 runupValuesHolmanMid.append(runupHolmanMid)

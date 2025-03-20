@@ -1884,6 +1884,27 @@ class Grapher:
                 plt.ylabel("runup (meters)", fontsize=14)
                 plt.savefig(graph_directory + stationName + '_runup.png')
                 plt.close()
+            
+#               graph deepwater wave height
+                fig, ax = plt.subplots(figsize=(16,9))
+
+                ax.plot(self.runupTimes, self.datapointsRunupHolmanLow[index], label="Deepwater SWH")
+#                 ax.plot(self.runupTimes, self.datapointsRunupStockdonNoSetup[index], label="Stockdon Swash (S/2)")
+#                 ax.plot(self.runupTimes, self.datapointsRunupStockdonLow[index], label="Stockdon Low")
+#                 ax.plot(self.runupTimes, self.datapointsRunupAdcirc[index], label="[SWL + setup] + 1.1(S/2)")
+
+
+                ax.legend(loc="upper left")
+                ax.format_xdata = mdates.DateFormatter('%d')
+                plt.xticks(fontsize=12)
+                plt.yticks(fontsize=12)
+                stationName = self.runupLabels[index]
+                maxSwh = str(round(max(self.datapointsRunupHolmanLow[index]), 2))
+                plt.title(self.titlePrefix + stationName + " station deepwater SWH max: " + maxSwh, fontsize=18)
+#                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
+                plt.ylabel("Deepwater SWH (meters)", fontsize=14)
+                plt.savefig(graph_directory + stationName + '_deepwater_swh.png')
+                plt.close()
                 
 #                 Graph setup
                 fig, ax = plt.subplots(figsize=(16,9))
