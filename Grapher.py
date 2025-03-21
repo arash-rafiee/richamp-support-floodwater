@@ -130,6 +130,7 @@ class Grapher:
         self.wavesExists = False
         self.rainExists = False
         self.waterExists = False
+        self.stillwaterExists = False
         self.etaExists = False
         self.meshExists = False
         self.runupExists = False
