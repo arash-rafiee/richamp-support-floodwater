@@ -320,7 +320,7 @@ class GetRunup:
             c_g0 = g * T / (4 * math.pi)  # Deepwater group velocity
 
             # Step 2: Solve dispersion relation for k at offshore depth
-            h = offshoreElevation  # Assuming this is the depth (positive)
+            h = offshoreElevation * -1.0  # Assuming this is the depth (positive)
             omega = 2 * math.pi / T  # Angular frequency
 
             # Function to solve dispersion relation: omega^2 = gk * tanh(kh)
