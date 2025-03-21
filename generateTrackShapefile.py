@@ -1,6 +1,7 @@
 import argparse
 import shapefile
 import math
+import os
 
 def parse_lat_lon(lat_str, lon_str):
     """Convert latitude and longitude strings (e.g., 298N, 0749W) to decimal degrees."""
@@ -21,8 +22,16 @@ def calculate_azimuth(lat1, lon1, lat2, lon2):
     azimuth = math.degrees(math.atan2(y, x))
     return (azimuth + 360) % 360  # Normalize to 0-360 degrees
 
+def write_prj_file(output_shp):
+    """Write a .prj file for WGS84 geographic coordinates."""
+    wgs84_prj = '''GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137,298.257223563]],PRIMEM["Greenwich",0],UNIT["Degree",0.017453292519943295]]'''
+    prj_file = output_shp.replace('.shp', '.prj') if output_shp.endswith('.shp') else output_shp + '.prj'
+    with open(prj_file, 'w') as f:
+        f.write(wgs84_prj)
+    print(f".prj file written to {prj_file}")
+
 def process_track_file(input_file, output_shp):
-    """Process the track file and generate a shapefile."""
+    """Process the track file and generate a shapefile with .prj."""
     # Read the track file
     with open(input_file, 'r') as f:
         lines = f.readlines()
@@ -64,6 +73,9 @@ def process_track_file(input_file, output_shp):
 
     # Close the shapefile
     w.close()
+
+    # Write the .prj file
+    write_prj_file(output_shp)
 
     print(f"Shapefile written to {output_shp}")
 
