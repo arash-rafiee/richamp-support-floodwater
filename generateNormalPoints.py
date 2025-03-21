@@ -6,9 +6,9 @@ HYPERPOINTS = 120
 # 7m depth
 # DEEPLINE_DISTANCE = 1000
 # 10 m depth
-DEEPLINE_DISTANCE = 1100
+# DEEPLINE_DISTANCE = 1100
 # 18m depth
-# DEEPLINE_DISTANCE = 2200  # New customizable constant for deepline distance in meters
+DEEPLINE_DISTANCE = 2200  # New customizable constant for deepline distance in meters
 # 25m depth
 # DEEPLINE_DISTANCE = 2400
 # offshore key depth -35.5
