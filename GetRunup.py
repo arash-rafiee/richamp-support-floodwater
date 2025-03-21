@@ -301,13 +301,18 @@ class GetRunup:
             
             
             # Your existing code
-            offshoreSwh = swhDict[offshoreKey]["swh"]
-            offshoreMwd = mwdDict[offshoreKey]["mwd"]
-            offshorePwp = pwpDict[offshoreKey]["pwp"]
+#             offshoreSwh = swhDict[offshoreKey]["swh"]
+#             offshoreMwd = mwdDict[offshoreKey]["mwd"]
+#             offshorePwp = pwpDict[offshoreKey]["pwp"]
+            
+            offshoreSwh = swhDict[deeplineKey]["swh"]
+            offshoreMwd = mwdDict[deeplineKey]["mwd"]
+            offshorePwp = pwpDict[deeplineKey]["pwp"]
 
             shorelineElevation = float(meshDict[key]["elevation"])
             surfElevation = float(meshDict[surfKey]["elevation"])
-            offshoreElevation = float(meshDict[offshoreKey]["elevation"])
+#             offshoreElevation = float(meshDict[offshoreKey]["elevation"])
+            offshoreElevation = float(meshDict[deeplineKey]["elevation"])
 
             # Calculating wave parameters preserved in arrays
             g = 9.81
@@ -560,7 +565,7 @@ class GetRunup:
 #             distance = 50
 #             offshoreElevation = 5
             averageSlope = math.atan((shorelineElevation - surfElevation) / surfDistance)
-            print("average slope", averageSlope)
+            print("shore to surf average slope", averageSlope)
 #             averageSlope = 0.025
 #             averageSlope = 
 
