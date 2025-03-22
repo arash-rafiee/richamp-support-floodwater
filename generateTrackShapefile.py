@@ -40,9 +40,10 @@ def process_track_file(input_file, output_shp):
     coordinates = []
     for line in lines:
         parts = line.split()
-        if len(parts) < 6:
+        if len(parts) < 7:  # Need at least 7 parts to get lat/lon
             continue  # Skip malformed lines
-        lat_str, lon_str = parts[4], parts[5]  # e.g., 298N, 0749W
+        lat_str, lon_str = parts[5], parts[6]  # e.g., 298N, 0749W
+        print(f"Raw lat/lon strings: {lat_str}, {lon_str}")  # Debug
         lat, lon = parse_lat_lon(lat_str, lon_str)
         coordinates.append((lat, lon))
 
