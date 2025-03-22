@@ -8,9 +8,9 @@ HYPERPOINTS = 120
 # 10 m depth
 # DEEPLINE_DISTANCE = 1100
 # 18m depth
-DEEPLINE_DISTANCE = 2200  # New customizable constant for deepline distance in meters
+# DEEPLINE_DISTANCE = 2200  # New customizable constant for deepline distance in meters
 # 25m depth
-# DEEPLINE_DISTANCE = 2400
+DEEPLINE_DISTANCE = 2400
 # offshore key depth -35.5
 
 def calculate_bearing(lat1, lon1, lat2, lon2):
