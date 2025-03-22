@@ -449,7 +449,7 @@ class GetRunup:
 #                 waterlineKey = waterlineKeys[0]
                 waterlineWaterValue = waterDict[stillwaterLineKey]["water"][index]
                 waterlineStillwaterValue = stillwaterDict[stillwaterLineKey]["water"][index]
-                print("waterlineWaterValue, waterlineStillWaterValue", waterlineWaterValue, waterlineStillwaterValue)
+#                 print("waterlineWaterValue, waterlineStillWaterValue", waterlineWaterValue, waterlineStillwaterValue)
 #                 print("waterlineDistance, averageSlope, coordinates", waterlineDistance, averageSlope, waterlineCoordinates, adjacentWaterlineCoordinates)
                 #           Then I need to calculate the wave parameters
 #           That can happen outside of the loop
