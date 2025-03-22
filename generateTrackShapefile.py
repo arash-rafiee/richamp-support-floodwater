@@ -23,8 +23,8 @@ def calculate_azimuth(lat1, lon1, lat2, lon2):
     return (azimuth + 360) % 360  # Normalize to 0-360 degrees
 
 def write_prj_file(output_shp):
-    """Write a .prj file for WGS84 geographic coordinates."""
-    wgs84_prj = '''GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137,298.257223563]],PRIMEM["Greenwich",0],UNIT["Degree",0.017453292519943295]]'''
+    """Write a .prj file for WGS84 geographic coordinates (EPSG:4326)."""
+    wgs84_prj = '''GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4326"]]'''
     prj_file = output_shp.replace('.shp', '.prj') if output_shp.endswith('.shp') else output_shp + '.prj'
     with open(prj_file, 'w') as f:
         f.write(wgs84_prj)
@@ -46,6 +46,11 @@ def process_track_file(input_file, output_shp):
         lat, lon = parse_lat_lon(lat_str, lon_str)
         coordinates.append((lat, lon))
 
+    # Debug: Print coordinates to verify
+    print("Parsed coordinates (lat, lon):")
+    for lat, lon in coordinates:
+        print(f"  ({lat}, {lon})")
+
     # Calculate azimuths (headings) for each segment
     azimuths = []
     for i in range(len(coordinates) - 1):
@@ -61,6 +66,11 @@ def process_track_file(input_file, output_shp):
 
     # Prepare polyline coordinates (lon, lat order for shapefile)
     polyline = [(lon, lat) for lat, lon in coordinates]
+
+    # Debug: Print polyline coordinates to verify
+    print("Polyline coordinates (lon, lat):")
+    for lon, lat in polyline:
+        print(f"  ({lon}, {lat})")
 
     # Create shapefile
     w = shapefile.Writer(output_shp, shapeType=shapefile.POLYLINE)
