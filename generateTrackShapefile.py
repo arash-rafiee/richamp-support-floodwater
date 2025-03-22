@@ -3,6 +3,9 @@ import shapefile
 import math
 import os
 
+# To run
+# python generateTrackShapefile.py 1938_night_track.txt /work/pi_iginis_uri_edu/pranav_sai_uri_edu/scenario_files/v18Runs/FinalWaterFiles/TrackFiles/Track
+
 def parse_lat_lon(lat_str, lon_str):
     """Convert latitude and longitude strings (e.g., 298N, 0749W) to decimal degrees."""
     lat = float(lat_str[:-1]) / 10  # Remove N/S and convert to decimal
