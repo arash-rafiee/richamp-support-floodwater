@@ -306,16 +306,16 @@ class GetRunup:
 #             offshorePwp = pwpDict[offshoreKey]["pwp"]
             
             offshoreSwh = swhDict[deeplineKey]["swh"]
-            print("deepline SWH Max: " + np.max(offshoreSwh))
+            print("deepline SWH Max: ", np.max(offshoreSwh))
             offshoreMwd = mwdDict[deeplineKey]["mwd"]
             offshorePwp = pwpDict[deeplineKey]["pwp"]
-            print("deepline PWP Max: " + np.max(offshorePwp))
+            print("deepline PWP Max: ", np.max(offshorePwp))
 
             shorelineElevation = float(meshDict[key]["elevation"])
             surfElevation = float(meshDict[surfKey]["elevation"])
 #             offshoreElevation = float(meshDict[offshoreKey]["elevation"])
             offshoreElevation = float(meshDict[deeplineKey]["elevation"])
-            print("deeplineElevation: " + offshoreElevation)
+            print("deeplineElevation: ", offshoreElevation)
             # Calculating wave parameters preserved in arrays
             g = 9.81
             offshoreWavelength = (g * np.array(offshorePwp)**2) / (2 * math.pi)  # Deepwater wavelength (L_0)
