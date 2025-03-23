@@ -15,8 +15,10 @@ HYPERPOINTS = 120
 # DEEPLINE_DISTANCE = 3500
 # Also 40 m depth
 # DEEPLINE_DISTANCE = 4500
+# 37m depth
 # DEEPLINE_DISTANCE = 5500
-DEEPLINE_DISTANCE = 6500
+# DEEPLINE_DISTANCE = 6500
+DEEPLINE_DISTANCE = 7500
 # offshore key depth -35.5
 
 def calculate_bearing(lat1, lon1, lat2, lon2):
