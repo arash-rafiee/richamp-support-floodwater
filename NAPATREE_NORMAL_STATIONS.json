@@ -25,8 +25,8 @@
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Napatree4 Deepline",
-      "latitude": "41.158035",
-      "longitude": "-71.783536"
+      "latitude": "41.149866",
+      "longitude": "-71.778542"
     },
     "50": {
       "id": "RUNUP",
@@ -46,8 +46,8 @@
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Napatree5 Deepline",
-      "latitude": "41.158837",
-      "longitude": "-71.780656"
+      "latitude": "41.150794",
+      "longitude": "-71.775313"
     },
     "30": {
       "id": "RUNUP",
@@ -67,8 +67,8 @@
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Napatree3 Deepline",
-      "latitude": "41.151975",
-      "longitude": "-71.804182"
+      "latitude": "41.143418",
+      "longitude": "-71.800504"
     },
     "20": {
       "id": "RUNUP",
@@ -88,8 +88,8 @@
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Napatree2 Deepline",
-      "latitude": "41.145307",
-      "longitude": "-71.846685"
+      "latitude": "41.136361",
+      "longitude": "-71.845460"
     },
     "10": {
       "id": "RUNUP",
@@ -109,8 +109,8 @@
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Napatree1 Deepline",
-      "latitude": "41.145304",
-      "longitude": "-71.886015"
+      "latitude": "41.136350",
+      "longitude": "-71.887135"
     },
     "40000": {
       "id": "RUNUP",
@@ -4965,36 +4965,36 @@
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Napatree4 Deepline",
-      "latitude": "41.158035",
-      "longitude": "-71.783536"
+      "latitude": "41.149866",
+      "longitude": "-71.778542"
     },
     "13": {
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Napatree1 Deepline",
-      "latitude": "41.145304",
-      "longitude": "-71.886015"
+      "latitude": "41.136350",
+      "longitude": "-71.887135"
     },
     "23": {
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Napatree2 Deepline",
-      "latitude": "41.145307",
-      "longitude": "-71.846685"
+      "latitude": "41.136361",
+      "longitude": "-71.845460"
     },
     "33": {
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Napatree3 Deepline",
-      "latitude": "41.151975",
-      "longitude": "-71.804182"
+      "latitude": "41.143418",
+      "longitude": "-71.800504"
     },
     "53": {
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Napatree5 Deepline",
-      "latitude": "41.158837",
-      "longitude": "-71.780656"
+      "latitude": "41.150794",
+      "longitude": "-71.775313"
     }
   },
   "NOS": {
@@ -5009,36 +5009,36 @@
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Napatree4 Deepline",
-      "latitude": "41.158035",
-      "longitude": "-71.783536"
+      "latitude": "41.149866",
+      "longitude": "-71.778542"
     },
     "13": {
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Napatree1 Deepline",
-      "latitude": "41.145304",
-      "longitude": "-71.886015"
+      "latitude": "41.136350",
+      "longitude": "-71.887135"
     },
     "23": {
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Napatree2 Deepline",
-      "latitude": "41.145307",
-      "longitude": "-71.846685"
+      "latitude": "41.136361",
+      "longitude": "-71.845460"
     },
     "33": {
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Napatree3 Deepline",
-      "latitude": "41.151975",
-      "longitude": "-71.804182"
+      "latitude": "41.143418",
+      "longitude": "-71.800504"
     },
     "53": {
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Napatree5 Deepline",
-      "latitude": "41.158837",
-      "longitude": "-71.780656"
+      "latitude": "41.150794",
+      "longitude": "-71.775313"
     },
     "40000": {
       "id": "RUNUP",

@@ -160,7 +160,7 @@ python generateGraphs.py --stations NAPATREE_NORMAL_STATIONS.json \
 --stillwaterExists true --stillwater /scratch3/workspace/pranav_sai_uri_edu-manrun/Dec172023RunupRun/forecast_RI_track_padcirc_master_build/fort.63.nc \
 --meshExists true --mesh /scratch3/workspace/pranav_sai_uri_edu-manrun/Dec172023RunupRun/forecast_RI_track_master_build/fort.14 \
 --generateRunup true \
---tempDir /scratch3/workspace/pranav_sai_uri_edu-manrun/temp/ --backgroundChoice NAPATREE
+--tempDir /scratch3/workspace/pranav_sai_uri_edu-manrun/temp/ --backgroundChoice NAPATREE_OFFSHORE
 
 
 # Water dec 23
