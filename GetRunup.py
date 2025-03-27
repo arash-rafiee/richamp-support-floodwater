@@ -240,9 +240,11 @@ class GetRunup:
 #               The RUNUP stations can also include an offshore node in the json, bypassing the need to find the offshore node index.
             stationDict = stationsDict["RUNUP"][key]
             if("d" in key):
-                key = key[0:key.index("d")]
-            normalDict = stationsDict["NORMAL"][key]
-            tangentDict = stationsDict["TANGENT"][key]
+                generalKey = key[0:key.index("d")]
+            else
+                generalKey = key
+            normalDict = stationsDict["NORMAL"][generalKey]
+            tangentDict = stationsDict["TANGENT"][generalKey]
             stationId = stationDict["id"]
             stationName = stationDict["name"]
             shorelineCoordinates = (float(stationDict["latitude"]), float(stationDict["longitude"]))
