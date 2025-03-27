@@ -2111,7 +2111,7 @@ class Grapher:
         for index in range(numberOfRunupDatapoints):
 
             stationName = self.runupLabels[index]
-            if("1" in stationName):
+            if("1" in stationName[0:stationName.index(" ")]):
                 ax.plot(self.runupTimes, self.datapointsRunupHolmanLow[index], label=stationName)
         #                 ax.plot(self.runupTimes, self.datapointsRunupStockdonNoSetup[index], label="Stockdon Swash (S/2)")
         #                 ax.plot(self.runupTimes, self.datapointsRunupStockdonLow[index], label="Stockdon Low")
@@ -2134,7 +2134,7 @@ class Grapher:
         for index in range(numberOfRunupDatapoints):
 
             stationName = self.runupLabels[index]
-            if("2" in stationName):
+            if("2" in stationName[0:stationName.index(" ")]):
                 ax.plot(self.runupTimes, self.datapointsRunupHolmanLow[index], label=stationName)
         #                 ax.plot(self.runupTimes, self.datapointsRunupStockdonNoSetup[index], label="Stockdon Swash (S/2)")
         #                 ax.plot(self.runupTimes, self.datapointsRunupStockdonLow[index], label="Stockdon Low")
@@ -2156,7 +2156,7 @@ class Grapher:
         for index in range(numberOfRunupDatapoints):
 
             stationName = self.runupLabels[index]
-            if("3" in stationName):
+            if("3" in stationName[0:stationName.index(" ")]):
                 ax.plot(self.runupTimes, self.datapointsRunupHolmanLow[index], label=stationName)
         #                 ax.plot(self.runupTimes, self.datapointsRunupStockdonNoSetup[index], label="Stockdon Swash (S/2)")
         #                 ax.plot(self.runupTimes, self.datapointsRunupStockdonLow[index], label="Stockdon Low")
@@ -2178,7 +2178,7 @@ class Grapher:
         for index in range(numberOfRunupDatapoints):
 
             stationName = self.runupLabels[index]
-            if("4" in stationName):
+            if("4" in stationName[0:stationName.index(" ")]):
                 ax.plot(self.runupTimes, self.datapointsRunupHolmanLow[index], label=stationName)
         #                 ax.plot(self.runupTimes, self.datapointsRunupStockdonNoSetup[index], label="Stockdon Swash (S/2)")
         #                 ax.plot(self.runupTimes, self.datapointsRunupStockdonLow[index], label="Stockdon Low")
@@ -2200,7 +2200,7 @@ class Grapher:
         for index in range(numberOfRunupDatapoints):
 
             stationName = self.runupLabels[index]
-            if("5" in stationName):
+            if("5" in stationName[0:stationName.index(" ")]):
                 ax.plot(self.runupTimes, self.datapointsRunupHolmanLow[index], label=stationName)
         #                 ax.plot(self.runupTimes, self.datapointsRunupStockdonNoSetup[index], label="Stockdon Swash (S/2)")
         #                 ax.plot(self.runupTimes, self.datapointsRunupStockdonLow[index], label="Stockdon Low")
