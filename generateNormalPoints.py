@@ -96,14 +96,17 @@ def generate_deepline_points(json_data, distance=DEEPLINE_DISTANCE):
 def generate_multiple_deepline_points(json_data, distances=DEEPLINE_DISTANCES):
     if 'NORMAL' not in json_data:
         json_data['NORMAL'] = {}
+    if 'TANGENT' not in json_data:
+        json_data['TANGENT'] = {}
     new_runup = {}
     
     for orig_runup_id, runup_data in json_data['RUNUP'].items():
         shoreline_lat, shoreline_lon = float(runup_data['latitude']), float(runup_data['longitude'])
         surf_lat, surf_lon = float(runup_data['surfLatitude']), float(runup_data['surfLongitude'])
+        tangent_lat, tangent_lon = float(runup_data['tangentLatitude']), float(runup_data['tangentLongitude'])
         bearing = calculate_bearing(shoreline_lat, shoreline_lon, surf_lat, surf_lon)
         
-        # Generate NORMAL points for this station
+        # Generate NORMAL points
         json_data['NORMAL'][orig_runup_id] = {}
         point_counter = 0
         for i in range(-HYPERPOINTS // 4, 3 * HYPERPOINTS // 4 + 1):
@@ -121,6 +124,24 @@ def generate_multiple_deepline_points(json_data, distances=DEEPLINE_DISTANCES):
             json_data['NORMAL'][orig_runup_id][new_key] = new_point
             for section in ['ASSET', 'NOS']:
                 json_data[section][new_key] = new_point
+            point_counter += 1
+        
+        # Generate TANGENT points
+        json_data['TANGENT'][orig_runup_id] = {}
+        point_counter = 0
+        for i in range(-HYPERPOINTS // 4, 3 * HYPERPOINTS // 4 + 1):
+            distance = i * HYPERRESOLUTION
+            new_lat, new_lon = calculate_new_point(tangent_lat, tangent_lon, bearing, distance)
+            new_point = {
+                "id": "RUNUP",
+                "source": "RUNUP",
+                "distance": str(distance),
+                "name": f"{runup_data['name']} Tangent {distance:.3f} m",
+                "latitude": f"{new_lat:.6f}",
+                "longitude": f"{new_lon:.6f}"
+            }
+            new_key = f"{orig_runup_id}{point_counter:03d}"
+            json_data['TANGENT'][orig_runup_id][new_key] = new_point
             point_counter += 1
         
         # Generate multiple deepline points
@@ -223,7 +244,7 @@ generate_deepline_points(data_long, distance=DEEPLINE_DISTANCE)
 with open('NAPATREE_LONG_STATIONS.json', 'w') as file:
     json.dump(data_long, file, indent=2)
 
-# DEEP stations (NORMAL points + multiple deepline points)
+# DEEP stations (NORMAL points + TANGENT points + multiple deepline points)
 with open('RUNUP_NAPATREE_STATIONS.json', 'r') as file:
     data_deep = json.load(file)
 generate_multiple_deepline_points(data_deep)
