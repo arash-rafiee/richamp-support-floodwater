@@ -27,7 +27,11 @@ DEEPLINE_DISTANCES = [
     18500,  # 25-30m depth
     19500,  # 25-30m depth
     20500,  # 25-30m depth
-    21500  # 25-30m depth
+    21500,  # 25-30m depth
+    22500,  # 25-30m depth
+    23500,  # 25-30m depth
+    24500,  # 25-30m depth
+    25500  # 25-30m depth
 ]
 
 def calculate_bearing(lat1, lon1, lat2, lon2):
