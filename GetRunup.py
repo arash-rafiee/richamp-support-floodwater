@@ -241,7 +241,7 @@ class GetRunup:
             stationDict = stationsDict["RUNUP"][key]
             if("d" in key):
                 generalKey = key[0:key.index("d")]
-            else
+            else:
                 generalKey = key
             normalDict = stationsDict["NORMAL"][generalKey]
             tangentDict = stationsDict["TANGENT"][generalKey]
