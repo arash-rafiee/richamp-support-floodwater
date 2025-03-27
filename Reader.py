@@ -1348,7 +1348,7 @@ class Fort14Reader:
 #         Interpolates elevation data according to available stations for below dataType
         dataType = "elevation"
         if(initializeClosestMeshNodes):
-            thresholdDistance = 10
+            thresholdDistance = 5
 #             thresholdDistance = 1
             self.reader.initializeClosestNodesForPoints(points, thresholdDistance, dataType)
         self.reader.generateDataFilesWithInterpolationForPoints(points, triangles, maskedTriangles, elevations, dataType, self.ADCIRC_MESH_DATA_FILE)

@@ -239,6 +239,8 @@ class GetRunup:
 #             The RUNUP stations should correspond to a node on the ADCIRC mesh
 #               The RUNUP stations can also include an offshore node in the json, bypassing the need to find the offshore node index.
             stationDict = stationsDict["RUNUP"][key]
+            if("d" in key):
+                key = key[0:key.index("d")]
             normalDict = stationsDict["NORMAL"][key]
             tangentDict = stationsDict["TANGENT"][key]
             stationId = stationDict["id"]
