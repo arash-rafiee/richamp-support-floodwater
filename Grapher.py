@@ -921,10 +921,14 @@ class Grapher:
                     datapointIribarren.append(runupDataset[stationKey]["iribarren"][index])
                     datapointSteepness.append(runupDataset[stationKey]["steepness"][index])
                     waterlineKey = runupDataset[stationKey]["waterlineKeys"][index]
-                    waterlineLatitude = float(self.obsMetadata["NORMAL"][stationKey][waterlineKey]["latitude"])
-                    waterlineLongitude = float(self.obsMetadata["NORMAL"][stationKey][waterlineKey]["longitude"])
-                    waterlineTangentLatitude = float(self.obsMetadata["TANGENT"][stationKey][waterlineKey]["latitude"])
-                    waterlineTangentLongitude = float(self.obsMetadata["TANGENT"][stationKey][waterlineKey]["longitude"])
+                    if("d" in stationKey):
+                        generalStationKey = stationKey[0:stationKey.index("d")]
+                    else:
+                        generalStationKey = stationKey
+                    waterlineLatitude = float(self.obsMetadata["NORMAL"][generalStationKey][waterlineKey]["latitude"])
+                    waterlineLongitude = float(self.obsMetadata["NORMAL"][generalStationKey][waterlineKey]["longitude"])
+                    waterlineTangentLatitude = float(self.obsMetadata["TANGENT"][generalStationKey][waterlineKey]["latitude"])
+                    waterlineTangentLongitude = float(self.obsMetadata["TANGENT"][generalStationKey][waterlineKey]["longitude"])
                     tangentLatitude = [waterlineLatitude, waterlineTangentLatitude]
                     tangentLongitude = [waterlineLongitude, waterlineTangentLongitude]
                     tangentLatitudes.append(tangentLatitude)
