@@ -149,7 +149,7 @@
 # --tempDir /scratch3/workspace/pranav_sai_uri_edu-manrun/temp/ --backgroundChoice NAPATREE
 
 
-python generateGraphs.py --stations NAPATREE_NORMAL_STATIONS.json \
+python generateGraphs.py --stations NAPATREE_DEEP_STATIONS.json \
 --wavesExists true \
 --waverad /scratch3/workspace/pranav_sai_uri_edu-manrun/Dec172023RunupRun/forecast_RI_track_master_build/rads.64.nc \
 --waveswh /scratch3/workspace/pranav_sai_uri_edu-manrun/Dec172023RunupRun/forecast_RI_track_master_build/swan_HS.63.nc \
