@@ -4,35 +4,66 @@ import math
 HYPERRESOLUTION = 1
 HYPERPOINTS = 120
 DEEPLINE_DISTANCE = 21500  # Default single distance
+# DEEPLINE_DISTANCES = [
+#     1000,  # 7m depth
+#     1100,  # 10m depth
+#     2200,  # 18m depth
+#     2400,  # 25m depth
+#     3500,  # 40m depth
+#     4500,  # 40m depth
+#     5500,  # 37m depth
+#     6500,  # 38-49m depth
+#     7500,  # 40-45m depth
+#     8500,  # 40-43m depth
+#     9500,  # 40m depth
+#     10500, # 40m depth
+#     11500, # 39m depth
+#     12500, # 38m depth
+#     13500, # 35m depth
+#     14500, # 35-39m depth
+#     15500, # 35-38m depth
+#     16500, # 33-35m depth
+#     17500, # 30-33m depth
+#     18500,  # 25-30m depth
+#     19500,  # 25-30m depth
+#     20500,  # 25-30m depth
+#     21500,  # 25-30m depth
+#     22500,  # 25-30m depth
+#     23500,  # 25-30m depth
+#     24500,  # 25-30m depth
+#     25500,  # 25-30m depth
+#     26500,  # 25-30m depth
+#     27500,  # 25-30m depth
+#     28500,  # 25-30m depth
+#     29500  # 25-30m depth
+# ]
+
 DEEPLINE_DISTANCES = [
     1000,  # 7m depth
-    1100,  # 10m depth
     2200,  # 18m depth
-    2400,  # 25m depth
     3500,  # 40m depth
-    4500,  # 40m depth
     5500,  # 37m depth
-    6500,  # 38-49m depth
     7500,  # 40-45m depth
-    8500,  # 40-43m depth
     9500,  # 40m depth
     10500, # 40m depth
-    11500, # 39m depth
     12500, # 38m depth
-    13500, # 35m depth
     14500, # 35-39m depth
-    15500, # 35-38m depth
     16500, # 33-35m depth
-    17500, # 30-33m depth
     18500,  # 25-30m depth
-    19500,  # 25-30m depth
     20500,  # 25-30m depth
-    21500,  # 25-30m depth
     22500,  # 25-30m depth
-    23500,  # 25-30m depth
     24500,  # 25-30m depth
-    25500  # 25-30m depth
+    26500,  # 25-30m depth
+    28500,  # 25-30m depth
+    29500,  # 25-30m depth
+    31500,  # 25-30m depth
+    33500,  # 25-30m depth
+    35500,  # 25-30m depth
+    37500,  # 25-30m depth
+    39500,  # 25-30m depth
+    41500  # 25-30m depth
 ]
+
 
 def calculate_bearing(lat1, lon1, lat2, lon2):
     lat1_rad, lon1_rad = math.radians(lat1), math.radians(lon1)
