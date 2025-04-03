@@ -2226,7 +2226,7 @@ class Grapher:
             stationName = self.runupLabels[index]
             if("5" in stationName[0:stationName.index(" ")] and stationName[-1] == "m"):
                 swhIndex = self.buoyLabels.index(stationName)
-                deeplineSwh.append(np.max(self.datapointsSWH[swhIndex]))
+                deeplineSWH.append(np.max(self.datapointsSWH[swhIndex]))
                 elevationIndex = self.assetLabels.index(stationName)
                 deeplineElevations.append(self.datapointsElevation[elevationIndex])
                 deeplineDeepwaterSWH.append(np.max(self.datapointsRunupHolmanLow[index]))
