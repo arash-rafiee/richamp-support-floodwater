@@ -2221,7 +2221,7 @@ class Grapher:
         deeplineDistances = []
         deeplineElevations = []
         deeplineSWH = []
-        deelineDeepwaterSWH = []
+        deeplineDeepwaterSWH = []
         for index in range(numberOfRunupDatapoints):
             stationName = self.runupLabels[index]
             if("5" in stationName[0:stationName.index(" ")] and stationName[-1] == "m"):
