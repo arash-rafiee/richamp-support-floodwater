@@ -2222,16 +2222,16 @@ class Grapher:
         deeplineElevations = []
         deeplineSWH = []
         deelineDeepwaterSWH = []
-        for index in range(numberOfElevationDatapoints):
-            stationName = self.assetLabels[index]
+        for index in range(numberOfRunupDatapoints):
+            stationName = self.runupLabels[index]
             if("5" in stationName[0:stationName.index(" ")] and stationName[-1] == "m"):
                 swhIndex = self.buoyLabels.index(stationName)
                 deeplineSwh.append(np.max(self.datapointsSWH[swhIndex]))
-                deepwaterSwhIndex = self.runupLabels.index(stationName)
-                deeplineDeepwaterSWH.append(np.max(self.datapointsRunupHolmanLow[deepwaterSwhIndex]))
+                elevationIndex = self.assetLabels.index(stationName)
+                deeplineElevations.append(self.datapointsElevation[elevationIndex])
+                deeplineDeepwaterSWH.append(np.max(self.datapointsRunupHolmanLow[index]))
                 
                 deeplineDistances.append(int(stationName[stationName.rindex(" ") + 1:len(stationName) - 1]))
-                deeplineElevations.append(self.datapointsElevation[index])
 
 
         fig, ax = plt.subplots(figsize=(16,9))
