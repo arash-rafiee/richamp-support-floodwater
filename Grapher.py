@@ -2128,6 +2128,56 @@ class Grapher:
         plt.ylabel("Deepwater SWH (meters)", fontsize=14)
         plt.savefig(graph_directory + 'Napatree1_all_deepwater_swh.png')
         plt.close()
+        
+        deeplineDistances = []
+        deeplineElevations = []
+        deeplineSWH = []
+        deeplineDeepwaterSWH = []
+        for index in range(numberOfRunupDatapoints):
+            stationName = self.runupLabels[index]
+            if("1" in stationName[0:stationName.index(" ")] and stationName[-1] == "m"):
+                swhIndex = self.buoyLabels.index(stationName)
+                deeplineSWH.append(np.max(self.datapointsSWH[swhIndex]))
+                elevationIndex = self.assetLabels.index(stationName)
+                deeplineElevations.append(self.datapointsElevation[elevationIndex])
+                deeplineDeepwaterSWH.append(np.max(self.datapointsRunupHolmanLow[index]))
+                
+                deeplineDistances.append(int(stationName[stationName.rindex(" ") + 1:len(stationName) - 1]))
+
+
+        fig, ax = plt.subplots(figsize=(16,9))
+        plt.xticks(fontsize=12)
+        plt.yticks(fontsize=12)
+        plt.title(self.titlePrefix + "Napatree1 Deepline Elevation: ", fontsize=18)
+        ax.plot(deeplineDistances, deeplineElevations)
+        plt.xlabel("Distance", fontsize=14)
+        plt.ylabel("Elevation (meters)", fontsize=14)
+        plt.tight_layout()
+        plt.savefig(graph_directory + 'Napatree1_all_elevations.png')
+        plt.close()
+        
+        fig, ax = plt.subplots(figsize=(16,9))
+        plt.xticks(fontsize=12)
+        plt.yticks(fontsize=12)
+        plt.title(self.titlePrefix + "Napatree1 Deepline SWH: ", fontsize=18)
+        ax.plot(deeplineDistances, deeplineSWH)
+        plt.xlabel("Distance", fontsize=14)
+        plt.ylabel("SWH (meters)", fontsize=14)
+        plt.tight_layout()
+        plt.savefig(graph_directory + 'Napatree1_max_swh.png')
+        plt.close()
+        
+        fig, ax = plt.subplots(figsize=(16,9))
+        plt.xticks(fontsize=12)
+        plt.yticks(fontsize=12)
+        plt.title(self.titlePrefix + "Napatree1 Deepline Deepwater SWH: ", fontsize=18)
+        ax.plot(deeplineDistances, deeplineDeepwaterSWH)
+        plt.xlabel("Distance", fontsize=14)
+        plt.ylabel("Deepwater SWH (meters)", fontsize=14)
+        plt.tight_layout()
+        plt.savefig(graph_directory + 'Napatree1_max_deepwater_swh.png')
+        plt.close()
+
                 
     #               graph all deepwater swh                
         fig, ax = plt.subplots(figsize=(16,9))
@@ -2151,6 +2201,56 @@ class Grapher:
         plt.ylabel("Deepwater SWH (meters)", fontsize=14)
         plt.savefig(graph_directory + 'Napatree2_all_deepwater_swh.png')
         plt.close()
+        
+        deeplineDistances = []
+        deeplineElevations = []
+        deeplineSWH = []
+        deeplineDeepwaterSWH = []
+        for index in range(numberOfRunupDatapoints):
+            stationName = self.runupLabels[index]
+            if("2" in stationName[0:stationName.index(" ")] and stationName[-1] == "m"):
+                swhIndex = self.buoyLabels.index(stationName)
+                deeplineSWH.append(np.max(self.datapointsSWH[swhIndex]))
+                elevationIndex = self.assetLabels.index(stationName)
+                deeplineElevations.append(self.datapointsElevation[elevationIndex])
+                deeplineDeepwaterSWH.append(np.max(self.datapointsRunupHolmanLow[index]))
+                
+                deeplineDistances.append(int(stationName[stationName.rindex(" ") + 1:len(stationName) - 1]))
+
+
+        fig, ax = plt.subplots(figsize=(16,9))
+        plt.xticks(fontsize=12)
+        plt.yticks(fontsize=12)
+        plt.title(self.titlePrefix + "Napatree2 Deepline Elevation: ", fontsize=18)
+        ax.plot(deeplineDistances, deeplineElevations)
+        plt.xlabel("Distance", fontsize=14)
+        plt.ylabel("Elevation (meters)", fontsize=14)
+        plt.tight_layout()
+        plt.savefig(graph_directory + 'Napatree2_all_elevations.png')
+        plt.close()
+        
+        fig, ax = plt.subplots(figsize=(16,9))
+        plt.xticks(fontsize=12)
+        plt.yticks(fontsize=12)
+        plt.title(self.titlePrefix + "Napatree2 Deepline SWH: ", fontsize=18)
+        ax.plot(deeplineDistances, deeplineSWH)
+        plt.xlabel("Distance", fontsize=14)
+        plt.ylabel("SWH (meters)", fontsize=14)
+        plt.tight_layout()
+        plt.savefig(graph_directory + 'Napatree2_max_swh.png')
+        plt.close()
+        
+        fig, ax = plt.subplots(figsize=(16,9))
+        plt.xticks(fontsize=12)
+        plt.yticks(fontsize=12)
+        plt.title(self.titlePrefix + "Napatree2 Deepline Deepwater SWH: ", fontsize=18)
+        ax.plot(deeplineDistances, deeplineDeepwaterSWH)
+        plt.xlabel("Distance", fontsize=14)
+        plt.ylabel("Deepwater SWH (meters)", fontsize=14)
+        plt.tight_layout()
+        plt.savefig(graph_directory + 'Napatree2_max_deepwater_swh.png')
+        plt.close()
+
     #               graph all deepwater swh                
         fig, ax = plt.subplots(figsize=(16,9))
         for index in range(numberOfRunupDatapoints):
@@ -2173,6 +2273,57 @@ class Grapher:
         plt.ylabel("Deepwater SWH (meters)", fontsize=14)
         plt.savefig(graph_directory + 'Napatree3_all_deepwater_swh.png')
         plt.close()
+        
+        deeplineDistances = []
+        deeplineElevations = []
+        deeplineSWH = []
+        deeplineDeepwaterSWH = []
+        for index in range(numberOfRunupDatapoints):
+            stationName = self.runupLabels[index]
+            if("3" in stationName[0:stationName.index(" ")] and stationName[-1] == "m"):
+                swhIndex = self.buoyLabels.index(stationName)
+                deeplineSWH.append(np.max(self.datapointsSWH[swhIndex]))
+                elevationIndex = self.assetLabels.index(stationName)
+                deeplineElevations.append(self.datapointsElevation[elevationIndex])
+                deeplineDeepwaterSWH.append(np.max(self.datapointsRunupHolmanLow[index]))
+                
+                deeplineDistances.append(int(stationName[stationName.rindex(" ") + 1:len(stationName) - 1]))
+
+
+        fig, ax = plt.subplots(figsize=(16,9))
+        plt.xticks(fontsize=12)
+        plt.yticks(fontsize=12)
+        plt.title(self.titlePrefix + "Napatree3 Deepline Elevation: ", fontsize=18)
+        ax.plot(deeplineDistances, deeplineElevations)
+        plt.xlabel("Distance", fontsize=14)
+        plt.ylabel("Elevation (meters)", fontsize=14)
+        plt.tight_layout()
+        plt.savefig(graph_directory + 'Napatree3_all_elevations.png')
+        plt.close()
+        
+        fig, ax = plt.subplots(figsize=(16,9))
+        plt.xticks(fontsize=12)
+        plt.yticks(fontsize=12)
+        plt.title(self.titlePrefix + "Napatree3 Deepline SWH: ", fontsize=18)
+        ax.plot(deeplineDistances, deeplineSWH)
+        plt.xlabel("Distance", fontsize=14)
+        plt.ylabel("SWH (meters)", fontsize=14)
+        plt.tight_layout()
+        plt.savefig(graph_directory + 'Napatree3_max_swh.png')
+        plt.close()
+        
+        fig, ax = plt.subplots(figsize=(16,9))
+        plt.xticks(fontsize=12)
+        plt.yticks(fontsize=12)
+        plt.title(self.titlePrefix + "Napatree3 Deepline Deepwater SWH: ", fontsize=18)
+        ax.plot(deeplineDistances, deeplineDeepwaterSWH)
+        plt.xlabel("Distance", fontsize=14)
+        plt.ylabel("Deepwater SWH (meters)", fontsize=14)
+        plt.tight_layout()
+        plt.savefig(graph_directory + 'Napatree3_max_deepwater_swh.png')
+        plt.close()
+
+
     #               graph all deepwater swh                
         fig, ax = plt.subplots(figsize=(16,9))
         for index in range(numberOfRunupDatapoints):
@@ -2195,6 +2346,56 @@ class Grapher:
         plt.ylabel("Deepwater SWH (meters)", fontsize=14)
         plt.savefig(graph_directory + 'Napatree4_all_deepwater_swh.png')
         plt.close()
+        
+        deeplineDistances = []
+        deeplineElevations = []
+        deeplineSWH = []
+        deeplineDeepwaterSWH = []
+        for index in range(numberOfRunupDatapoints):
+            stationName = self.runupLabels[index]
+            if("4" in stationName[0:stationName.index(" ")] and stationName[-1] == "m"):
+                swhIndex = self.buoyLabels.index(stationName)
+                deeplineSWH.append(np.max(self.datapointsSWH[swhIndex]))
+                elevationIndex = self.assetLabels.index(stationName)
+                deeplineElevations.append(self.datapointsElevation[elevationIndex])
+                deeplineDeepwaterSWH.append(np.max(self.datapointsRunupHolmanLow[index]))
+                
+                deeplineDistances.append(int(stationName[stationName.rindex(" ") + 1:len(stationName) - 1]))
+
+
+        fig, ax = plt.subplots(figsize=(16,9))
+        plt.xticks(fontsize=12)
+        plt.yticks(fontsize=12)
+        plt.title(self.titlePrefix + "Napatree4 Deepline Elevation: ", fontsize=18)
+        ax.plot(deeplineDistances, deeplineElevations)
+        plt.xlabel("Distance", fontsize=14)
+        plt.ylabel("Elevation (meters)", fontsize=14)
+        plt.tight_layout()
+        plt.savefig(graph_directory + 'Napatree4_all_elevations.png')
+        plt.close()
+        
+        fig, ax = plt.subplots(figsize=(16,9))
+        plt.xticks(fontsize=12)
+        plt.yticks(fontsize=12)
+        plt.title(self.titlePrefix + "Napatree4 Deepline SWH: ", fontsize=18)
+        ax.plot(deeplineDistances, deeplineSWH)
+        plt.xlabel("Distance", fontsize=14)
+        plt.ylabel("SWH (meters)", fontsize=14)
+        plt.tight_layout()
+        plt.savefig(graph_directory + 'Napatree4_max_swh.png')
+        plt.close()
+        
+        fig, ax = plt.subplots(figsize=(16,9))
+        plt.xticks(fontsize=12)
+        plt.yticks(fontsize=12)
+        plt.title(self.titlePrefix + "Napatree4 Deepline Deepwater SWH: ", fontsize=18)
+        ax.plot(deeplineDistances, deeplineDeepwaterSWH)
+        plt.xlabel("Distance", fontsize=14)
+        plt.ylabel("Deepwater SWH (meters)", fontsize=14)
+        plt.tight_layout()
+        plt.savefig(graph_directory + 'Napatree4_max_deepwater_swh.png')
+        plt.close()
+
     #               graph all deepwater swh                
         fig, ax = plt.subplots(figsize=(16,9))
         for index in range(numberOfRunupDatapoints):
