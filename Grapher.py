@@ -1536,7 +1536,7 @@ class Grapher:
                 if(self.obsExists):
                     ax.scatter(self.obsDatapointsTimes[index], self.obsDatapointsDirections[index], marker=".", label="Obs")
                 ax.legend(loc="lower right")
-                ax.set_ylim([0, 50])
+#                 ax.set_ylim([0, 50])
                 stationName = self.obsLabels[index]
                 plt.title(stationName + " station wind directions")
                 plt.xlabel("Hours since " + self.windStartDate.strftime(self.DATE_FORMAT))
