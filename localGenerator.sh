@@ -148,19 +148,19 @@
 # --generateRunup true \
 # --tempDir /scratch3/workspace/pranav_sai_uri_edu-manrun/temp/ --backgroundChoice NAPATREE
 
-
-python generateGraphs.py --stations NAPATREE_DEEP_STATIONS.json \
---wavesExists true \
---waverad /scratch3/workspace/pranav_sai_uri_edu-manrun/Dec172023RunupRun/forecast_RI_track_master_build/rads.64.nc \
---waveswh /scratch3/workspace/pranav_sai_uri_edu-manrun/Dec172023RunupRun/forecast_RI_track_master_build/swan_HS.63.nc \
---wavemwd /scratch3/workspace/pranav_sai_uri_edu-manrun/Dec172023RunupRun/forecast_RI_track_master_build/swan_DIR.63.nc \
---wavemwp /scratch3/workspace/pranav_sai_uri_edu-manrun/Dec172023RunupRun/forecast_RI_track_master_build/swan_TMM10.63.nc \
---wavepwp /scratch3/workspace/pranav_sai_uri_edu-manrun/Dec172023RunupRun/forecast_RI_track_master_build/swan_TPS.63.nc \
---waterExists true --water /scratch3/workspace/pranav_sai_uri_edu-manrun/Dec172023RunupRun/forecast_RI_track_master_build/fort.63.nc \
---stillwaterExists true --stillwater /scratch3/workspace/pranav_sai_uri_edu-manrun/Dec172023RunupRun/forecast_RI_track_padcirc_master_build/fort.63.nc \
---meshExists true --mesh /scratch3/workspace/pranav_sai_uri_edu-manrun/Dec172023RunupRun/forecast_RI_track_master_build/fort.14 \
---generateRunup true \
---tempDir /scratch3/workspace/pranav_sai_uri_edu-manrun/temp/ --backgroundChoice BLOCK_ISLAND_SOUND_OUTLINE
+# 
+# python generateGraphs.py --stations NAPATREE_DEEP_STATIONS.json \
+# --wavesExists true \
+# --waverad /scratch3/workspace/pranav_sai_uri_edu-manrun/Dec172023RunupRun/forecast_RI_track_master_build/rads.64.nc \
+# --waveswh /scratch3/workspace/pranav_sai_uri_edu-manrun/Dec172023RunupRun/forecast_RI_track_master_build/swan_HS.63.nc \
+# --wavemwd /scratch3/workspace/pranav_sai_uri_edu-manrun/Dec172023RunupRun/forecast_RI_track_master_build/swan_DIR.63.nc \
+# --wavemwp /scratch3/workspace/pranav_sai_uri_edu-manrun/Dec172023RunupRun/forecast_RI_track_master_build/swan_TMM10.63.nc \
+# --wavepwp /scratch3/workspace/pranav_sai_uri_edu-manrun/Dec172023RunupRun/forecast_RI_track_master_build/swan_TPS.63.nc \
+# --waterExists true --water /scratch3/workspace/pranav_sai_uri_edu-manrun/Dec172023RunupRun/forecast_RI_track_master_build/fort.63.nc \
+# --stillwaterExists true --stillwater /scratch3/workspace/pranav_sai_uri_edu-manrun/Dec172023RunupRun/forecast_RI_track_padcirc_master_build/fort.63.nc \
+# --meshExists true --mesh /scratch3/workspace/pranav_sai_uri_edu-manrun/Dec172023RunupRun/forecast_RI_track_master_build/fort.14 \
+# --generateRunup true \
+# --tempDir /scratch3/workspace/pranav_sai_uri_edu-manrun/temp/ --backgroundChoice BLOCK_ISLAND_SOUND_OUTLINE
 
 # Water dec 23
 # python generateGraphs.py --stations RUNUP_NORMAL_STATIONS.json --wavesExists true --waveswh /scratch3/workspace/pranav_sai_uri_edu-manrun/Dec172023RunupRun/forecast_RI_track/swan_HS.63.nc --wavemwd /scratch3/workspace/pranav_sai_uri_edu-manrun/Dec172023RunupRun/forecast_RI_track/swan_DIR.63.nc --wavemwp /scratch3/workspace/pranav_sai_uri_edu-manrun/Dec172023RunupRun/forecast_RI_track/swan_TMM10.63.nc --wavepwp /scratch3/workspace/pranav_sai_uri_edu-manrun/Dec172023RunupRun/forecast_RI_track/swan_TPS.63.nc --waverad /scratch3/workspace/pranav_sai_uri_edu-manrun/Dec172023RunupRun/forecast_RI_track/rads.64.nc --backgroundChoice RHODE_ISLAND_CHAMP --tempDir /scratch3/workspace/pranav_sai_uri_edu-manrun/temp/
@@ -177,8 +177,8 @@ python generateGraphs.py --stations NAPATREE_DEEP_STATIONS.json \
 
 # python generateGraphs.py --stations OBS_STATIONS.json --gfsExists true --wind /project/pi_iginis_uri_edu/pranav_sai_uri_edu/scenario_files/1938392025.nc --backgroundChoice CAPE_COD_BAY_OUTLINE --tempDir /scratch3/workspace/pranav_sai_uri_edu-manrun/temp/
 # python generateGraphs.py --stations OBS_STATIONS.json --gfsExists true --wind /project/pi_iginis_uri_edu/pranav_sai_uri_edu/scenario_files/1938Modified3725.nc --backgroundChoice CAPE_COD_BAY_OUTLINE --tempDir /scratch3/workspace/pranav_sai_uri_edu-manrun/temp/
-
-# python generateGraphs.py --stations OBS_STATIONS.json --waterExists true --water /work/pi_iginis_uri_edu/pranav_sai_uri_edu/scenario_files/v18Runs/FinalWaterFiles/1938_modified_night.fort.63.nc --backgroundChoice CAPE_COD_BAY_OUTLINE --tempDir /scratch3/workspace/pranav_sai_uri_edu-manrun/temp/
+python generateGraphs.py --stations OBS_STATIONS.json --gfsExists true --wind /work/pi_iginis_uri_edu/pranav_sai_uri_edu/scenario_files/v18Runs/FinalWaterFiles/WindFiles/1938Night.nc --backgroundChoice RHODE_ISLAND_CHAMP --tempDir /scratch3/workspace/pranav_sai_uri_edu-runup/temp/
+python generateGraphs.py --stations OBS_STATIONS.json --waterExists true --water /work/pi_iginis_uri_edu/pranav_sai_uri_edu/scenario_files/v18Runs/FinalWaterFiles/1938_night.fort.63.nc --backgroundChoice RHODE_ISLAND_CHAMP --tempDir /scratch3/workspace/pranav_sai_uri_edu-runup/temp/
 
 # python generateGraphs.py --stations OBS_STATIONS.json --waterExists true --water /work/pi_iginis_uri_edu/pranav_sai_uri_edu/scenario_files/v18Runs/FinalWaterFiles/1938.fort.63.nc --backgroundChoice CAPE_COD_BAY_OUTLINE --tempDir /scratch3/workspace/pranav_sai_uri_edu-manrun/temp/
 
