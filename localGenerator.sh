@@ -178,7 +178,8 @@
 # python generateGraphs.py --stations OBS_STATIONS.json --gfsExists true --wind /project/pi_iginis_uri_edu/pranav_sai_uri_edu/scenario_files/1938392025.nc --backgroundChoice CAPE_COD_BAY_OUTLINE --tempDir /scratch3/workspace/pranav_sai_uri_edu-manrun/temp/
 # python generateGraphs.py --stations OBS_STATIONS.json --gfsExists true --wind /project/pi_iginis_uri_edu/pranav_sai_uri_edu/scenario_files/1938Modified3725.nc --backgroundChoice CAPE_COD_BAY_OUTLINE --tempDir /scratch3/workspace/pranav_sai_uri_edu-manrun/temp/
 # python generateGraphs.py --stations OBS_STATIONS.json --gfsExists true --wind /work/pi_iginis_uri_edu/pranav_sai_uri_edu/scenario_files/v18Runs/FinalWaterFiles/WindFiles/1938Night.nc --backgroundChoice EAST_COAST_OUTLINE --tempDir /scratch3/workspace/pranav_sai_uri_edu-runup/temp/
-python generateGraphs.py --stations OBS_STATIONS.json --waterExists true --water /work/pi_iginis_uri_edu/pranav_sai_uri_edu/scenario_files/v18Runs/FinalWaterFiles/1938_night.fort.63.nc --backgroundChoice RHODE_ISLAND_CHAMP --tempDir /scratch3/workspace/pranav_sai_uri_edu-runup/temp/
+# python generateGraphs.py --stations OBS_STATIONS.json --waterExists true --water /work/pi_iginis_uri_edu/pranav_sai_uri_edu/scenario_files/v18Runs/FinalWaterFiles/1938_night.fort.63.nc --backgroundChoice RHODE_ISLAND_CHAMP --tempDir /scratch3/workspace/pranav_sai_uri_edu-runup/temp/
+python generateGraphs.py --stations OBS_STATIONS.json --rainExists true --rain RICHAMP_rain.nc --backgroundChoice EAST_COAST_OUTLINE --tempDir /scratch3/workspace/pranav_sai_uri_edu-runup/temp/
 
 # python generateGraphs.py --stations OBS_STATIONS.json --waterExists true --water /work/pi_iginis_uri_edu/pranav_sai_uri_edu/scenario_files/v18Runs/FinalWaterFiles/1938.fort.63.nc --backgroundChoice CAPE_COD_BAY_OUTLINE --tempDir /scratch3/workspace/pranav_sai_uri_edu-manrun/temp/
 
