@@ -3,7 +3,7 @@ import math
 
 HYPERRESOLUTION = 1
 HYPERPOINTS = 120
-DEEPLINE_DISTANCE = 21500  # Default single distance
+DEEPLINE_DISTANCE = 5000  # Default single distance
 # DEEPLINE_DISTANCES = [
 #     1000,  # 7m depth
 #     1100,  # 10m depth
