@@ -2107,27 +2107,27 @@ class Grapher:
                 plt.close()
 
     #               graph all deepwater swh                
-        fig, ax = plt.subplots(figsize=(16,9))
-        for index in range(numberOfRunupDatapoints):
-
-            stationName = self.runupLabels[index]
-            if("1" in stationName[0:stationName.index(" ")]):
-                ax.plot(self.runupTimes, self.datapointsRunupHolmanLow[index], label=stationName)
-        #                 ax.plot(self.runupTimes, self.datapointsRunupStockdonNoSetup[index], label="Stockdon Swash (S/2)")
-        #                 ax.plot(self.runupTimes, self.datapointsRunupStockdonLow[index], label="Stockdon Low")
-        #                 ax.plot(self.runupTimes, self.datapointsRunupAdcirc[index], label="[SWL + setup] + 1.1(S/2)")
-
-
-        ax.legend(loc="upper left")
-        ax.format_xdata = mdates.DateFormatter('%d')
-        plt.xticks(fontsize=12)
-        plt.yticks(fontsize=12)
-        plt.title(self.titlePrefix + "Napatree1 all deepwater SWH: ", fontsize=18)
-#                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
-        plt.tight_layout()
-        plt.ylabel("Deepwater SWH (meters)", fontsize=14)
-        plt.savefig(graph_directory + 'Napatree1_all_deepwater_swh.png')
-        plt.close()
+#         fig, ax = plt.subplots(figsize=(16,9))
+#         for index in range(numberOfRunupDatapoints):
+# 
+#             stationName = self.runupLabels[index]
+#             if("1" in stationName[0:stationName.index(" ")]):
+#                 ax.plot(self.runupTimes, self.datapointsRunupHolmanLow[index], label=stationName)
+#         #                 ax.plot(self.runupTimes, self.datapointsRunupStockdonNoSetup[index], label="Stockdon Swash (S/2)")
+#         #                 ax.plot(self.runupTimes, self.datapointsRunupStockdonLow[index], label="Stockdon Low")
+#         #                 ax.plot(self.runupTimes, self.datapointsRunupAdcirc[index], label="[SWL + setup] + 1.1(S/2)")
+# 
+# 
+#         ax.legend(loc="upper left")
+#         ax.format_xdata = mdates.DateFormatter('%d')
+#         plt.xticks(fontsize=12)
+#         plt.yticks(fontsize=12)
+#         plt.title(self.titlePrefix + "Napatree1 all deepwater SWH: ", fontsize=18)
+# #                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
+#         plt.tight_layout()
+#         plt.ylabel("Deepwater SWH (meters)", fontsize=14)
+#         plt.savefig(graph_directory + 'Napatree1_all_deepwater_swh.png')
+#         plt.close()
 #         
 #         deeplineDistances = []
 #         deeplineElevations = []
@@ -2180,27 +2180,27 @@ class Grapher:
 
                 
     #               graph all deepwater swh                
-        fig, ax = plt.subplots(figsize=(16,9))
-        for index in range(numberOfRunupDatapoints):
-
-            stationName = self.runupLabels[index]
-            if("2" in stationName[0:stationName.index(" ")]):
-                ax.plot(self.runupTimes, self.datapointsRunupHolmanLow[index], label=stationName)
-        #                 ax.plot(self.runupTimes, self.datapointsRunupStockdonNoSetup[index], label="Stockdon Swash (S/2)")
-        #                 ax.plot(self.runupTimes, self.datapointsRunupStockdonLow[index], label="Stockdon Low")
-        #                 ax.plot(self.runupTimes, self.datapointsRunupAdcirc[index], label="[SWL + setup] + 1.1(S/2)")
-
-
-        ax.legend(loc="upper left")
-        ax.format_xdata = mdates.DateFormatter('%d')
-        plt.xticks(fontsize=12)
-        plt.yticks(fontsize=12)
-        plt.title(self.titlePrefix + "Napatree2 all deepwater SWH: ", fontsize=18)
-#                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
-        plt.tight_layout()
-        plt.ylabel("Deepwater SWH (meters)", fontsize=14)
-        plt.savefig(graph_directory + 'Napatree2_all_deepwater_swh.png')
-        plt.close()
+#         fig, ax = plt.subplots(figsize=(16,9))
+#         for index in range(numberOfRunupDatapoints):
+# 
+#             stationName = self.runupLabels[index]
+#             if("2" in stationName[0:stationName.index(" ")]):
+#                 ax.plot(self.runupTimes, self.datapointsRunupHolmanLow[index], label=stationName)
+#         #                 ax.plot(self.runupTimes, self.datapointsRunupStockdonNoSetup[index], label="Stockdon Swash (S/2)")
+#         #                 ax.plot(self.runupTimes, self.datapointsRunupStockdonLow[index], label="Stockdon Low")
+#         #                 ax.plot(self.runupTimes, self.datapointsRunupAdcirc[index], label="[SWL + setup] + 1.1(S/2)")
+# 
+# 
+#         ax.legend(loc="upper left")
+#         ax.format_xdata = mdates.DateFormatter('%d')
+#         plt.xticks(fontsize=12)
+#         plt.yticks(fontsize=12)
+#         plt.title(self.titlePrefix + "Napatree2 all deepwater SWH: ", fontsize=18)
+# #                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
+#         plt.tight_layout()
+#         plt.ylabel("Deepwater SWH (meters)", fontsize=14)
+#         plt.savefig(graph_directory + 'Napatree2_all_deepwater_swh.png')
+#         plt.close()
         
 #         deeplineDistances = []
 #         deeplineElevations = []
@@ -2252,28 +2252,28 @@ class Grapher:
 #         plt.close()
 
     #               graph all deepwater swh                
-        fig, ax = plt.subplots(figsize=(16,9))
-        for index in range(numberOfRunupDatapoints):
-
-            stationName = self.runupLabels[index]
-            if("3" in stationName[0:stationName.index(" ")]):
-                ax.plot(self.runupTimes, self.datapointsRunupHolmanLow[index], label=stationName)
-        #                 ax.plot(self.runupTimes, self.datapointsRunupStockdonNoSetup[index], label="Stockdon Swash (S/2)")
-        #                 ax.plot(self.runupTimes, self.datapointsRunupStockdonLow[index], label="Stockdon Low")
-        #                 ax.plot(self.runupTimes, self.datapointsRunupAdcirc[index], label="[SWL + setup] + 1.1(S/2)")
-
-
-        ax.legend(loc="upper left")
-        ax.format_xdata = mdates.DateFormatter('%d')
-        plt.xticks(fontsize=12)
-        plt.yticks(fontsize=12)
-        plt.title(self.titlePrefix + "Napatree3 all deepwater SWH: ", fontsize=18)
-#                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
-        plt.tight_layout()
-        plt.ylabel("Deepwater SWH (meters)", fontsize=14)
-        plt.savefig(graph_directory + 'Napatree3_all_deepwater_swh.png')
-        plt.close()
-        
+#         fig, ax = plt.subplots(figsize=(16,9))
+#         for index in range(numberOfRunupDatapoints):
+# 
+#             stationName = self.runupLabels[index]
+#             if("3" in stationName[0:stationName.index(" ")]):
+#                 ax.plot(self.runupTimes, self.datapointsRunupHolmanLow[index], label=stationName)
+#         #                 ax.plot(self.runupTimes, self.datapointsRunupStockdonNoSetup[index], label="Stockdon Swash (S/2)")
+#         #                 ax.plot(self.runupTimes, self.datapointsRunupStockdonLow[index], label="Stockdon Low")
+#         #                 ax.plot(self.runupTimes, self.datapointsRunupAdcirc[index], label="[SWL + setup] + 1.1(S/2)")
+# 
+# 
+#         ax.legend(loc="upper left")
+#         ax.format_xdata = mdates.DateFormatter('%d')
+#         plt.xticks(fontsize=12)
+#         plt.yticks(fontsize=12)
+#         plt.title(self.titlePrefix + "Napatree3 all deepwater SWH: ", fontsize=18)
+# #                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
+#         plt.tight_layout()
+#         plt.ylabel("Deepwater SWH (meters)", fontsize=14)
+#         plt.savefig(graph_directory + 'Napatree3_all_deepwater_swh.png')
+#         plt.close()
+#         
 #         deeplineDistances = []
 #         deeplineElevations = []
 #         deeplineSWH = []
@@ -2325,27 +2325,27 @@ class Grapher:
 
 
     #               graph all deepwater swh                
-        fig, ax = plt.subplots(figsize=(16,9))
-        for index in range(numberOfRunupDatapoints):
-
-            stationName = self.runupLabels[index]
-            if("4" in stationName[0:stationName.index(" ")]):
-                ax.plot(self.runupTimes, self.datapointsRunupHolmanLow[index], label=stationName)
-        #                 ax.plot(self.runupTimes, self.datapointsRunupStockdonNoSetup[index], label="Stockdon Swash (S/2)")
-        #                 ax.plot(self.runupTimes, self.datapointsRunupStockdonLow[index], label="Stockdon Low")
-        #                 ax.plot(self.runupTimes, self.datapointsRunupAdcirc[index], label="[SWL + setup] + 1.1(S/2)")
-
-
-        ax.legend(loc="upper left")
-        ax.format_xdata = mdates.DateFormatter('%d')
-        plt.xticks(fontsize=12)
-        plt.yticks(fontsize=12)
-        plt.title(self.titlePrefix + "Napatree4 all deepwater SWH: ", fontsize=18)
-#                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
-        plt.tight_layout()
-        plt.ylabel("Deepwater SWH (meters)", fontsize=14)
-        plt.savefig(graph_directory + 'Napatree4_all_deepwater_swh.png')
-        plt.close()
+#         fig, ax = plt.subplots(figsize=(16,9))
+#         for index in range(numberOfRunupDatapoints):
+# 
+#             stationName = self.runupLabels[index]
+#             if("4" in stationName[0:stationName.index(" ")]):
+#                 ax.plot(self.runupTimes, self.datapointsRunupHolmanLow[index], label=stationName)
+#         #                 ax.plot(self.runupTimes, self.datapointsRunupStockdonNoSetup[index], label="Stockdon Swash (S/2)")
+#         #                 ax.plot(self.runupTimes, self.datapointsRunupStockdonLow[index], label="Stockdon Low")
+#         #                 ax.plot(self.runupTimes, self.datapointsRunupAdcirc[index], label="[SWL + setup] + 1.1(S/2)")
+# 
+# 
+#         ax.legend(loc="upper left")
+#         ax.format_xdata = mdates.DateFormatter('%d')
+#         plt.xticks(fontsize=12)
+#         plt.yticks(fontsize=12)
+#         plt.title(self.titlePrefix + "Napatree4 all deepwater SWH: ", fontsize=18)
+# #                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
+#         plt.tight_layout()
+#         plt.ylabel("Deepwater SWH (meters)", fontsize=14)
+#         plt.savefig(graph_directory + 'Napatree4_all_deepwater_swh.png')
+#         plt.close()
         
 #         deeplineDistances = []
 #         deeplineElevations = []
@@ -2397,28 +2397,28 @@ class Grapher:
 #         plt.close()
 
     #               graph all deepwater swh                
-        fig, ax = plt.subplots(figsize=(16,9))
-        for index in range(numberOfRunupDatapoints):
-
-            stationName = self.runupLabels[index]
-            if("5" in stationName[0:stationName.index(" ")]):
-                ax.plot(self.runupTimes, self.datapointsRunupHolmanLow[index], label=stationName)
-        #                 ax.plot(self.runupTimes, self.datapointsRunupStockdonNoSetup[index], label="Stockdon Swash (S/2)")
-        #                 ax.plot(self.runupTimes, self.datapointsRunupStockdonLow[index], label="Stockdon Low")
-        #                 ax.plot(self.runupTimes, self.datapointsRunupAdcirc[index], label="[SWL + setup] + 1.1(S/2)")
-
-
-        ax.legend(loc="upper left")
-        ax.format_xdata = mdates.DateFormatter('%d')
-        plt.xticks(fontsize=12)
-        plt.yticks(fontsize=12)
-        plt.title(self.titlePrefix + "Napatree5 all deepwater SWH: ", fontsize=18)
-#                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
-        plt.tight_layout()
-        plt.ylabel("Deepwater SWH (meters)", fontsize=14)
-        plt.savefig(graph_directory + 'Napatree5_all_deepwater_swh.png')
-        plt.close()
-        
+#         fig, ax = plt.subplots(figsize=(16,9))
+#         for index in range(numberOfRunupDatapoints):
+# 
+#             stationName = self.runupLabels[index]
+#             if("5" in stationName[0:stationName.index(" ")]):
+#                 ax.plot(self.runupTimes, self.datapointsRunupHolmanLow[index], label=stationName)
+#         #                 ax.plot(self.runupTimes, self.datapointsRunupStockdonNoSetup[index], label="Stockdon Swash (S/2)")
+#         #                 ax.plot(self.runupTimes, self.datapointsRunupStockdonLow[index], label="Stockdon Low")
+#         #                 ax.plot(self.runupTimes, self.datapointsRunupAdcirc[index], label="[SWL + setup] + 1.1(S/2)")
+# 
+# 
+#         ax.legend(loc="upper left")
+#         ax.format_xdata = mdates.DateFormatter('%d')
+#         plt.xticks(fontsize=12)
+#         plt.yticks(fontsize=12)
+#         plt.title(self.titlePrefix + "Napatree5 all deepwater SWH: ", fontsize=18)
+# #                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
+#         plt.tight_layout()
+#         plt.ylabel("Deepwater SWH (meters)", fontsize=14)
+#         plt.savefig(graph_directory + 'Napatree5_all_deepwater_swh.png')
+#         plt.close()
+#         
 #         deeplineDistances = []
 #         deeplineElevations = []
 #         deeplineSWH = []
