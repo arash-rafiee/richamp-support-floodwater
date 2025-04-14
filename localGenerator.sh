@@ -182,10 +182,10 @@
 # python generateGraphs.py --stations OBS_STATIONS.json --rainExists true --rain RICHAMP_rain.nc --backgroundChoice EAST_COAST_OUTLINE --tempDir /scratch3/workspace/pranav_sai_uri_edu-runup/temp/
 
 
-python generateGraphs.py --stations OBS_STATIONS.json --obsExists true --gfsExists true --wind /work/pi_iginis_uri_edu/pranav_sai_uri_edu/scenario_files/v18Runs/FinalWaterFiles/WindFiles/Jan24Wind.nc --backgroundChoice EAST_COAST_OUTLINE --tempDir /scratch3/workspace/pranav_sai_uri_edu-runup/temp/
-# python generateGraphs.py --stations OBS_STATIONS.json --rainExists true --rain /work/pi_iginis_uri_edu/pranav_sai_uri_edu/scenario_files/v18Runs/FinalWaterFiles/RainFiles/Jan24Rain.nc --backgroundChoice EAST_COAST_OUTLINE --tempDir /scratch3/workspace/pranav_sai_uri_edu-runup/temp/
+# python generateGraphs.py --stations OBS_STATIONS.json --obsExists true --gfsExists true --wind /work/pi_iginis_uri_edu/pranav_sai_uri_edu/scenario_files/v18Runs/FinalWaterFiles/WindFiles/Jan24Wind.nc --backgroundChoice EAST_COAST_OUTLINE --tempDir /scratch3/workspace/pranav_sai_uri_edu-runup/temp/
+python generateGraphs.py --stations OBS_STATIONS.json --rainExists true --obsExists true --rain /work/pi_iginis_uri_edu/pranav_sai_uri_edu/scenario_files/v18Runs/FinalWaterFiles/RainFiles/Jan24Rain.nc --backgroundChoice EAST_COAST_OUTLINE --tempDir /scratch3/workspace/pranav_sai_uri_edu-runup/temp/
 # 
-# python generateGraphs.py --stations OBS_STATIONS.json --waterExists true --water /work/pi_iginis_uri_edu/pranav_sai_uri_edu/scenario_files/v18Runs/FinalWaterFiles/Jan24.fort.63.nc --backgroundChoice RHODE_ISLAND_CHAMP --tempDir /scratch3/workspace/pranav_sai_uri_edu-runup/temp/
+python generateGraphs.py --stations OBS_STATIONS.json --waterExists true --obsExists true --water /work/pi_iginis_uri_edu/pranav_sai_uri_edu/scenario_files/v18Runs/FinalWaterFiles/Jan24.fort.63.nc --backgroundChoice RHODE_ISLAND_CHAMP --tempDir /scratch3/workspace/pranav_sai_uri_edu-runup/temp/
 
 
 # python generateGraphs.py --stations OBS_STATIONS.json --waterExists true --water /work/pi_iginis_uri_edu/pranav_sai_uri_edu/scenario_files/v18Runs/FinalWaterFiles/1938.fort.63.nc --backgroundChoice CAPE_COD_BAY_OUTLINE --tempDir /scratch3/workspace/pranav_sai_uri_edu-runup/temp/
