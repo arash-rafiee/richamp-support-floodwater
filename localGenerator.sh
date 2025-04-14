@@ -201,13 +201,22 @@
 
 # python generateGraphs.py --stations OBS_STATIONS.json --waterExists true --water /work/pi_iginis_uri_edu/pranav_sai_uri_edu/scenario_files/v18Runs/FinalWaterFiles/Jan24_1ft.fort.63.nc --backgroundChoice RHODE_ISLAND_CHAMP --tempDir /scratch3/workspace/pranav_sai_uri_edu-runup/temp/
 # 
+# python generateGraphs.py --stations OBS_STATIONS.json \
+# --wavesExists true \
+# --waverad /scratch3/workspace/pranav_sai_uri_edu-runup/Jan92024RunupRun/forecast_RI_track_1ft/rads.64.nc \
+# --waveswh /scratch3/workspace/pranav_sai_uri_edu-runup/Jan92024RunupRun/forecast_RI_track_1ft/swan_HS.63.nc \
+# --wavemwd /scratch3/workspace/pranav_sai_uri_edu-runup/Jan92024RunupRun/forecast_RI_track_1ft/swan_DIR.63.nc \
+# --wavemwp /scratch3/workspace/pranav_sai_uri_edu-runup/Jan92024RunupRun/forecast_RI_track_1ft/swan_TMM10.63.nc \
+# --wavepwp /scratch3/workspace/pranav_sai_uri_edu-runup/Jan92024RunupRun/forecast_RI_track_1ft/swan_TPS.63.nc \
+# --tempDir /scratch3/workspace/pranav_sai_uri_edu-runup/temp/ --backgroundChoice BLOCK_ISLAND_SOUND_OUTLINE
+
 python generateGraphs.py --stations OBS_STATIONS.json \
 --wavesExists true \
---waverad /scratch3/workspace/pranav_sai_uri_edu-runup/Jan92024RunupRun/forecast_RI_track_1ft/rads.64.nc \
---waveswh /scratch3/workspace/pranav_sai_uri_edu-runup/Jan92024RunupRun/forecast_RI_track_1ft/swan_HS.63.nc \
---wavemwd /scratch3/workspace/pranav_sai_uri_edu-runup/Jan92024RunupRun/forecast_RI_track_1ft/swan_DIR.63.nc \
---wavemwp /scratch3/workspace/pranav_sai_uri_edu-runup/Jan92024RunupRun/forecast_RI_track_1ft/swan_TMM10.63.nc \
---wavepwp /scratch3/workspace/pranav_sai_uri_edu-runup/Jan92024RunupRun/forecast_RI_track_1ft/swan_TPS.63.nc \
+--waverad /scratch3/workspace/pranav_sai_uri_edu-runup/Jan92024RunupRun/forecast_RI_track/rads.64.nc \
+--waveswh /scratch3/workspace/pranav_sai_uri_edu-runup/Jan92024RunupRun/forecast_RI_track/swan_HS.63.nc \
+--wavemwd /scratch3/workspace/pranav_sai_uri_edu-runup/Jan92024RunupRun/forecast_RI_track/swan_DIR.63.nc \
+--wavemwp /scratch3/workspace/pranav_sai_uri_edu-runup/Jan92024RunupRun/forecast_RI_track/swan_TMM10.63.nc \
+--wavepwp /scratch3/workspace/pranav_sai_uri_edu-runup/Jan92024RunupRun/forecast_RI_track/swan_TPS.63.nc \
 --tempDir /scratch3/workspace/pranav_sai_uri_edu-runup/temp/ --backgroundChoice BLOCK_ISLAND_SOUND_OUTLINE
 
 
