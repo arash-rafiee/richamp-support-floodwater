@@ -253,6 +253,8 @@ class GetRunup:
             surfKey = stationDict["surfKey"]
             surfCoordinates = (float(stationDict["surfLatitude"]), float(stationDict["surfLongitude"]))
             deeplineKey = stationDict["deeplineKey"]
+            slopelineKey = stationDict["slopelineKey"]
+            slopelineCoordinates = (float(stationDict["slopeLatitude"]), float(stationDict["slopeLongitude"]))
             
             runupTimes = waterDict[offshoreKey]["times"]
 #             runupTimes = swhDict[offshoreKey]["times"]
@@ -305,13 +307,16 @@ class GetRunup:
             
             
             # Your existing code
-            offshoreSwh = swhDict[offshoreKey]["swh"]
-            offshoreMwd = mwdDict[offshoreKey]["mwd"]
-            offshorePwp = pwpDict[offshoreKey]["pwp"]
+#             offshoreSwh = swhDict[offshoreKey]["swh"]
+#             offshoreMwd = mwdDict[offshoreKey]["mwd"]
+#             offshorePwp = pwpDict[offshoreKey]["pwp"]
             
-#             offshoreSwh = swhDict[deeplineKey]["swh"]
-#             offshoreMwd = mwdDict[deeplineKey]["mwd"]
-#             offshorePwp = pwpDict[deeplineKey]["pwp"]
+            offshoreSwh = swhDict[deeplineKey]["swh"]
+            offshoreMwd = mwdDict[deeplineKey]["mwd"]
+            offshorePwp = pwpDict[deeplineKey]["pwp"]
+
+            meshDict[slopelineKey]["elevation"]
+            
             
             print("deepline SWH Max: ", np.max(offshoreSwh))
             print("deepline PWP Max: ", np.max(offshorePwp))
@@ -319,8 +324,8 @@ class GetRunup:
             shorelineElevation = float(meshDict[key]["elevation"])
             surfElevation = float(meshDict[surfKey]["elevation"])
             
-            offshoreElevation = float(meshDict[offshoreKey]["elevation"])
-#             offshoreElevation = float(meshDict[deeplineKey]["elevation"])
+#             offshoreElevation = float(meshDict[offshoreKey]["elevation"])
+            offshoreElevation = float(meshDict[deeplineKey]["elevation"])
 
             print("deeplineElevation: ", offshoreElevation)
             # Calculating wave parameters preserved in arrays
@@ -359,6 +364,8 @@ class GetRunup:
             # Step 5: Update offshoreSwh and recalculate steepness
             offshoreSwh = deepwaterSwh  # As requested
             offshoreSteepness = offshoreSwh / offshoreWavelength  # Updated steepness using deepwater values
+
+            slopelineElevation = float(meshDict[slopelineKey]["elevation"])
 
             # Now offshoreSwh represents the deepwater significant wave height
             waterlineKeys = []
@@ -440,8 +447,12 @@ class GetRunup:
 #                 Now I need to calculate the averageSlope using the waterlineKey point
 
 
-                waterlineDistance = haversine.haversine(waterlineCoordinates, adjacentWaterlineCoordinates) * 1000
-                averageSlope = math.atan((waterlineElevation - adjacentWaterlineElevation) / waterlineDistance)
+#                 waterlineDistance = haversine.haversine(waterlineCoordinates, adjacentWaterlineCoordinates) * 1000
+#                 averageSlope = math.atan((waterlineElevation - adjacentWaterlineElevation) / waterlineDistance)
+#                 averageSlopes.append(averageSlope)
+                
+                slopelineDistance = haversine.haversine(slopelineCoordinates, waterlineCoordinates) * 1000
+                averageSlope = math.atan((slopelineElevation - waterlineElevation) / slopelineDistance)
                 averageSlopes.append(averageSlope)
                 
 #                 Get the water elevation at the waterline point.

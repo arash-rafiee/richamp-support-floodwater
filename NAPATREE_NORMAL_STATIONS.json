@@ -18,15 +18,15 @@
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Napatree Offshore",
-      "latitude": "40.967",
-      "longitude": "-71.124"
+      "latitude": "41.19892",
+      "longitude": "-71.80623"
     },
     "43": {
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Napatree4 Deepline",
-      "latitude": "41.268301",
-      "longitude": "-71.851077"
+      "latitude": "41.288716",
+      "longitude": "-71.863610"
     },
     "50": {
       "id": "RUNUP",
@@ -46,8 +46,8 @@
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Napatree5 Deepline",
-      "latitude": "41.267393",
-      "longitude": "-71.852924"
+      "latitude": "41.287491",
+      "longitude": "-71.866333"
     },
     "30": {
       "id": "RUNUP",
@@ -67,8 +67,8 @@
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Napatree3 Deepline",
-      "latitude": "41.267472",
-      "longitude": "-71.853926"
+      "latitude": "41.288858",
+      "longitude": "-71.863157"
     },
     "20": {
       "id": "RUNUP",
@@ -88,8 +88,8 @@
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Napatree2 Deepline",
-      "latitude": "41.266073",
-      "longitude": "-71.863259"
+      "latitude": "41.288437",
+      "longitude": "-71.866335"
     },
     "10": {
       "id": "RUNUP",
@@ -109,8 +109,8 @@
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Napatree1 Deepline",
-      "latitude": "41.266176",
-      "longitude": "-71.870864"
+      "latitude": "41.288560",
+      "longitude": "-71.868052"
     },
     "40000": {
       "id": "RUNUP",
@@ -4951,6 +4951,41 @@
       "name": "Napatree1 90.000 m",
       "latitude": "41.310137",
       "longitude": "-71.865339"
+    },
+    "40s": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree4 Slopeline",
+      "latitude": "41.307497",
+      "longitude": "-71.875146"
+    },
+    "50s": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree5 Slopeline",
+      "latitude": "41.305980",
+      "longitude": "-71.878677"
+    },
+    "30s": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree3 Slopeline",
+      "latitude": "41.308532",
+      "longitude": "-71.871655"
+    },
+    "20s": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree2 Slopeline",
+      "latitude": "41.309012",
+      "longitude": "-71.869167"
+    },
+    "10s": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree1 Slopeline",
+      "latitude": "41.309152",
+      "longitude": "-71.865463"
     }
   },
   "NDBC": {
@@ -4958,43 +4993,43 @@
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Napatree Offshore",
-      "latitude": "40.967",
-      "longitude": "-71.124"
+      "latitude": "41.19892",
+      "longitude": "-71.80623"
     },
     "43": {
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Napatree4 Deepline",
-      "latitude": "41.268301",
-      "longitude": "-71.851077"
+      "latitude": "41.288716",
+      "longitude": "-71.863610"
     },
     "13": {
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Napatree1 Deepline",
-      "latitude": "41.266176",
-      "longitude": "-71.870864"
+      "latitude": "41.288560",
+      "longitude": "-71.868052"
     },
     "23": {
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Napatree2 Deepline",
-      "latitude": "41.266073",
-      "longitude": "-71.863259"
+      "latitude": "41.288437",
+      "longitude": "-71.866335"
     },
     "33": {
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Napatree3 Deepline",
-      "latitude": "41.267472",
-      "longitude": "-71.853926"
+      "latitude": "41.288858",
+      "longitude": "-71.863157"
     },
     "53": {
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Napatree5 Deepline",
-      "latitude": "41.267393",
-      "longitude": "-71.852924"
+      "latitude": "41.287491",
+      "longitude": "-71.866333"
     }
   },
   "NOS": {
@@ -5002,43 +5037,43 @@
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Napatree Offshore",
-      "latitude": "40.967",
-      "longitude": "-71.124"
+      "latitude": "41.19892",
+      "longitude": "-71.80623"
     },
     "43": {
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Napatree4 Deepline",
-      "latitude": "41.268301",
-      "longitude": "-71.851077"
+      "latitude": "41.288716",
+      "longitude": "-71.863610"
     },
     "13": {
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Napatree1 Deepline",
-      "latitude": "41.266176",
-      "longitude": "-71.870864"
+      "latitude": "41.288560",
+      "longitude": "-71.868052"
     },
     "23": {
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Napatree2 Deepline",
-      "latitude": "41.266073",
-      "longitude": "-71.863259"
+      "latitude": "41.288437",
+      "longitude": "-71.866335"
     },
     "33": {
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Napatree3 Deepline",
-      "latitude": "41.267472",
-      "longitude": "-71.853926"
+      "latitude": "41.288858",
+      "longitude": "-71.863157"
     },
     "53": {
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Napatree5 Deepline",
-      "latitude": "41.267393",
-      "longitude": "-71.852924"
+      "latitude": "41.287491",
+      "longitude": "-71.866333"
     },
     "40000": {
       "id": "RUNUP",
@@ -9896,7 +9931,10 @@
       "surfLatitude": "41.303351",
       "surfLongitude": "-71.872599",
       "offshoreLatitude": "41.19892",
-      "offshoreLongitude": "-71.80623"
+      "offshoreLongitude": "-71.80623",
+      "slopelineKey": "40s",
+      "slopeLatitude": "41.307497",
+      "slopeLongitude": "-71.875146"
     },
     "50": {
       "id": "RUNUP",
@@ -9912,7 +9950,10 @@
       "surfLatitude": "41.301188",
       "surfLongitude": "-71.875477",
       "offshoreLatitude": "41.19892",
-      "offshoreLongitude": "-71.80623"
+      "offshoreLongitude": "-71.80623",
+      "slopelineKey": "50s",
+      "slopeLatitude": "41.305980",
+      "slopeLongitude": "-71.878677"
     },
     "30": {
       "id": "RUNUP",
@@ -9928,7 +9969,10 @@
       "surfLatitude": "41.303533",
       "surfLongitude": "-71.869495",
       "offshoreLatitude": "41.19892",
-      "offshoreLongitude": "-71.80623"
+      "offshoreLongitude": "-71.80623",
+      "slopelineKey": "30s",
+      "slopeLatitude": "41.308532",
+      "slopeLongitude": "-71.871655"
     },
     "20": {
       "id": "RUNUP",
@@ -9944,7 +9988,10 @@
       "surfLatitude": "41.304358",
       "surfLongitude": "-71.868526",
       "offshoreLatitude": "41.19892",
-      "offshoreLongitude": "-71.80623"
+      "offshoreLongitude": "-71.80623",
+      "slopelineKey": "20s",
+      "slopeLatitude": "41.309012",
+      "slopeLongitude": "-71.869167"
     },
     "10": {
       "id": "RUNUP",
@@ -9960,7 +10007,10 @@
       "surfLatitude": "41.302815",
       "surfLongitude": "-71.866260",
       "offshoreLatitude": "41.302815",
-      "offshoreLongitude": "-71.866260"
+      "offshoreLongitude": "-71.866260",
+      "slopelineKey": "10s",
+      "slopeLatitude": "41.309152",
+      "slopeLongitude": "-71.865463"
     }
   },
   "NORMAL": {

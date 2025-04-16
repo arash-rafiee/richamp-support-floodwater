@@ -3,67 +3,13 @@ import math
 
 HYPERRESOLUTION = 1
 HYPERPOINTS = 120
-DEEPLINE_DISTANCE = 5000  # Default single distance
-# DEEPLINE_DISTANCES = [
-#     1000,  # 7m depth
-#     1100,  # 10m depth
-#     2200,  # 18m depth
-#     2400,  # 25m depth
-#     3500,  # 40m depth
-#     4500,  # 40m depth
-#     5500,  # 37m depth
-#     6500,  # 38-49m depth
-#     7500,  # 40-45m depth
-#     8500,  # 40-43m depth
-#     9500,  # 40m depth
-#     10500, # 40m depth
-#     11500, # 39m depth
-#     12500, # 38m depth
-#     13500, # 35m depth
-#     14500, # 35-39m depth
-#     15500, # 35-38m depth
-#     16500, # 33-35m depth
-#     17500, # 30-33m depth
-#     18500,  # 25-30m depth
-#     19500,  # 25-30m depth
-#     20500,  # 25-30m depth
-#     21500,  # 25-30m depth
-#     22500,  # 25-30m depth
-#     23500,  # 25-30m depth
-#     24500,  # 25-30m depth
-#     25500,  # 25-30m depth
-#     26500,  # 25-30m depth
-#     27500,  # 25-30m depth
-#     28500,  # 25-30m depth
-#     29500  # 25-30m depth
-# ]
-
+DEEPLINE_DISTANCE = 2500  # Default single distance
+SLOPELINE_DISTANCE = 200  # New parameter for slopeline distance in meters
 DEEPLINE_DISTANCES = [
-    1000,  # 7m depth
-    2200,  # 18m depth
-    3500,  # 40m depth
-    5500,  # 37m depth
-    7500,  # 40-45m depth
-    9500,  # 40m depth
-    10500, # 40m depth
-    12500, # 38m depth
-    14500, # 35-39m depth
-    16500, # 33-35m depth
-    18500,  # 25-30m depth
-    20500,  # 25-30m depth
-    22500,  # 25-30m depth
-    24500,  # 25-30m depth
-    26500,  # 25-30m depth
-    28500,  # 25-30m depth
-    29500,  # 25-30m depth
-    31500,  # 25-30m depth
-    33500,  # 25-30m depth
-    35500,  # 25-30m depth
-    37500,  # 25-30m depth
-    39500,  # 25-30m depth
-    41500  # 25-30m depth
+    1000, 2200, 3500, 5500, 7500, 9500, 10500, 12500, 14500, 16500,
+    18500, 20500, 22500, 24500, 26500, 28500, 29500, 31500, 33500, 35500,
+    37500, 39500, 41500
 ]
-
 
 def calculate_bearing(lat1, lon1, lat2, lon2):
     lat1_rad, lon1_rad = math.radians(lat1), math.radians(lon1)
@@ -109,6 +55,35 @@ def generate_points_along_line(json_data, resolution=HYPERRESOLUTION, points_cou
             for section in ['ASSET', 'NOS']:
                 json_data[section][new_key] = new_point
             point_counter += 1
+
+def generate_slopeline_points(json_data, distance=SLOPELINE_DISTANCE):
+    for runup_id, runup_data in json_data['RUNUP'].items():
+        shoreline_lat, shoreline_lon = float(runup_data['latitude']), float(runup_data['longitude'])
+        surf_lat, surf_lon = float(runup_data['surfLatitude']), float(runup_data['surfLongitude'])
+        bearing = calculate_bearing(shoreline_lat, shoreline_lon, surf_lat, surf_lon)
+        
+        # Calculate slopeline coordinates
+        new_lat, new_lon = calculate_new_point(shoreline_lat, shoreline_lon, bearing, distance)
+        
+        # Create unique key for slopeline
+        slopeline_key = f"{runup_id}s"
+        
+        # Add slopelineKey and coordinates to RUNUP section
+        runup_data['slopelineKey'] = slopeline_key
+        runup_data['slopeLatitude'] = f"{new_lat:.6f}"
+        runup_data['slopeLongitude'] = f"{new_lon:.6f}"
+        
+        # Create slopeline point
+        slopeline_point = {
+            "id": "RUNUP",
+            "source": "RUNUP",
+            "name": f"{runup_data['name']} Slopeline",
+            "latitude": f"{new_lat:.6f}",
+            "longitude": f"{new_lon:.6f}"
+        }
+        
+        # Add to ASSET section
+        json_data['ASSET'][slopeline_key] = slopeline_point
 
 def generate_deepline_points(json_data, distance=DEEPLINE_DISTANCE):
     for runup_id, runup_data in json_data['RUNUP'].items():
@@ -267,6 +242,7 @@ with open('RUNUP_NAPATREE_STATIONS.json', 'r') as file:
     data_normal = json.load(file)
 generate_points_along_line(data_normal)
 generate_deepline_points(data_normal, distance=DEEPLINE_DISTANCE)
+generate_slopeline_points(data_normal, distance=SLOPELINE_DISTANCE)
 generate_tangent_points(data_normal)
 with open('NAPATREE_NORMAL_STATIONS.json', 'w') as file:
     json.dump(data_normal, file, indent=2)
@@ -279,7 +255,7 @@ generate_deepline_points(data_long, distance=DEEPLINE_DISTANCE)
 with open('NAPATREE_LONG_STATIONS.json', 'w') as file:
     json.dump(data_long, file, indent=2)
 
-# DEEP stations (NORMAL points + TANGENT points + multiple deepline points)
+# DEEP stations
 with open('RUNUP_NAPATREE_STATIONS.json', 'r') as file:
     data_deep = json.load(file)
 generate_multiple_deepline_points(data_deep)
