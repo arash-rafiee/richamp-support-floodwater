@@ -145,6 +145,9 @@ def main():
         "--stillwater", help="Water elevation netcdf file", type=str
     )
     p.add_argument(
+        "--tidewater", help="Tide Water elevation netcdf file", type=str
+    )
+    p.add_argument(
         "--rain", help="Rain netcdf file", type=str
     )
     p.add_argument(
@@ -183,6 +186,9 @@ def main():
     )
     p.add_argument(
         "--stillwaterExists", type=bool, help="Graph adcirc still water elevation data"
+    )
+    p.add_argument(
+        "--tidewaterExists", type=bool, help="Graph adcirc tide water elevation data"
     )
     p.add_argument(
         "--wavesExists", type=bool, help="Graph adcirc wave data"
@@ -465,6 +471,14 @@ def main():
 #         (stillwaterStartDateObject, stillwaterEndDateObject) = Fort63Reader(ADCIRC_WATER_FILE=ADCIRC_STILLWATER_FILE, STATIONS_FILE=STATIONS_FILE, ADCIRC_WATER_DATA_FILE=ADCIRC_STILLWATER_DATA_FILE, BACKGROUND_AXIS=backgroundAxis).generateWindDataForStations()
         dataToGraph["STILLWATER"] = ADCIRC_STILLWATER_DATA_FILE
 
+    print("args.tidewaterExists", args.tidewaterExists, flush=True)
+    if(args.tidewaterExists):
+        ADCIRC_TIDEWATER_FILE = args.tidewater
+        ADCIRC_TIDEWATER_DATA_FILE = water_temp_directory + "adcirc_tidewater_data_file" + ".json"
+        (tidewaterStartDateObject, tidewaterEndDateObject) = Fort63Reader(ADCIRC_WATER_FILE=ADCIRC_TIDEWATER_FILE, STATIONS_FILE=STATIONS_FILE, ADCIRC_WATER_DATA_FILE=ADCIRC_TIDEWATER_DATA_FILE, BACKGROUND_AXIS=backgroundAxis).generateWindDataForStations()
+        dataToGraph["TIDEWATER"] = ADCIRC_TIDEWATER_DATA_FILE
+
+
     print("args.meshExists", args.meshExists, flush=True)
     if(args.meshExists):
         ADCIRC_MESH_FILE = args.mesh
@@ -565,6 +579,7 @@ def main():
                 WAVE_PWP_DATA_FILE=dataToGraph["PWP"],
                 ADCIRC_MESH_DATA_FILE=dataToGraph["MESH"],
                 ADCIRC_STILLWATER_DATA_FILE=dataToGraph["STILLWATER"],
+                ADCIRC_TIDEWATER_DATA_FILE=dataToGraph["TIDEWATER"],
                 RUNUP_DATA_FILE = RUNUP_DATA_FILE
             )
             dataToGraph["RUNUP"] = RUNUP_DATA_FILE

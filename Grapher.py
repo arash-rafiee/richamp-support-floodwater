@@ -131,6 +131,7 @@ class Grapher:
         self.rainExists = False
         self.waterExists = False
         self.stillwaterExists = False
+        self.tidewaterExists = False
         self.etaExists = False
         self.meshExists = False
         self.runupExists = False
@@ -167,6 +168,8 @@ class Grapher:
             self.waterExists = True
         if("STILLWATER" in dataToGraph):
             self.stillwaterExists = True
+        if("TIDEWATER" in dataToGraph):
+            self.tidewaterExists = True
         if("ETA" in dataToGraph):
             self.etaExists = True
         if("MESH" in dataToGraph):
@@ -261,6 +264,9 @@ class Grapher:
         
         self.stillwaterTimes = []
         self.datapointsStillwaters = []
+        
+        self.tidewaterTimes = []
+        self.datapointsTidewaters = []
         
         self.etaLongitudes = []
         self.etaLatitudes = []
@@ -586,9 +592,14 @@ class Grapher:
             if(self.stillwaterExists):
                 with open(dataToGraph["STILLWATER"]) as outfile:
                     stillwaterDataset = json.load(outfile)
+                    
+            if(self.tidewaterExists):
+                with open(dataToGraph["TIDEWATER"]) as outfile:
+                    tidewaterDataset = json.load(outfile)
                 
             waterTimestampsInitialized = False
             stillwaterTimestampsInitialized = False
+            tidewaterTimestampsInitialized = False
             for stationKey in waterDataset.keys():
                 if(stationKey == "map_data"):
                     self.mapWaterTriangles = waterDataset["map_data"]["map_triangles"]
@@ -632,6 +643,14 @@ class Grapher:
                                 datapointStillwaters.append(stillwaterDataset[stationKey]["water"][index])
                             stillwaterTimestampsInitialized = True
                             self.datapointsStillwaters.append(datapointStillwaters)
+                        if(self.tidewaterExists):
+                            datapointTidewaters = []
+                            for index in range(len(tidewaterDataset[stationKey]["times"])):
+                                if(not tidewaterTimestampsInitialized):
+                                    self.tidewaterTimes.append(self.unixTimeToDeltaHours(tidewaterDataset[stationKey]["times"][index], self.waterStartDate))
+                                datapointTidewaters.append(tidewaterDataset[stationKey]["water"][index])
+                            tidewaterTimestampsInitialized = True
+                            self.datapointsTidewaters.append(datapointTidewaters)
                         if(self.tideExists):
                             tideTimes = []
                             tideWaters = []
@@ -1595,6 +1614,8 @@ class Grapher:
                 ax.plot(self.waterTimes, self.datapointsWaters[index], label="SWL + setup")
                 if(self.stillwaterExists):
                     ax.plot(self.stillwaterTimes, self.datapointsStillwaters[index], label="SWL")
+                if(self.tidewaterExists):
+                    ax.plot(self.tidewaterTimes, self.datapointsTidewaters[index], label="Tide")
                 if(self.tideExists):
                     ax.plot(self.tideDatapointsTimes[index], self.tideDatapointsWaters[index], label="Station")
 #                     ax.plot(self.tideDatapointsPredictionTimes[index], self.tideDatapointsPredictionWaters[index], label="Prediction")
@@ -1819,6 +1840,9 @@ class Grapher:
                     
                     if(self.stillwaterExists):
                         ax.plot(self.stillwaterTimes, self.datapointsStillwaters[index], label="Forecast")
+                        
+                    if(self.tidewaterExists):
+                        ax.plot(self.tidewaterTimes, self.datapointsTidewaters[index], label="Forecast")
                     # Plot tide data if available
                     if self.tideExists:
                         ax.plot(self.tideDatapointsTimes[index], self.tideDatapointsWaters[index], label=f"Station {stationName}")

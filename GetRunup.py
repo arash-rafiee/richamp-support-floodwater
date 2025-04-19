@@ -205,6 +205,7 @@ class GetRunup:
         WAVE_PWP_DATA_FILE="",
         ADCIRC_MESH_DATA_FILE="",
         ADCIRC_STILLWATER_DATA_FILE="",
+        ADCIRC_TIDEWATER_DATA_FILE=""
         RUNUP_DATA_FILE=""):
         print("Generating Runup!", flush=True)
         temp_directory = RUNUP_DATA_FILE[0:RUNUP_DATA_FILE.rfind("/") + 1]
@@ -222,6 +223,8 @@ class GetRunup:
             meshDict = json.load(datafile)
         with open(ADCIRC_STILLWATER_DATA_FILE) as datafile:
             stillwaterDict = json.load(datafile)
+        with open(ADCIRC_TIDEWATER_DATA_FILE) as datafile:
+            tidewaterDict = json.load(datafile)
             
 
 
@@ -402,13 +405,14 @@ class GetRunup:
             for index, waterValue in enumerate(offshoreWater):
                 waterlineKey = None
                 stillwaterLineKey = None
+                tidewaterLineKey = None
 #                Find the waterline key
                 for normalKey in normalDict:
                     normalStationWaterValue = waterDict[normalKey]["water"][index]
-                    normalStationStillwaterValue = stillwaterDict[normalKey]["water"][index]
+#                     normalStationStillwaterValue = stillwaterDict[normalKey]["water"][index]
 #                     print("normalStationWaterValue, index", index, normalStationWaterValue)
-                    if(not np.isnan(normalStationStillwaterValue)):
-                        stillwaterLineKey = normalKey
+#                     if(not np.isnan(normalStationStillwaterValue)):
+#                         stillwaterLineKey = normalKey
                     if(not np.isnan(normalStationWaterValue)):
                         waterlineKey = normalKey
                         break
@@ -426,6 +430,13 @@ class GetRunup:
 #                     print("normalStationWaterValue, index", index, normalStationWaterValue)
                     if(not np.isnan(normalStationStillwaterValue)):
                         stillwaterLineKey = normalKey
+                        break
+                        
+                for normalKey in normalDict:
+                    normalStationTidewaterValue = tidewaterDict[normalKey]["water"][index]
+#                     print("normalStationWaterValue, index", index, normalStationWaterValue)
+                    if(not np.isnan(normalStationTidewaterValue)):
+                        tidewaterLineKey = normalKey
                         break
 #                 Now I have the waterline key
                 
@@ -467,6 +478,7 @@ class GetRunup:
 #                 waterlineKey = waterlineKeys[0]
                 waterlineWaterValue = waterDict[stillwaterLineKey]["water"][index]
                 waterlineStillwaterValue = stillwaterDict[stillwaterLineKey]["water"][index]
+                waterlineTidewaterValue = tidewaterDict[tidewaterLineKey]["water"][index]
 #                 print("waterlineWaterValue, waterlineStillWaterValue", waterlineWaterValue, waterlineStillwaterValue)
 #                 print("waterlineDistance, averageSlope, coordinates", waterlineDistance, averageSlope, waterlineCoordinates, adjacentWaterlineCoordinates)
                 #           Then I need to calculate the wave parameters
@@ -510,12 +522,16 @@ class GetRunup:
 #               only be applied to the setup! not the still water level also. The still water level should be added without the 
 #               1.1 factor. this is a meme level situation.
                 adcircSetup = waterlineWaterValue - waterlineStillwaterValue
+                adcircStormSurge = waterlineStillwaterValue - waterlineTidewaterValue
                 adcircRunup = self.calculateAdcircRunup(waterlineWaterValue, stockdonRunupNoSetup)
                 
 #                 Hijack some existing variables
-                runupHolmanHigh = self.calculateAdcircRunupUsingSetupFullSwash(adcircSetup, stockdonRunupNoSetup, waterlineStillwaterValue)
                 runupHolmanMid = self.calculateAdcircRunupUsingSetup(adcircSetup, stockdonRunupNoSetup, waterlineStillwaterValue)
                 runupHolmanLow = offshoreSwh[index]
+                stockdonSetupLow = adcircSetup
+                runupHolmanHigh = adcircStormSurge
+                
+                adcircSetup = adcircSetup + adrircStormSurge
 #                 runupValues.append(stockdonRunup)
                 runupValuesHolmanHigh.append(runupHolmanHigh)
                 runupValuesHolmanMid.append(runupHolmanMid)
