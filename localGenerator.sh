@@ -134,6 +134,8 @@ python generateGraphs.py --stations NAPATREE_NORMAL_STATIONS.json \
 --wavemwp /scratch3/workspace/pranav_sai_uri_edu-runup/Jan92024RunupRun/forecast_RI_track/swan_TMM10.63.nc \
 --wavepwp /scratch3/workspace/pranav_sai_uri_edu-runup/Jan92024RunupRun/forecast_RI_track/swan_TPS.63.nc \
 --waterExists true --water /scratch3/workspace/pranav_sai_uri_edu-runup/Jan92024RunupRun/forecast_RI_track/fort.63.nc \
+--stillwaterExists true --stillwater /scratch3/workspace/pranav_sai_uri_edu-runup/Jan92024RunupRun/forecast_RI_track/fort.63.nc \
+--tidewaterExists true --tidewater /scratch3/workspace/pranav_sai_uri_edu-runup/Jan92024RunupRun/forecast_RI_track/fort.63.nc \
 --meshExists true --mesh /scratch3/workspace/pranav_sai_uri_edu-runup/Jan92024RunupRun/forecast_RI_track/fort.14 \
 --generateRunup true \
 --tempDir /scratch3/workspace/pranav_sai_uri_edu-runup/temp/ --backgroundChoice NAPATREE_BEACH
