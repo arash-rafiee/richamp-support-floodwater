@@ -532,7 +532,7 @@ class GetRunup:
                 stockdonSetupLow = adcircSetup
                 runupHolmanHigh = adcircStormSurge
                 
-                adcircSetup = adcircSetup + adrircStormSurge
+                adcircSetup = adcircSetup + adcircStormSurge
 #                 runupValues.append(stockdonRunup)
                 runupValuesHolmanHigh.append(runupHolmanHigh)
                 runupValuesHolmanMid.append(runupHolmanMid)
