@@ -1,0 +1,321 @@
+{
+  "ASSET": {
+    "10sl000": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree1 Slope 0.0m",
+      "latitude": "41.310943",
+      "longitude": "-71.865238"
+    },
+    "10sl001": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree1 Slope 10.0m",
+      "latitude": "41.310853",
+      "longitude": "-71.865249"
+    },
+    "10sl002": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree1 Slope 20.0m",
+      "latitude": "41.310764",
+      "longitude": "-71.865261"
+    },
+    "10sl003": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree1 Slope 30.0m",
+      "latitude": "41.310674",
+      "longitude": "-71.865272"
+    },
+    "10sl004": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree1 Slope 40.0m",
+      "latitude": "41.310585",
+      "longitude": "-71.865283"
+    },
+    "10sl005": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree1 Slope 50.0m",
+      "latitude": "41.310495",
+      "longitude": "-71.865294"
+    },
+    "10sl006": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree1 Slope 60.0m",
+      "latitude": "41.310406",
+      "longitude": "-71.865306"
+    },
+    "10sl007": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree1 Slope 70.0m",
+      "latitude": "41.310316",
+      "longitude": "-71.865317"
+    },
+    "10sl008": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree1 Slope 80.0m",
+      "latitude": "41.310227",
+      "longitude": "-71.865328"
+    },
+    "10sl009": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree1 Slope 90.0m",
+      "latitude": "41.310137",
+      "longitude": "-71.865339"
+    },
+    "10sl010": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree1 Slope 100.0m",
+      "latitude": "41.310048",
+      "longitude": "-71.865351"
+    },
+    "10sl011": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree1 Slope 110.0m",
+      "latitude": "41.309958",
+      "longitude": "-71.865362"
+    },
+    "10sl012": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree1 Slope 120.0m",
+      "latitude": "41.309869",
+      "longitude": "-71.865373"
+    },
+    "10sl013": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree1 Slope 130.0m",
+      "latitude": "41.309779",
+      "longitude": "-71.865384"
+    },
+    "10sl014": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree1 Slope 140.0m",
+      "latitude": "41.309690",
+      "longitude": "-71.865396"
+    },
+    "10sl015": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree1 Slope 150.0m",
+      "latitude": "41.309600",
+      "longitude": "-71.865407"
+    },
+    "10sl016": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree1 Slope 160.0m",
+      "latitude": "41.309510",
+      "longitude": "-71.865418"
+    },
+    "10sl017": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree1 Slope 170.0m",
+      "latitude": "41.309421",
+      "longitude": "-71.865429"
+    },
+    "10sl018": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree1 Slope 180.0m",
+      "latitude": "41.309331",
+      "longitude": "-71.865441"
+    },
+    "10sl019": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree1 Slope 190.0m",
+      "latitude": "41.309242",
+      "longitude": "-71.865452"
+    },
+    "10sl020": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree1 Slope 200.0m",
+      "latitude": "41.309152",
+      "longitude": "-71.865463"
+    }
+  },
+  "NDBC": {
+    "42": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree Offshore",
+      "latitude": "41.19892",
+      "longitude": "-71.80623"
+    },
+    "43": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree4 Deepline",
+      "latitude": "41.291166",
+      "longitude": "-71.865114"
+    },
+    "13": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree1 Deepline",
+      "latitude": "41.291246",
+      "longitude": "-71.867714"
+    },
+    "23": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree2 Deepline",
+      "latitude": "41.291121",
+      "longitude": "-71.866704"
+    },
+    "33": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree3 Deepline",
+      "latitude": "41.291424",
+      "longitude": "-71.864265"
+    },
+    "53": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree5 Deepline",
+      "latitude": "41.289903",
+      "longitude": "-71.867943"
+    }
+  },
+  "NOS": {
+    "42": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree Offshore",
+      "latitude": "41.19892",
+      "longitude": "-71.80623"
+    },
+    "43": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree4 Deepline",
+      "latitude": "41.291166",
+      "longitude": "-71.865114"
+    },
+    "13": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree1 Deepline",
+      "latitude": "41.291246",
+      "longitude": "-71.867714"
+    },
+    "23": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree2 Deepline",
+      "latitude": "41.291121",
+      "longitude": "-71.866704"
+    },
+    "33": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree3 Deepline",
+      "latitude": "41.291424",
+      "longitude": "-71.864265"
+    },
+    "53": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "name": "Napatree5 Deepline",
+      "latitude": "41.289903",
+      "longitude": "-71.867943"
+    }
+  },
+  "RUNUP": {
+    "40": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "surfKey": "41",
+      "offshoreKey": "42",
+      "deeplineKey": "43",
+      "name": "Napatree4",
+      "latitude": "41.30913",
+      "longitude": "-71.87615",
+      "tangentLatitude": "41.30924",
+      "tangentLongitude": "-71.87583",
+      "surfLatitude": "41.303351",
+      "surfLongitude": "-71.872599",
+      "offshoreLatitude": "41.19892",
+      "offshoreLongitude": "-71.80623"
+    },
+    "50": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "surfKey": "51",
+      "offshoreKey": "42",
+      "deeplineKey": "53",
+      "name": "Napatree5",
+      "latitude": "41.307588",
+      "longitude": "-71.879751",
+      "tangentLatitude": "41.307614",
+      "tangentLongitude": "-71.879688",
+      "surfLatitude": "41.301188",
+      "surfLongitude": "-71.875477",
+      "offshoreLatitude": "41.19892",
+      "offshoreLongitude": "-71.80623"
+    },
+    "30": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "surfKey": "31",
+      "offshoreKey": "42",
+      "deeplineKey": "33",
+      "name": "Napatree3",
+      "latitude": "41.310243",
+      "longitude": "-71.872394",
+      "tangentLatitude": "41.310266",
+      "tangentLongitude": "-71.872291",
+      "surfLatitude": "41.303533",
+      "surfLongitude": "-71.869495",
+      "offshoreLatitude": "41.19892",
+      "offshoreLongitude": "-71.80623"
+    },
+    "20": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "surfKey": "21",
+      "offshoreKey": "42",
+      "deeplineKey": "23",
+      "name": "Napatree2",
+      "latitude": "41.310801",
+      "longitude": "-71.869413",
+      "tangentLatitude": "41.310817",
+      "tangentLongitude": "-71.869263",
+      "surfLatitude": "41.304358",
+      "surfLongitude": "-71.868526",
+      "offshoreLatitude": "41.19892",
+      "offshoreLongitude": "-71.80623"
+    },
+    "10": {
+      "id": "RUNUP",
+      "source": "RUNUP",
+      "surfKey": "11",
+      "offshoreKey": "42",
+      "deeplineKey": "13",
+      "name": "Napatree1",
+      "latitude": "41.310943",
+      "longitude": "-71.865238",
+      "tangentLatitude": "41.310939",
+      "tangentLongitude": "-71.865137",
+      "surfLatitude": "41.302815",
+      "surfLongitude": "-71.866260",
+      "offshoreLatitude": "41.302815",
+      "offshoreLongitude": "-71.866260"
+    }
+  }
+}

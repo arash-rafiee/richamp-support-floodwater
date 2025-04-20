@@ -1,10 +1,12 @@
 import json
+import copy
 import math
 
 HYPERRESOLUTION = 1
 HYPERPOINTS = 120
 DEEPLINE_DISTANCE = 2500  # Default single distance
-SLOPELINE_DISTANCE = 200  # New parameter for slopeline distance in meters
+SLOPELINE_DISTANCE = 200  # Slopeline distance in meters
+SLOPELINE_DELIM_DISTANCE = 10  # Delimitation distance for slope points in meters
 DEEPLINE_DISTANCES = [
     1000, 2200, 3500, 5500, 7500, 9500, 10500, 12500, 14500, 16500,
     18500, 20500, 22500, 24500, 26500, 28500, 29500, 31500, 33500, 35500,
@@ -84,6 +86,39 @@ def generate_slopeline_points(json_data, distance=SLOPELINE_DISTANCE):
         
         # Add to ASSET section
         json_data['ASSET'][slopeline_key] = slopeline_point
+
+def generate_slope_stations(json_data, max_distance=SLOPELINE_DISTANCE, delim_distance=SLOPELINE_DELIM_DISTANCE):
+    # Create a copy of the data to avoid modifying the original
+    slope_data = copy.deepcopy(json_data)
+    
+    for runup_id, runup_data in slope_data['RUNUP'].items():
+        shoreline_lat, shoreline_lon = float(runup_data['latitude']), float(runup_data['longitude'])
+        surf_lat, surf_lon = float(runup_data['surfLatitude']), float(runup_data['surfLongitude'])
+        bearing = calculate_bearing(shoreline_lat, shoreline_lon, surf_lat, surf_lon)
+        
+        # Clear existing ASSET entries to only include slope points
+        slope_data['ASSET'] = {}
+        
+        # Generate points at delim_distance intervals up to max_distance
+        point_counter = 0
+        distance = 0
+        while distance <= max_distance:
+            new_lat, new_lon = calculate_new_point(shoreline_lat, shoreline_lon, bearing, distance)
+            new_key = f"{runup_id}sl{point_counter:03d}"
+            
+            slope_point = {
+                "id": "RUNUP",
+                "source": "RUNUP",
+                "name": f"{runup_data['name']} Slope {distance:.1f}m",
+                "latitude": f"{new_lat:.6f}",
+                "longitude": f"{new_lon:.6f}"
+            }
+            
+            slope_data['ASSET'][new_key] = slope_point
+            distance += delim_distance
+            point_counter += 1
+    
+    return slope_data
 
 def generate_deepline_points(json_data, distance=DEEPLINE_DISTANCE):
     for runup_id, runup_data in json_data['RUNUP'].items():
@@ -261,3 +296,10 @@ with open('RUNUP_NAPATREE_STATIONS.json', 'r') as file:
 generate_multiple_deepline_points(data_deep)
 with open('NAPATREE_DEEP_STATIONS.json', 'w') as file:
     json.dump(data_deep, file, indent=2)
+
+# SLOPE stations
+with open('RUNUP_NAPATREE_STATIONS.json', 'r') as file:
+    data_slope = json.load(file)
+slope_data = generate_slope_stations(data_slope)
+with open('NAPATREE_SLOPE_STATIONS.json', 'w') as file:
+    json.dump(slope_data, file, indent=2)
