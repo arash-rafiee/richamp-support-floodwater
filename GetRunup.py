@@ -465,6 +465,7 @@ class GetRunup:
                 slopelineDistance = haversine.haversine(slopelineCoordinates, waterlineCoordinates) * 1000
                 averageSlope = math.atan((slopelineElevation - waterlineElevation) / slopelineDistance)
                 averageSlopes.append(averageSlope)
+                print("slopelineElevation, distance, averageSlope, waterlineElevation: ", slopelineElevation, slopelineDistance, averageSlope, waterlineElevation)
                 
 #                 Get the water elevation at the waterline point.
 #                  The minimum of this should just be the elevation of the point itself
