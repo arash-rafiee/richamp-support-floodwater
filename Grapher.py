@@ -1942,8 +1942,9 @@ class Grapher:
 #                 ax.plot(self.runupTimes, self.datapointsSetupHolmanMid[index], label="Holman Mid Tide ξ")
 #                 ax.plot(self.runupTimes, self.datapointsSetupHolmanLow[index], label="Holman Low Tide ξ")
                 ax.plot(self.runupTimes, self.datapointsSetupStockdon[index], label="Stockdon βf√(HₒLₒ)")
-                ax.plot(self.runupTimes, self.datapointsSetupAdcirc[index], label="ADCIRC+SWAN setup")
-#                 ax.plot(self.runupTimes, self.datapointsSetupStockdonLow[index], label="Stockdon Low")
+                ax.plot(self.runupTimes, self.datapointsSetupAdcirc[index], label="ADCIRC+SWAN setup+storm surge")
+                ax.plot(self.runupTimes, self.datapointsSetupStockdonLow[index], label="ADCIRC+SWAN setup")
+                ax.plot(self.runupTimes, self.datapointsRunupHolmanHigh[index], label="ADCIRC+SWAN storm surge")
 
 
                 ax.legend(loc="upper left")
