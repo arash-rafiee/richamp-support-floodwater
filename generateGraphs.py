@@ -579,7 +579,7 @@ def main():
                 WAVE_PWP_DATA_FILE=dataToGraph["PWP"],
                 ADCIRC_MESH_DATA_FILE=dataToGraph["MESH"],
 #                 ADCIRC_STILLWATER_DATA_FILE=dataToGraph["STILLWATER"],
-                ADCIRC_TIDEWATER_DATA_FILE=dataToGraph["TIDEWATER"],
+#                 ADCIRC_TIDEWATER_DATA_FILE=dataToGraph["TIDEWATER"],
                 RUNUP_DATA_FILE = RUNUP_DATA_FILE
             )
             dataToGraph["RUNUP"] = RUNUP_DATA_FILE
