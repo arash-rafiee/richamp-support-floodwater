@@ -91,13 +91,13 @@ def generate_slope_stations(json_data, max_distance=SLOPELINE_DISTANCE, delim_di
     # Create a copy of the data to avoid modifying the original
     slope_data = copy.deepcopy(json_data)
     
+    # Clear existing ASSET entries once before processing all transects
+    slope_data['ASSET'] = {}
+    
     for runup_id, runup_data in slope_data['RUNUP'].items():
         shoreline_lat, shoreline_lon = float(runup_data['latitude']), float(runup_data['longitude'])
         surf_lat, surf_lon = float(runup_data['surfLatitude']), float(runup_data['surfLongitude'])
         bearing = calculate_bearing(shoreline_lat, shoreline_lon, surf_lat, surf_lon)
-        
-        # Clear existing ASSET entries to only include slope points
-        slope_data['ASSET'] = {}
         
         # Generate points at delim_distance intervals up to max_distance
         point_counter = 0
