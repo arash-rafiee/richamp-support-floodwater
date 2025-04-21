@@ -8,6 +8,8 @@ from urllib.error import HTTPError
 from datetime import datetime, timedelta, timezone
 import json
 from Encoders import NumpyEncoder
+import pandas as pd
+import numpy as np
 import signal
 import os
 import time 
