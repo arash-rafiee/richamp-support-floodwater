@@ -216,3 +216,7 @@ Napatree Beach 2
 "lat long of north east", "(41.30960442799856, -71.87544533729552)"
 "lat long of south west", "(41.30839556639793, -71.87705466270445)"
 
+Winnapaug
+"lat long of center", "(41.325, -71.785)"
+"lat long of north east", "(41.34433416895306, -71.75925079345703)"
+"lat long of south west", "(41.30566009263403, -71.81074920654297)"

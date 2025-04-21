@@ -130,6 +130,10 @@ NAPATREE_BEACH_2_MAP = "NapatreeBeach2.png"
 NAPATREE_BEACH_2_OUTLINE_MAP = "NapatreeBeach2Outline.png"
 NAPATREE_BEACH_2_AXIS = [-71.87705466270445, -71.87544533729552, 41.30960442799856, 41.30839556639793]
 
+WINNAPAUG_MAP = "Winnapaug.png"
+WINNAPAUG_OUTLINE_MAP = "WinnapaugOutline.png"
+WINNAPAUG_AXIS = [-71.81074920654297, -71.75925079345703, 41.34433416895306, 41.30566009263403]
+
 def main():
     p = argparse.ArgumentParser(description="Make a request to generate graphs")
     p.add_argument(
@@ -421,6 +425,12 @@ def main():
     elif(backgroundChoice == "NAPATREE_BEACH_2_OUTLINE"):
         backgroundMap = NAPATREE_BEACH_2_OUTLINE_MAP
         backgroundAxis = NAPATREE_BEACH_2_AXIS
+    elif(backgroundChoice == "WINNAPAUG"):
+        backgroundMap = WINNAPAUG_MAP
+        backgroundAxis = WINNAPAUG_AXIS
+    elif(backgroundChoice == "WINNIPAUG_OUTLINE"):
+        backgroundMap = WINNAPAUG_OUTLINE_MAP
+        backgroundAxis = WINNAPAUG_AXIS
         
     print("args.adcircExists", args.adcircExists, flush=True)
     if(args.adcircExists):
@@ -487,7 +497,7 @@ def main():
 
         ADCIRC_MESH_DATA_FILE = water_temp_directory + "adcirc_elevation_data_file" + ".json"
 
-#         Fort14Reader(ADCIRC_MESH_FILE=ADCIRC_MESH_FILE, STATIONS_FILE=STATIONS_FILE, ADCIRC_MESH_DATA_FILE=ADCIRC_MESH_DATA_FILE, BACKGROUND_AXIS=backgroundAxis).generateMeshDataForStations()
+        Fort14Reader(ADCIRC_MESH_FILE=ADCIRC_MESH_FILE, STATIONS_FILE=STATIONS_FILE, ADCIRC_MESH_DATA_FILE=ADCIRC_MESH_DATA_FILE, BACKGROUND_AXIS=backgroundAxis).generateMeshDataForStations()
 #         waterStartDateObject = datetime.datetime(year=2018, month=2, day=28, hour=5)
 #         waterEndDateObject = datetime.datetime(year=2018, month=3, day=4, hour=5)
         dataToGraph["MESH"] = ADCIRC_MESH_DATA_FILE

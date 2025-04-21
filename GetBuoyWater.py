@@ -12,6 +12,8 @@ import signal
 import os
 import time 
 
+
+# Add logic to pull loaded data from txt file depending on source in station
 def alarm_handler(signum, frame):
     raise TimeoutError("URL retrieval timed out")
 
@@ -84,57 +86,61 @@ class GetBuoyWater:
             stationDict = stationsDict["NOS"][key]
             stationId = stationDict["id"]
             stationName = stationDict["name"]
-# https://opendap.co-ops.nos.noaa.gov/erddap/tabledap/IOOS_Hourly_Height_Verified_Water_Level.htmlTable?STATION_ID%2CDATUM%2CBEGIN_DATE%2CEND_DATE%2Ctime%2CWL_VALUE%2CSIGMA&STATION_ID=%228452660%22&DATUM%3E=%22MSL%22&BEGIN_DATE%3E=%222024-07-29%22&END_DATE%3E=%222024-08-10%22
-            url = "https://opendap.co-ops.nos.noaa.gov/erddap/tabledap/IOOS_Hourly_Height_Verified_Water_Level.mat?STATION_ID%2CDATUM%2CBEGIN_DATE%2CEND_DATE%2Ctime%2CWL_VALUE%2CSIGMA&STATION_ID=%22"  + stationId + "%22&DATUM%3E=%22MSL%22&BEGIN_DATE%3E=%22" + startDateFormat + "%22&END_DATE%3E=%22" + endDateFormat + "%22"
-            
-            predictionTimes = []
-            predictionWaters = []
-            for year in predictionYears:
+            stationSource = stationDict["source"]
+            if(".txt" in stationSource):
+                print("Pulling Data from Station File")
+            else:
+    # https://opendap.co-ops.nos.noaa.gov/erddap/tabledap/IOOS_Hourly_Height_Verified_Water_Level.htmlTable?STATION_ID%2CDATUM%2CBEGIN_DATE%2CEND_DATE%2Ctime%2CWL_VALUE%2CSIGMA&STATION_ID=%228452660%22&DATUM%3E=%22MSL%22&BEGIN_DATE%3E=%222024-07-29%22&END_DATE%3E=%222024-08-10%22
+                url = "https://opendap.co-ops.nos.noaa.gov/erddap/tabledap/IOOS_Hourly_Height_Verified_Water_Level.mat?STATION_ID%2CDATUM%2CBEGIN_DATE%2CEND_DATE%2Ctime%2CWL_VALUE%2CSIGMA&STATION_ID=%22"  + stationId + "%22&DATUM%3E=%22MSL%22&BEGIN_DATE%3E=%22" + startDateFormat + "%22&END_DATE%3E=%22" + endDateFormat + "%22"
+                
+                predictionTimes = []
+                predictionWaters = []
+                for year in predictionYears:
+                    try:
+                        predictionUrl = "https://tidesandcurrents.noaa.gov/cgi-bin/predictiondownload.cgi?&stnid=" + stationId +  "&threshold=&thresholdDirection=greaterThan&bdate=" + str(year) + "&timezone=GMT&datum=NAVD&clock=24hour&type=txt&annual=true"
+                        print("predictionUrl", predictionUrl)
+                        predictionFilename = temp_directory + stationDict["id"] + str(year) + "_TidePrediction.mat"
+                        safe_urlretrieve(predictionUrl, predictionFilename)
+                        with open(predictionFilename) as file:
+                            lines = file.readlines()
+                            if(len(lines) > 0):
+                                for line in lines[14::]:
+                                    data = line.split("\t")
+    #                                 https://www.digitalocean.com/community/tutorials/python-string-to-datetime-strptime
+                                    time = datetime.strptime(data[0] + data[2] + "GMT", "%Y/%m/%d%H:%M%Z")
+                                    time = time.replace(tzinfo=timezone.utc)
+                                    if(time >= startDateObject and time <= endDateObject):
+                                        print(time)
+                                        predictionTimes.append(datetime.timestamp(time))
+                                        predictionWater = float(data[5]) / 100.0
+                                        predictionWaters.append(predictionWater)
+    #                             predictionLines.append(lines[15::])
+                    except (HTTPError, FileNotFoundError):
+                        print("Bad prdiction url: ", predictionUrl)
+                        badStations.append(badStations.append(stationDict))
+    #             print(predictionLines)
+    
+    #             print(url)
+            #     sensorURL = 'https://ioos-dif-sos-prod.co-ops-aws-east1.net/ioos-dif-sos/SOS?service=SOS&request=DescribeSensor&version=1.0.0&outputFormat=text/xml;subtype="sensorML/1.0.1/profiles/ioos_sos/1.0"&procedure=urn:ioos:station:NOAA.NOS.CO-OPS:8454000'
+                matFilename = temp_directory + stationDict["id"] + ".mat"
+            #     sensorFilename = stationDict["id"] + "_sensor"
                 try:
-                    predictionUrl = "https://tidesandcurrents.noaa.gov/cgi-bin/predictiondownload.cgi?&stnid=" + stationId +  "&threshold=&thresholdDirection=greaterThan&bdate=" + str(year) + "&timezone=GMT&datum=NAVD&clock=24hour&type=txt&annual=true"
-                    print("predictionUrl", predictionUrl)
-                    predictionFilename = temp_directory + stationDict["id"] + str(year) + "_TidePrediction.mat"
-                    safe_urlretrieve(predictionUrl, predictionFilename)
-                    with open(predictionFilename) as file:
-                        lines = file.readlines()
-                        if(len(lines) > 0):
-                            for line in lines[14::]:
-                                data = line.split("\t")
-#                                 https://www.digitalocean.com/community/tutorials/python-string-to-datetime-strptime
-                                time = datetime.strptime(data[0] + data[2] + "GMT", "%Y/%m/%d%H:%M%Z")
-                                time = time.replace(tzinfo=timezone.utc)
-                                if(time >= startDateObject and time <= endDateObject):
-                                    print(time)
-                                    predictionTimes.append(datetime.timestamp(time))
-                                    predictionWater = float(data[5]) / 100.0
-                                    predictionWaters.append(predictionWater)
-#                             predictionLines.append(lines[15::])
+                    print("mat url", url)
+            #     Once mat files are downloaded once, comment out this line to stop querying the API
+                    safe_urlretrieve(url, matFilename)
+            #         urlretrieve(sensorURL, sensorFilename)
+                    data = scipy.io.loadmat(matFilename)
+                    unixTimes = data["IOOS_Hourly_Height_Verified_Wat"]["time"][0][0].flatten()
+                    waters = data["IOOS_Hourly_Height_Verified_Wat"]["WL_VALUE"][0][0].flatten()
+                    waterDict[key] = {}
+                    waterDict[key]["times"] = unixTimes
+                    waterDict[key]["water"] = waters
+                    waterDict[key]["prediction_times"] = predictionTimes
+                    waterDict[key]["prediction_water"] = predictionWaters
+            
                 except (HTTPError, FileNotFoundError):
-                    print("Bad prdiction url: ", predictionUrl)
+                    print("bad mat url: ", url)
                     badStations.append(badStations.append(stationDict))
-#             print(predictionLines)
-
-#             print(url)
-        #     sensorURL = 'https://ioos-dif-sos-prod.co-ops-aws-east1.net/ioos-dif-sos/SOS?service=SOS&request=DescribeSensor&version=1.0.0&outputFormat=text/xml;subtype="sensorML/1.0.1/profiles/ioos_sos/1.0"&procedure=urn:ioos:station:NOAA.NOS.CO-OPS:8454000'
-            matFilename = temp_directory + stationDict["id"] + ".mat"
-        #     sensorFilename = stationDict["id"] + "_sensor"
-            try:
-                print("mat url", url)
-        #     Once mat files are downloaded once, comment out this line to stop querying the API
-                safe_urlretrieve(url, matFilename)
-        #         urlretrieve(sensorURL, sensorFilename)
-                data = scipy.io.loadmat(matFilename)
-                unixTimes = data["IOOS_Hourly_Height_Verified_Wat"]["time"][0][0].flatten()
-                waters = data["IOOS_Hourly_Height_Verified_Wat"]["WL_VALUE"][0][0].flatten()
-                waterDict[key] = {}
-                waterDict[key]["times"] = unixTimes
-                waterDict[key]["water"] = waters
-                waterDict[key]["prediction_times"] = predictionTimes
-                waterDict[key]["prediction_water"] = predictionWaters
-        
-            except (HTTPError, FileNotFoundError):
-                print("bad mat url: ", url)
-                badStations.append(badStations.append(stationDict))
         
         # print(windDict)
         with open(OBS_WATER_DATA_FILE, "w") as outfile:
