@@ -528,12 +528,12 @@ class GetRunup:
                 adcircRunup = self.calculateAdcircRunup(waterlineWaterValue, stockdonRunupNoSetup)
                 
 #                 Hijack some existing variables
+                adcircSetup = adcircSetup + adcircStormSurge
                 runupHolmanMid = self.calculateAdcircRunupUsingSetup(adcircSetup, stockdonRunupNoSetup, waterlineStillwaterValue)
                 runupHolmanLow = offshoreSwh[index]
                 stockdonSetupLow = adcircSetup
                 runupHolmanHigh = adcircStormSurge
                 
-                adcircSetup = adcircSetup + adcircStormSurge
 #                 runupValues.append(stockdonRunup)
                 runupValuesHolmanHigh.append(runupHolmanHigh)
                 runupValuesHolmanMid.append(runupHolmanMid)

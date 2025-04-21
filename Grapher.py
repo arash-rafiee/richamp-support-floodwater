@@ -1892,7 +1892,7 @@ class Grapher:
                 fig, ax = plt.subplots(figsize=(16,9))
 #                 ax.plot(self.runupTimes, self.datapointsRunup[index], label="runup")
 #                 ax.plot(self.runupTimes, self.datapointsRunupHolmanHigh[index], label="1.1(setup + S)")
-                ax.plot(self.runupTimes, self.datapointsRunupHolmanMid[index], label="1.1([setup] + S/2) + [SWL]")
+                ax.plot(self.runupTimes, self.datapointsRunupHolmanMid[index], label="1.1([setup + storm surge] + S/2) + [SWL]")
 #                 ax.plot(self.runupTimes, self.datapointsRunupHolmanHigh[index], label="Holman High Tide ξ")
 #                 ax.plot(self.runupTimes, self.datapointsRunupHolmanMid[index], label="Holman Mid Tide ξ")
 #                 ax.plot(self.runupTimes, self.datapointsRunupHolmanLow[index], label="Holman Low Tide ξ")
