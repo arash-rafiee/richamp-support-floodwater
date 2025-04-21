@@ -428,7 +428,7 @@ def main():
     elif(backgroundChoice == "WINNAPAUG"):
         backgroundMap = WINNAPAUG_MAP
         backgroundAxis = WINNAPAUG_AXIS
-    elif(backgroundChoice == "WINNIPAUG_OUTLINE"):
+    elif(backgroundChoice == "WINNAPAUG_OUTLINE"):
         backgroundMap = WINNAPAUG_OUTLINE_MAP
         backgroundAxis = WINNAPAUG_AXIS
         

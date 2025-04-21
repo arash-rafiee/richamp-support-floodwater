@@ -309,32 +309,32 @@
       "id": "0",
       "source": "Station2Data.txt",
       "name": "Winnapaug Station 2",
-      "latitude": "41.18945",
-      "longitude": "-71.56754",
+      "latitude": "41.33448",
+      "longitude": "-71.7776",
       "altitude": "999\n"
     },
     "105": {
       "id": "0",
       "source": "Station3Data.txt",
       "name": "Winnapaug Station 3",
-      "latitude": "41.18945",
-      "longitude": "-71.56754",
+      "latitude": "41.33726",
+      "longitude": "-71.7783",
       "altitude": "999\n"
     },
     "106": {
       "id": "0",
       "source": "Station4Data.txt",
       "name": "Winnapaug Station 4",
-      "latitude": "41.18945",
-      "longitude": "-71.56754",
+      "latitude": "41.33504",
+      "longitude": "-71.7798",
       "altitude": "999\n"
     },
     "107": {
       "id": "0",
       "source": "Station5Data.txt",
       "name": "Winnapaug Station 5",
-      "latitude": "41.18945",
-      "longitude": "-71.56754",
+      "latitude": "41.32875",
+      "longitude": "-71.8036",
       "altitude": "999\n"
     },
     "58": {

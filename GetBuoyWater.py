@@ -89,6 +89,32 @@ class GetBuoyWater:
             stationSource = stationDict["source"]
             if(".txt" in stationSource):
                 print("Pulling Data from Station File")
+                                # Path to the text file
+                file_path = stationSource
+                
+                # Step 1: Load the data
+                # The file is tab-separated, and the first column is datetime
+                # We specify the column names manually since the file doesn't have a header
+                column_names = [
+                    "datetime", "salinity", "temperature", "DO_umol_kg", 
+                    "Depth_m", "pressure_decibars", "col6", "col7", "col8", "col9"
+                ]
+                data = pd.read_csv(file_path, sep="\t", names=column_names, parse_dates=["datetime"])
+                
+                # Step 2: Convert datetime to Unix timestamps
+                # Convert the datetime column to Unix timestamps (seconds since epoch, UTC)
+                unixTimes = (data["datetime"].astype("int64") // 10**9).to_numpy()
+                
+                # Step 3: Extract the water depth
+                # Depth_m is the water depth column (column 4 in the text file)
+                waters = data["Depth_m"].to_numpy()
+                
+                waterDict[key] = {}
+                waterDict[key]["times"] = unixTimes
+                waterDict[key]["water"] = waters
+                waterDict[key]["prediction_times"] = []
+                waterDict[key]["prediction_water"] = []
+                
             else:
     # https://opendap.co-ops.nos.noaa.gov/erddap/tabledap/IOOS_Hourly_Height_Verified_Water_Level.htmlTable?STATION_ID%2CDATUM%2CBEGIN_DATE%2CEND_DATE%2Ctime%2CWL_VALUE%2CSIGMA&STATION_ID=%228452660%22&DATUM%3E=%22MSL%22&BEGIN_DATE%3E=%222024-07-29%22&END_DATE%3E=%222024-08-10%22
                 url = "https://opendap.co-ops.nos.noaa.gov/erddap/tabledap/IOOS_Hourly_Height_Verified_Water_Level.mat?STATION_ID%2CDATUM%2CBEGIN_DATE%2CEND_DATE%2Ctime%2CWL_VALUE%2CSIGMA&STATION_ID=%22"  + stationId + "%22&DATUM%3E=%22MSL%22&BEGIN_DATE%3E=%22" + startDateFormat + "%22&END_DATE%3E=%22" + endDateFormat + "%22"
