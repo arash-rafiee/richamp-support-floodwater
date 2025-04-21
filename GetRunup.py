@@ -458,16 +458,16 @@ class GetRunup:
 #                 Now I need to calculate the averageSlope using the waterlineKey point
 
 
-                waterlineDistance = haversine.haversine(waterlineCoordinates, adjacentWaterlineCoordinates) * 1000
-                averageSlope = math.atan((waterlineElevation - adjacentWaterlineElevation) / waterlineDistance)
-                averageSlopes.append(averageSlope)
-#                 
-#                 slopelineDistance = haversine.haversine(slopelineCoordinates, waterlineCoordinates) * 1000
-#                 slopelineDistance = -slopelineDistance
-#                 averageSlope = math.atan((slopelineElevation - waterlineElevation) / slopelineDistance)
+#                 waterlineDistance = haversine.haversine(waterlineCoordinates, adjacentWaterlineCoordinates) * 1000
+#                 averageSlope = math.atan((waterlineElevation - adjacentWaterlineElevation) / waterlineDistance)
 #                 averageSlopes.append(averageSlope)
-#                 print("slopelineElevation, distance, averageSlope, waterlineElevation: ", slopelineElevation, slopelineDistance, averageSlope, waterlineElevation)
-#                 
+                
+                slopelineDistance = haversine.haversine(slopelineCoordinates, waterlineCoordinates) * 1000
+                slopelineDistance = -slopelineDistance
+                averageSlope = math.atan((slopelineElevation - waterlineElevation) / slopelineDistance)
+                averageSlopes.append(averageSlope)
+                print("slopelineElevation, distance, averageSlope, waterlineElevation: ", slopelineElevation, slopelineDistance, averageSlope, waterlineElevation)
+                
 #                 Get the water elevation at the waterline point.
 #                  The minimum of this should just be the elevation of the point itself
 #                   The wet dry algorithim is also important here
