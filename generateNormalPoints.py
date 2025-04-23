@@ -4,8 +4,8 @@ import math
 
 HYPERRESOLUTION = 1
 HYPERPOINTS = 120
-DEEPLINE_DISTANCE = 5000  # Default single distance
-SLOPELINE_DISTANCE = 200  # Slopeline distance in meters
+DEEPLINE_DISTANCE = 2200  # Default single distance
+SLOPELINE_DISTANCE = 75  # Slopeline distance in meters
 SLOPELINE_DELIM_DISTANCE = 10  # Delimitation distance for slope points in meters
 DEEPLINE_DISTANCES = [
     1000, 2200, 3500, 5500, 7500, 9500, 10500, 12500, 14500, 16500,
