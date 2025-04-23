@@ -106,10 +106,10 @@ class GetBuoyWater:
                 
                 # Step 2: Convert datetime from EST to GMT and then to Unix timestamps
                 # First, localize the datetime to EST (UTC-5)
-                data["datetime"] = data["datetime"].dt.tz_localize("EST")
+                data["datetime"] = data["datetime"].dt.tz_localize("GMT")
 
                 # Convert from EST to GMT (UTC)
-                data["datetime"] = data["datetime"].dt.tz_convert("GMT")
+                data["datetime"] = data["datetime"].dt.tz_convert("EST")
 
                 # Convert the GMT datetime to Unix timestamps (seconds since epoch, UTC)
                 unixTimes = (data["datetime"].astype("int64") // 10**9).to_numpy()
