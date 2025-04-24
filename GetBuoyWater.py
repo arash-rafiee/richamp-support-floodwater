@@ -45,12 +45,14 @@ def safe_urlretrieve(url, filename, timeout=10, max_retries=3):
     return False  # If all retries fail
         
 class GetBuoyWater:
-    def __init__(self, STATIONS_FILE="", OBS_WATER_DATA_FILE="", startDateObject="", endDateObject=""):
+    def __init__(self, STATIONS_FILE="", ADCIRC_MESH_DATA_FILE="", OBS_WATER_DATA_FILE="", startDateObject="", endDateObject=""):
         temp_directory = OBS_WATER_DATA_FILE[0:OBS_WATER_DATA_FILE.rfind("/") + 1]
         print(type(startDateObject), flush=True)
         print(startDateObject, flush=True)
         with open(STATIONS_FILE) as stations_file:
             stationsDict = json.load(stations_file)
+        with open(ADCIRC_MESH_DATA_FILE) as datafile:
+            meshDict = json.load(datafile)
 
         # stationIds = [8413320, 8443970, 8447435, 8449130, 8447930, 8452660, 8510560, 8418150, 8419870, 8454049, 8454000, 8461490, 8411060, 8531680, 8534720, 8452944]
         # stationNames = ['Bar Harbor', 'Boston', 'Chatham', 'Nantucket', 'Woods Hole', 'Newport', 'Montauk', 'Portland', 'Seavey Island, ME', 'Quonset Point', 'Providence', 'New London', 'Cutler Faris Wharf', 'Sandy Hook', 'Altlantic City', 'Conimicut Light'] 
@@ -106,10 +108,10 @@ class GetBuoyWater:
                 
                 # Step 2: Convert datetime from EST to GMT and then to Unix timestamps
                 # First, localize the datetime to EST (UTC-5)
-                data["datetime"] = data["datetime"].dt.tz_localize("GMT")
+                data["datetime"] = data["datetime"].dt.tz_localize("EST")
 
                 # Convert from EST to GMT (UTC)
-                data["datetime"] = data["datetime"].dt.tz_convert("EST")
+                data["datetime"] = data["datetime"].dt.tz_convert("GMT")
 
                 # Convert the GMT datetime to Unix timestamps (seconds since epoch, UTC)
                 unixTimes = (data["datetime"].astype("int64") // 10**9).to_numpy()
@@ -120,6 +122,10 @@ class GetBuoyWater:
                 # Step 3: Extract the water depth
                 # Depth_m is the water depth column (column 4 in the text file)
                 waters = data["Depth_m"].to_numpy()
+                
+                stationElevation = meshDict[key]["elevation"]
+                print("station elevation", key, stationElevation)
+                waters  = waters - stationElevation
                 
                 waterDict[key] = {}
                 waterDict[key]["times"] = unixTimes
