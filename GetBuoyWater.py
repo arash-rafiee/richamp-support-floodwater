@@ -123,9 +123,9 @@ class GetBuoyWater:
                 # Depth_m is the water depth column (column 4 in the text file)
                 waters = data["Depth_m"].to_numpy()
                 
-                stationElevation = meshDict[key]["elevation"]
+#                 stationElevation = meshDict[key]["elevation"]
                 print("station elevation", key, stationElevation)
-                waters  = waters - stationElevation
+#                 waters  = waters - stationElevation
                 
                 waterDict[key] = {}
                 waterDict[key]["times"] = unixTimes
