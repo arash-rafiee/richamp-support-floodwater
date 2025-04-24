@@ -124,7 +124,7 @@ class GetBuoyWater:
                 waters = data["Depth_m"].to_numpy()
                 
 #                 stationElevation = meshDict[key]["elevation"]
-                print("station elevation", key, stationElevation)
+#                 print("station elevation", key, stationElevation)
 #                 waters  = waters - stationElevation
                 
                 waterDict[key] = {}
