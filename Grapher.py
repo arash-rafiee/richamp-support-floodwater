@@ -1380,7 +1380,7 @@ class Grapher:
                     
                 if(self.obsExists):
                     ax.scatter(self.buoyLongitudes, self.buoyLatitudes, label="Obs", zorder=3, alpha=0.7, marker=".", s=40, color="black")
-                    for index in range(len(self.datapointsElevation)):
+                    for index in range(len(self.buoyLabels)):
                         ax.annotate(self.buoyLabels[index], (self.buoyLongitudes[index], self.buoyLatitudes[index]))
                     
                 if(self.runupExists):
