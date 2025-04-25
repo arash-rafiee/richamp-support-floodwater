@@ -1379,9 +1379,9 @@ class Grapher:
                     ax.scatter(self.assetLongitudes, self.assetLatitudes, label="Assets", zorder=3, alpha=0.7, marker=".", s=40, color="black")
                     
                 if(self.obsExists):
-                    ax.scatter(self.buoyLongitudes, self.buoyLatitudes, label="Obs", zorder=3, alpha=0.7, marker=".", s=40, color="black")
-                    for index in range(len(self.buoyLabels)):
-                        ax.annotate(self.buoyLabels[index], (self.buoyLongitudes[index], self.buoyLatitudes[index]))
+                    ax.scatter(self.tideLongitudes, self.tideLatitudes, label="Obs", zorder=3, alpha=0.7, marker=".", s=40, color="black")
+                    for tideIndex in range(len(self.tideLabels)):
+                        ax.annotate(self.tideLabels[tideIndex], (self.tideLongitudes[tideIndex], self.tideLatitudes[tideIndex]))
                     
                 if(self.runupExists):
                     for runupIndex, runupLabel in enumerate(self.runupLabels):
