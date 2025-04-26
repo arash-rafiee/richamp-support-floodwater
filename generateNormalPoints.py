@@ -5,7 +5,7 @@ import math
 HYPERRESOLUTION = 1
 HYPERPOINTS = 120
 DEEPLINE_DISTANCE = 2200  # Default single distance
-SLOPELINE_DISTANCE = -10  # Slopeline distance in meters
+SLOPELINE_DISTANCE = -20  # Slopeline distance in meters
 SLOPELINE_DELIM_DISTANCE = 1  # Delimitation distance for slope points in meters
 DEEPLINE_DISTANCES = [
     1000, 2200, 3500, 5500, 7500, 9500, 10500, 12500, 14500, 16500,
@@ -14,11 +14,11 @@ DEEPLINE_DISTANCES = [
 ]
 
 # Station-specific deepline distances
-DEEPLINE_DISTANCE_1 = 2500  # For Napatree1 (runup_id: 10)
-DEEPLINE_DISTANCE_2 = 2400  # For Napatree2 (runup_id: 20)
-DEEPLINE_DISTANCE_3 = 2300  # For Napatree3 (runup_id: 30)
-DEEPLINE_DISTANCE_4 = 2250  # For Napatree4 (runup_id: 40)
-DEEPLINE_DISTANCE_5 = 2150  # For Napatree5 (runup_id: 50)
+DEEPLINE_DISTANCE_1 = 2200  # For Napatree1 (runup_id: 10)
+DEEPLINE_DISTANCE_2 = 2210  # For Napatree2 (runup_id: 20)
+DEEPLINE_DISTANCE_3 = 2220  # For Napatree3 (runup_id: 30)
+DEEPLINE_DISTANCE_4 = 2175  # For Napatree4 (runup_id: 40)
+DEEPLINE_DISTANCE_5 = 2175  # For Napatree5 (runup_id: 50)
 
 # Dictionary to map runup_id to deepline distance
 DEEPLINE_DISTANCE_MAP = {
