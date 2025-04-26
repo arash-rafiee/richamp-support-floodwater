@@ -46,8 +46,8 @@
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Napatree5 Deepline",
-      "latitude": "41.290104",
-      "longitude": "-71.868077"
+      "latitude": "41.289903",
+      "longitude": "-71.867943"
     },
     "30": {
       "id": "RUNUP",
@@ -67,8 +67,8 @@
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Napatree3 Deepline",
-      "latitude": "41.291253",
-      "longitude": "-71.864191"
+      "latitude": "41.290569",
+      "longitude": "-71.863896"
     },
     "20": {
       "id": "RUNUP",
@@ -88,8 +88,8 @@
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Napatree2 Deepline",
-      "latitude": "41.291031",
-      "longitude": "-71.866692"
+      "latitude": "41.290674",
+      "longitude": "-71.866643"
     },
     "10": {
       "id": "RUNUP",
@@ -5014,22 +5014,22 @@
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Napatree2 Deepline",
-      "latitude": "41.291031",
-      "longitude": "-71.866692"
+      "latitude": "41.290674",
+      "longitude": "-71.866643"
     },
     "33": {
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Napatree3 Deepline",
-      "latitude": "41.291253",
-      "longitude": "-71.864191"
+      "latitude": "41.290569",
+      "longitude": "-71.863896"
     },
     "53": {
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Napatree5 Deepline",
-      "latitude": "41.290104",
-      "longitude": "-71.868077"
+      "latitude": "41.289903",
+      "longitude": "-71.867943"
     }
   },
   "NOS": {
@@ -5058,22 +5058,22 @@
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Napatree2 Deepline",
-      "latitude": "41.291031",
-      "longitude": "-71.866692"
+      "latitude": "41.290674",
+      "longitude": "-71.866643"
     },
     "33": {
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Napatree3 Deepline",
-      "latitude": "41.291253",
-      "longitude": "-71.864191"
+      "latitude": "41.290569",
+      "longitude": "-71.863896"
     },
     "53": {
       "id": "RUNUP",
       "source": "RUNUP",
       "name": "Napatree5 Deepline",
-      "latitude": "41.290104",
-      "longitude": "-71.868077"
+      "latitude": "41.289903",
+      "longitude": "-71.867943"
     },
     "40000": {
       "id": "RUNUP",

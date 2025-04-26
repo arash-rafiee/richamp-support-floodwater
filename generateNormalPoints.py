@@ -15,10 +15,10 @@ DEEPLINE_DISTANCES = [
 
 # Station-specific deepline distances
 DEEPLINE_DISTANCE_1 = 2200  # For Napatree1 (runup_id: 10)
-DEEPLINE_DISTANCE_2 = 2210  # For Napatree2 (runup_id: 20)
-DEEPLINE_DISTANCE_3 = 2220  # For Napatree3 (runup_id: 30)
+DEEPLINE_DISTANCE_2 = 2250  # For Napatree2 (runup_id: 20)
+DEEPLINE_DISTANCE_3 = 2300  # For Napatree3 (runup_id: 30)
 DEEPLINE_DISTANCE_4 = 2175  # For Napatree4 (runup_id: 40)
-DEEPLINE_DISTANCE_5 = 2175  # For Napatree5 (runup_id: 50)
+DEEPLINE_DISTANCE_5 = 2200  # For Napatree5 (runup_id: 50)
 
 # Dictionary to map runup_id to deepline distance
 DEEPLINE_DISTANCE_MAP = {
