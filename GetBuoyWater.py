@@ -104,28 +104,34 @@ class GetBuoyWater:
                     "Depth_m", "pressure_decibars", "col6", "col7", "col8", "col9"
                 ]
                 data = pd.read_csv(file_path, sep="\t", names=column_names, parse_dates=["datetime"])
-                
-                
-                # Step 2: Convert datetime from EST to GMT and then to Unix timestamps
-                # First, localize the datetime to EST (UTC-5)
+
+                # Step 2: Convert datetime from EST to GMT
+                # Localize the datetime to EST (UTC-5)
                 data["datetime"] = data["datetime"].dt.tz_localize("EST")
 
                 # Convert from EST to GMT (UTC)
                 data["datetime"] = data["datetime"].dt.tz_convert("GMT")
 
-                # Convert the GMT datetime to Unix timestamps (seconds since epoch, UTC)
-                unixTimes = (data["datetime"].astype("int64") // 10**9).to_numpy()
-                # Step 2: Convert datetime to Unix timestamps
-                # Convert the datetime column to Unix timestamps (seconds since epoch, UTC)
-                unixTimes = (data["datetime"].astype("int64") // 10**9).to_numpy()
+                # Step 3: Filter data based on the time range (startDateObject to endDateObject)
+                # Ensure startDateObject and endDateObject are timezone-aware (GMT)
+                # If they are naive, you would need to localize them to GMT, but we assume they are already in GMT
+                filtered_data = data[
+                    (data["datetime"] >= startDateObject) & (data["datetime"] <= endDateObject)
+                ]
+
+                # Step 4: Convert filtered datetime to Unix timestamps
+                # If no data falls within the range, filtered_data will be empty
+                if not filtered_data.empty:
+                    unixTimes = (filtered_data["datetime"].astype("int64") // 10**9).to_numpy()
+                    waters = filtered_data["Depth_m"].to_numpy()
+                else:
+                    # Handle the case where no data falls within the range
+                    unixTimes = np.array([], dtype=np.int64)
+                    waters = np.array([], dtype=np.float64)
                 
-                # Step 3: Extract the water depth
-                # Depth_m is the water depth column (column 4 in the text file)
-                waters = data["Depth_m"].to_numpy()
-                
-                stationElevation = meshDict[key]["elevation"]
-                print("station elevation", key, stationElevation)
-                waters = abs(stationElevation) - waters
+#                 stationElevation = meshDict[key]["elevation"]
+#                 print("station elevation", key, stationElevation)
+#                 waters = abs(stationElevation) - waters
                 
                 waterDict[key] = {}
                 waterDict[key]["times"] = unixTimes
