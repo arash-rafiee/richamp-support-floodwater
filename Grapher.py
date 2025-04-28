@@ -942,6 +942,8 @@ class Grapher:
                     waterlineKey = runupDataset[stationKey]["waterlineKeys"][index]
                     if("d" in stationKey):
                         generalStationKey = stationKey[0:stationKey.index("d")]
+                    elif(len(stationKey) == 3):
+                        generalStationKey = stationKey[0:-1]
                     else:
                         generalStationKey = stationKey
                     waterlineLatitude = float(self.obsMetadata["NORMAL"][generalStationKey][waterlineKey]["latitude"])
