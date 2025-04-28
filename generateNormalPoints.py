@@ -5,8 +5,9 @@ import math
 HYPERRESOLUTION = 1
 HYPERPOINTS = 120
 DEEPLINE_DISTANCE = 2200  # Default single distance
-SLOPELINE_DISTANCE = -20  # Slopeline distance in meters
-SLOPELINE_DELIM_DISTANCE = 1  # Delimitation distance for slope points in meters
+MIN_SLOPELINE_DISTANCE = 2100  # Minimum slopeline distance in meters
+MAX_SLOPELINE_DISTANCE = 2300   # Maximum slopeline distance in meters
+SLOPELINE_DELIM_DISTANCE = 20  # Delimitation distance for slope points in meters
 DEEPLINE_DISTANCES = [
     1000, 2200, 3500, 5500, 7500, 9500, 10500, 12500, 14500, 16500,
     18500, 20500, 22500, 24500, 26500, 28500, 29500, 31500, 33500, 35500,
@@ -74,7 +75,7 @@ def generate_points_along_line(json_data, resolution=HYPERRESOLUTION, points_cou
                 json_data[section][new_key] = new_point
             point_counter += 1
 
-def generate_slopeline_points(json_data, distance=SLOPELINE_DISTANCE):
+def generate_slopeline_points(json_data, distance=MAX_SLOPELINE_DISTANCE):
     for runup_id, runup_data in json_data['RUNUP'].items():
         shoreline_lat, shoreline_lon = float(runup_data['latitude']), float(runup_data['longitude'])
         surf_lat, surf_lon = float(runup_data['surfLatitude']), float(runup_data['surfLongitude'])
@@ -103,7 +104,7 @@ def generate_slopeline_points(json_data, distance=SLOPELINE_DISTANCE):
         # Add to ASSET section
         json_data['ASSET'][slopeline_key] = slopeline_point
 
-def generate_slope_stations(json_data, max_distance=SLOPELINE_DISTANCE, delim_distance=SLOPELINE_DELIM_DISTANCE):
+def generate_slope_stations(json_data, min_distance=MIN_SLOPELINE_DISTANCE, max_distance=MAX_SLOPELINE_DISTANCE, delim_distance=SLOPELINE_DELIM_DISTANCE):
     # Create a copy of the data to avoid modifying the original
     slope_data = copy.deepcopy(json_data)
     
@@ -115,15 +116,15 @@ def generate_slope_stations(json_data, max_distance=SLOPELINE_DISTANCE, delim_di
         surf_lat, surf_lon = float(runup_data['surfLatitude']), float(runup_data['surfLongitude'])
         bearing = calculate_bearing(shoreline_lat, shoreline_lon, surf_lat, surf_lon)
         
-        # Adjust bearing for negative max_distance (opposite direction)
-        adjusted_bearing = bearing + math.pi if max_distance < 0 else bearing
-        adjusted_max_distance = abs(max_distance)  # Use absolute distance for loop
-        
-        # Generate points at delim_distance intervals up to adjusted_max_distance
+        # Generate points at delim_distance intervals from min_distance to max_distance
         point_counter = 0
-        distance = 0
-        while distance <= adjusted_max_distance:
-            new_lat, new_lon = calculate_new_point(shoreline_lat, shoreline_lon, adjusted_bearing, distance)
+        distance = min_distance
+        while distance <= max_distance:
+            # Adjust bearing for negative distances (opposite direction)
+            adjusted_bearing = bearing + math.pi if distance < 0 else bearing
+            adjusted_distance = abs(distance)  # Use absolute distance for calculation
+            
+            new_lat, new_lon = calculate_new_point(shoreline_lat, shoreline_lon, adjusted_bearing, adjusted_distance)
             new_key = f"{runup_id}sl{point_counter:03d}"
             
             slope_point = {
@@ -301,7 +302,7 @@ with open('RUNUP_NAPATREE_STATIONS.json', 'r') as file:
     data_normal = json.load(file)
 generate_points_along_line(data_normal)
 generate_deepline_points(data_normal)
-generate_slopeline_points(data_normal, distance=SLOPELINE_DISTANCE)
+generate_slopeline_points(data_normal, distance=MAX_SLOPELINE_DISTANCE)
 generate_tangent_points(data_normal)
 with open('NAPATREE_NORMAL_STATIONS.json', 'w') as file:
     json.dump(data_normal, file, indent=2)
