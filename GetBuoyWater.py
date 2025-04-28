@@ -129,10 +129,10 @@ class GetBuoyWater:
                     unixTimes = np.array([], dtype=np.int64)
                     waters = np.array([], dtype=np.float64)
                 
-                stationElevation = meshDict[key]["elevation"]
-                print("station elevation", key, stationElevation)
-                waters = waters + stationElevation
-                
+#                 stationElevation = meshDict[key]["elevation"]
+#                 print("station elevation", key, stationElevation)
+#                 waters = waters + stationElevation
+#                 
                 waterDict[key] = {}
                 waterDict[key]["times"] = unixTimes
                 waterDict[key]["water"] = waters
