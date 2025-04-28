@@ -326,7 +326,7 @@ class GetRunup:
             print("deepline SWH Max: ", np.max(offshoreSwh))
             print("deepline PWP Max: ", np.max(offshorePwp))
 
-            shorelineElevation = float(meshDict[key]["elevation"])
+            shorelineElevation = float(meshDict[generalKey]["elevation"])
             surfElevation = float(meshDict[surfKey]["elevation"])
             
 #             offshoreElevation = float(meshDict[offshoreKey]["elevation"])
