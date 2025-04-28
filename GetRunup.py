@@ -244,6 +244,8 @@ class GetRunup:
             stationDict = stationsDict["RUNUP"][key]
             if("d" in key):
                 generalKey = key[0:key.index("d")]
+            elif(len(key) == 3):
+                generalKey = key[0:-1]
             else:
                 generalKey = key
             normalDict = stationsDict["NORMAL"][generalKey]
