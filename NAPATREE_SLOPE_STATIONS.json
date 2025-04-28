@@ -3,387 +3,317 @@
     "40sl000": {
       "id": "RUNUP",
       "source": "RUNUP",
-      "name": "Napatree4 Slope 2100.0m",
-      "latitude": "41.291982",
-      "longitude": "-71.865615"
+      "name": "Napatree4 Slope 200.0m",
+      "latitude": "41.307497",
+      "longitude": "-71.875146"
     },
     "40sl001": {
       "id": "RUNUP",
       "source": "RUNUP",
-      "name": "Napatree4 Slope 2120.0m",
-      "latitude": "41.291819",
-      "longitude": "-71.865515"
+      "name": "Napatree4 Slope 300.0m",
+      "latitude": "41.306680",
+      "longitude": "-71.874645"
     },
     "40sl002": {
       "id": "RUNUP",
       "source": "RUNUP",
-      "name": "Napatree4 Slope 2140.0m",
-      "latitude": "41.291656",
-      "longitude": "-71.865415"
+      "name": "Napatree4 Slope 400.0m",
+      "latitude": "41.305864",
+      "longitude": "-71.874143"
     },
     "40sl003": {
       "id": "RUNUP",
       "source": "RUNUP",
-      "name": "Napatree4 Slope 2160.0m",
-      "latitude": "41.291493",
-      "longitude": "-71.865315"
+      "name": "Napatree4 Slope 500.0m",
+      "latitude": "41.305047",
+      "longitude": "-71.873641"
     },
     "40sl004": {
       "id": "RUNUP",
       "source": "RUNUP",
-      "name": "Napatree4 Slope 2180.0m",
-      "latitude": "41.291329",
-      "longitude": "-71.865214"
+      "name": "Napatree4 Slope 600.0m",
+      "latitude": "41.304231",
+      "longitude": "-71.873140"
     },
     "40sl005": {
       "id": "RUNUP",
       "source": "RUNUP",
-      "name": "Napatree4 Slope 2200.0m",
-      "latitude": "41.291166",
-      "longitude": "-71.865114"
+      "name": "Napatree4 Slope 700.0m",
+      "latitude": "41.303414",
+      "longitude": "-71.872638"
     },
     "40sl006": {
       "id": "RUNUP",
       "source": "RUNUP",
-      "name": "Napatree4 Slope 2220.0m",
-      "latitude": "41.291003",
-      "longitude": "-71.865014"
+      "name": "Napatree4 Slope 800.0m",
+      "latitude": "41.302598",
+      "longitude": "-71.872136"
     },
     "40sl007": {
       "id": "RUNUP",
       "source": "RUNUP",
-      "name": "Napatree4 Slope 2240.0m",
-      "latitude": "41.290839",
-      "longitude": "-71.864913"
+      "name": "Napatree4 Slope 900.0m",
+      "latitude": "41.301781",
+      "longitude": "-71.871635"
     },
     "40sl008": {
       "id": "RUNUP",
       "source": "RUNUP",
-      "name": "Napatree4 Slope 2260.0m",
-      "latitude": "41.290676",
-      "longitude": "-71.864813"
-    },
-    "40sl009": {
-      "id": "RUNUP",
-      "source": "RUNUP",
-      "name": "Napatree4 Slope 2280.0m",
-      "latitude": "41.290513",
-      "longitude": "-71.864713"
-    },
-    "40sl010": {
-      "id": "RUNUP",
-      "source": "RUNUP",
-      "name": "Napatree4 Slope 2300.0m",
-      "latitude": "41.290349",
-      "longitude": "-71.864612"
+      "name": "Napatree4 Slope 1000.0m",
+      "latitude": "41.300965",
+      "longitude": "-71.871133"
     },
     "50sl000": {
       "id": "RUNUP",
       "source": "RUNUP",
-      "name": "Napatree5 Slope 2100.0m",
-      "latitude": "41.290707",
-      "longitude": "-71.868480"
+      "name": "Napatree5 Slope 200.0m",
+      "latitude": "41.305980",
+      "longitude": "-71.878677"
     },
     "50sl001": {
       "id": "RUNUP",
       "source": "RUNUP",
-      "name": "Napatree5 Slope 2120.0m",
-      "latitude": "41.290546",
-      "longitude": "-71.868372"
+      "name": "Napatree5 Slope 300.0m",
+      "latitude": "41.305176",
+      "longitude": "-71.878140"
     },
     "50sl002": {
       "id": "RUNUP",
       "source": "RUNUP",
-      "name": "Napatree5 Slope 2140.0m",
-      "latitude": "41.290385",
-      "longitude": "-71.868265"
+      "name": "Napatree5 Slope 400.0m",
+      "latitude": "41.304373",
+      "longitude": "-71.877604"
     },
     "50sl003": {
       "id": "RUNUP",
       "source": "RUNUP",
-      "name": "Napatree5 Slope 2160.0m",
-      "latitude": "41.290225",
-      "longitude": "-71.868158"
+      "name": "Napatree5 Slope 500.0m",
+      "latitude": "41.303569",
+      "longitude": "-71.877067"
     },
     "50sl004": {
       "id": "RUNUP",
       "source": "RUNUP",
-      "name": "Napatree5 Slope 2180.0m",
-      "latitude": "41.290064",
-      "longitude": "-71.868050"
+      "name": "Napatree5 Slope 600.0m",
+      "latitude": "41.302765",
+      "longitude": "-71.876530"
     },
     "50sl005": {
       "id": "RUNUP",
       "source": "RUNUP",
-      "name": "Napatree5 Slope 2200.0m",
-      "latitude": "41.289903",
-      "longitude": "-71.867943"
+      "name": "Napatree5 Slope 700.0m",
+      "latitude": "41.301961",
+      "longitude": "-71.875993"
     },
     "50sl006": {
       "id": "RUNUP",
       "source": "RUNUP",
-      "name": "Napatree5 Slope 2220.0m",
-      "latitude": "41.289742",
-      "longitude": "-71.867836"
+      "name": "Napatree5 Slope 800.0m",
+      "latitude": "41.301157",
+      "longitude": "-71.875456"
     },
     "50sl007": {
       "id": "RUNUP",
       "source": "RUNUP",
-      "name": "Napatree5 Slope 2240.0m",
-      "latitude": "41.289582",
-      "longitude": "-71.867728"
+      "name": "Napatree5 Slope 900.0m",
+      "latitude": "41.300353",
+      "longitude": "-71.874920"
     },
     "50sl008": {
       "id": "RUNUP",
       "source": "RUNUP",
-      "name": "Napatree5 Slope 2260.0m",
-      "latitude": "41.289421",
-      "longitude": "-71.867621"
-    },
-    "50sl009": {
-      "id": "RUNUP",
-      "source": "RUNUP",
-      "name": "Napatree5 Slope 2280.0m",
-      "latitude": "41.289260",
-      "longitude": "-71.867514"
-    },
-    "50sl010": {
-      "id": "RUNUP",
-      "source": "RUNUP",
-      "name": "Napatree5 Slope 2300.0m",
-      "latitude": "41.289099",
-      "longitude": "-71.867407"
+      "name": "Napatree5 Slope 1000.0m",
+      "latitude": "41.299550",
+      "longitude": "-71.874383"
     },
     "30sl000": {
       "id": "RUNUP",
       "source": "RUNUP",
-      "name": "Napatree3 Slope 2100.0m",
-      "latitude": "41.292279",
-      "longitude": "-71.864634"
+      "name": "Napatree3 Slope 200.0m",
+      "latitude": "41.308532",
+      "longitude": "-71.871655"
     },
     "30sl001": {
       "id": "RUNUP",
       "source": "RUNUP",
-      "name": "Napatree3 Slope 2120.0m",
-      "latitude": "41.292108",
-      "longitude": "-71.864561"
+      "name": "Napatree3 Slope 300.0m",
+      "latitude": "41.307677",
+      "longitude": "-71.871285"
     },
     "30sl002": {
       "id": "RUNUP",
       "source": "RUNUP",
-      "name": "Napatree3 Slope 2140.0m",
-      "latitude": "41.291937",
-      "longitude": "-71.864487"
+      "name": "Napatree3 Slope 400.0m",
+      "latitude": "41.306821",
+      "longitude": "-71.870916"
     },
     "30sl003": {
       "id": "RUNUP",
       "source": "RUNUP",
-      "name": "Napatree3 Slope 2160.0m",
-      "latitude": "41.291766",
-      "longitude": "-71.864413"
+      "name": "Napatree3 Slope 500.0m",
+      "latitude": "41.305966",
+      "longitude": "-71.870546"
     },
     "30sl004": {
       "id": "RUNUP",
       "source": "RUNUP",
-      "name": "Napatree3 Slope 2180.0m",
-      "latitude": "41.291595",
-      "longitude": "-71.864339"
+      "name": "Napatree3 Slope 600.0m",
+      "latitude": "41.305111",
+      "longitude": "-71.870177"
     },
     "30sl005": {
       "id": "RUNUP",
       "source": "RUNUP",
-      "name": "Napatree3 Slope 2200.0m",
-      "latitude": "41.291424",
-      "longitude": "-71.864265"
+      "name": "Napatree3 Slope 700.0m",
+      "latitude": "41.304255",
+      "longitude": "-71.869807"
     },
     "30sl006": {
       "id": "RUNUP",
       "source": "RUNUP",
-      "name": "Napatree3 Slope 2220.0m",
-      "latitude": "41.291253",
-      "longitude": "-71.864191"
+      "name": "Napatree3 Slope 800.0m",
+      "latitude": "41.303400",
+      "longitude": "-71.869437"
     },
     "30sl007": {
       "id": "RUNUP",
       "source": "RUNUP",
-      "name": "Napatree3 Slope 2240.0m",
-      "latitude": "41.291082",
-      "longitude": "-71.864117"
+      "name": "Napatree3 Slope 900.0m",
+      "latitude": "41.302544",
+      "longitude": "-71.869068"
     },
     "30sl008": {
       "id": "RUNUP",
       "source": "RUNUP",
-      "name": "Napatree3 Slope 2260.0m",
-      "latitude": "41.290911",
-      "longitude": "-71.864043"
-    },
-    "30sl009": {
-      "id": "RUNUP",
-      "source": "RUNUP",
-      "name": "Napatree3 Slope 2280.0m",
-      "latitude": "41.290740",
-      "longitude": "-71.863969"
-    },
-    "30sl010": {
-      "id": "RUNUP",
-      "source": "RUNUP",
-      "name": "Napatree3 Slope 2300.0m",
-      "latitude": "41.290569",
-      "longitude": "-71.863896"
+      "name": "Napatree3 Slope 1000.0m",
+      "latitude": "41.301689",
+      "longitude": "-71.868698"
     },
     "20sl000": {
       "id": "RUNUP",
       "source": "RUNUP",
-      "name": "Napatree2 Slope 2100.0m",
-      "latitude": "41.292015",
-      "longitude": "-71.866827"
+      "name": "Napatree2 Slope 200.0m",
+      "latitude": "41.309012",
+      "longitude": "-71.869167"
     },
     "20sl001": {
       "id": "RUNUP",
       "source": "RUNUP",
-      "name": "Napatree2 Slope 2120.0m",
-      "latitude": "41.291836",
-      "longitude": "-71.866803"
+      "name": "Napatree2 Slope 300.0m",
+      "latitude": "41.308117",
+      "longitude": "-71.869044"
     },
     "20sl002": {
       "id": "RUNUP",
       "source": "RUNUP",
-      "name": "Napatree2 Slope 2140.0m",
-      "latitude": "41.291658",
-      "longitude": "-71.866778"
+      "name": "Napatree2 Slope 400.0m",
+      "latitude": "41.307223",
+      "longitude": "-71.868920"
     },
     "20sl003": {
       "id": "RUNUP",
       "source": "RUNUP",
-      "name": "Napatree2 Slope 2160.0m",
-      "latitude": "41.291479",
-      "longitude": "-71.866753"
+      "name": "Napatree2 Slope 500.0m",
+      "latitude": "41.306328",
+      "longitude": "-71.868797"
     },
     "20sl004": {
       "id": "RUNUP",
       "source": "RUNUP",
-      "name": "Napatree2 Slope 2180.0m",
-      "latitude": "41.291300",
-      "longitude": "-71.866729"
+      "name": "Napatree2 Slope 600.0m",
+      "latitude": "41.305434",
+      "longitude": "-71.868674"
     },
     "20sl005": {
       "id": "RUNUP",
       "source": "RUNUP",
-      "name": "Napatree2 Slope 2200.0m",
-      "latitude": "41.291121",
-      "longitude": "-71.866704"
+      "name": "Napatree2 Slope 700.0m",
+      "latitude": "41.304539",
+      "longitude": "-71.868551"
     },
     "20sl006": {
       "id": "RUNUP",
       "source": "RUNUP",
-      "name": "Napatree2 Slope 2220.0m",
-      "latitude": "41.290942",
-      "longitude": "-71.866680"
+      "name": "Napatree2 Slope 800.0m",
+      "latitude": "41.303645",
+      "longitude": "-71.868428"
     },
     "20sl007": {
       "id": "RUNUP",
       "source": "RUNUP",
-      "name": "Napatree2 Slope 2240.0m",
-      "latitude": "41.290763",
-      "longitude": "-71.866655"
+      "name": "Napatree2 Slope 900.0m",
+      "latitude": "41.302750",
+      "longitude": "-71.868305"
     },
     "20sl008": {
       "id": "RUNUP",
       "source": "RUNUP",
-      "name": "Napatree2 Slope 2260.0m",
-      "latitude": "41.290584",
-      "longitude": "-71.866630"
-    },
-    "20sl009": {
-      "id": "RUNUP",
-      "source": "RUNUP",
-      "name": "Napatree2 Slope 2280.0m",
-      "latitude": "41.290405",
-      "longitude": "-71.866606"
-    },
-    "20sl010": {
-      "id": "RUNUP",
-      "source": "RUNUP",
-      "name": "Napatree2 Slope 2300.0m",
-      "latitude": "41.290226",
-      "longitude": "-71.866581"
+      "name": "Napatree2 Slope 1000.0m",
+      "latitude": "41.301855",
+      "longitude": "-71.868182"
     },
     "10sl000": {
       "id": "RUNUP",
       "source": "RUNUP",
-      "name": "Napatree1 Slope 2100.0m",
-      "latitude": "41.292141",
-      "longitude": "-71.867602"
+      "name": "Napatree1 Slope 200.0m",
+      "latitude": "41.309152",
+      "longitude": "-71.865463"
     },
     "10sl001": {
       "id": "RUNUP",
       "source": "RUNUP",
-      "name": "Napatree1 Slope 2120.0m",
-      "latitude": "41.291962",
-      "longitude": "-71.867624"
+      "name": "Napatree1 Slope 300.0m",
+      "latitude": "41.308257",
+      "longitude": "-71.865576"
     },
     "10sl002": {
       "id": "RUNUP",
       "source": "RUNUP",
-      "name": "Napatree1 Slope 2140.0m",
-      "latitude": "41.291783",
-      "longitude": "-71.867647"
+      "name": "Napatree1 Slope 400.0m",
+      "latitude": "41.307362",
+      "longitude": "-71.865688"
     },
     "10sl003": {
       "id": "RUNUP",
       "source": "RUNUP",
-      "name": "Napatree1 Slope 2160.0m",
-      "latitude": "41.291604",
-      "longitude": "-71.867669"
+      "name": "Napatree1 Slope 500.0m",
+      "latitude": "41.306466",
+      "longitude": "-71.865801"
     },
     "10sl004": {
       "id": "RUNUP",
       "source": "RUNUP",
-      "name": "Napatree1 Slope 2180.0m",
-      "latitude": "41.291425",
-      "longitude": "-71.867692"
+      "name": "Napatree1 Slope 600.0m",
+      "latitude": "41.305571",
+      "longitude": "-71.865913"
     },
     "10sl005": {
       "id": "RUNUP",
       "source": "RUNUP",
-      "name": "Napatree1 Slope 2200.0m",
-      "latitude": "41.291246",
-      "longitude": "-71.867714"
+      "name": "Napatree1 Slope 700.0m",
+      "latitude": "41.304676",
+      "longitude": "-71.866026"
     },
     "10sl006": {
       "id": "RUNUP",
       "source": "RUNUP",
-      "name": "Napatree1 Slope 2220.0m",
-      "latitude": "41.291067",
-      "longitude": "-71.867737"
+      "name": "Napatree1 Slope 800.0m",
+      "latitude": "41.303780",
+      "longitude": "-71.866139"
     },
     "10sl007": {
       "id": "RUNUP",
       "source": "RUNUP",
-      "name": "Napatree1 Slope 2240.0m",
-      "latitude": "41.290887",
-      "longitude": "-71.867759"
+      "name": "Napatree1 Slope 900.0m",
+      "latitude": "41.302885",
+      "longitude": "-71.866251"
     },
     "10sl008": {
       "id": "RUNUP",
       "source": "RUNUP",
-      "name": "Napatree1 Slope 2260.0m",
-      "latitude": "41.290708",
-      "longitude": "-71.867782"
-    },
-    "10sl009": {
-      "id": "RUNUP",
-      "source": "RUNUP",
-      "name": "Napatree1 Slope 2280.0m",
-      "latitude": "41.290529",
-      "longitude": "-71.867804"
-    },
-    "10sl010": {
-      "id": "RUNUP",
-      "source": "RUNUP",
-      "name": "Napatree1 Slope 2300.0m",
-      "latitude": "41.290350",
-      "longitude": "-71.867827"
+      "name": "Napatree1 Slope 1000.0m",
+      "latitude": "41.301990",
+      "longitude": "-71.866364"
     }
   },
   "NDBC": {
