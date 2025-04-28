@@ -320,36 +320,36 @@
 18-Feb-2025 07:45:00	12.6156	4.2077	NaN	0.0720	0.0720	49.3229	12.8707	NaN	NaN
 18-Feb-2025 08:00:01	13.1634	3.5897	NaN	0.0800	0.0800	49.3333	13.1543	NaN	NaN
 18-Feb-2025 08:15:01	14.8833	2.9691	NaN	0.1000	0.1010	49.3438	14.4746	NaN	NaN
-undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined
-undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined
-undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined
-undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined
-undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined
-undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined
-undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined
-undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined
-undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined
-undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined
-undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined
-undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined
-undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined
-undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined
-undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined
-undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined
-undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined
-undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined
-undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined
-undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined
-undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined
-undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined
-undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined
-undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined
-undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined
-undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined
-undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined
-undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined
-undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined
-undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined	undefined
+18-Feb-2025 08:30:00	16.1007	2.8205	NaN	0.1230	0.1240	49.3542	15.4967	NaN	NaN
+18-Feb-2025 08:45:01	21.6232	2.6270	NaN	0.1490	0.1500	49.3646	20.2092	NaN	NaN
+18-Feb-2025 09:00:01	26.3096	0.9427	NaN	0.1760	0.1770	49.3750	23.0286	NaN	NaN
+18-Feb-2025 09:15:00	27.5783	1.6500	NaN	0.2020	0.2030	49.3854	24.5413	NaN	NaN
+18-Feb-2025 09:30:01	27.6782	1.8563	NaN	0.2270	0.2290	49.3958	24.7697	NaN	NaN
+18-Feb-2025 09:45:01	27.6569	2.3259	NaN	0.2670	0.2690	49.4063	25.0887	NaN	NaN
+18-Feb-2025 10:00:00	27.6138	2.2350	NaN	0.2830	0.2850	49.4167	24.9879	NaN	NaN
+18-Feb-2025 10:15:01	27.5119	2.6520	NaN	0.3020	0.3040	49.4271	25.2023	NaN	NaN
+18-Feb-2025 10:30:01	27.4686	2.6297	NaN	0.3170	0.3200	49.4375	25.1502	NaN	NaN
+18-Feb-2025 10:45:00	27.3113	1.9751	NaN	0.3390	0.3410	49.4479	24.5542	NaN	NaN
+18-Feb-2025 11:00:01	27.7753	0.5705	NaN	0.3460	0.3480	49.4583	23.9329	NaN	NaN
+18-Feb-2025 11:15:01	27.4745	1.0315	NaN	0.3580	0.3610	49.4688	24.0201	NaN	NaN
+18-Feb-2025 11:30:00	27.7048	0.9547	NaN	0.3650	0.3680	49.4792	24.1492	NaN	NaN
+18-Feb-2025 11:45:01	27.5901	1.0592	NaN	0.3760	0.3790	49.4896	24.1319	NaN	NaN
+18-Feb-2025 12:00:01	27.6493	0.3587	NaN	0.3700	0.3730	49.5000	23.6848	NaN	NaN
+18-Feb-2025 12:15:00	27.7821	0.3509	NaN	0.3480	0.3510	49.5104	23.7831	NaN	NaN
+18-Feb-2025 12:30:01	27.6732	0.7777	NaN	0.3680	0.3710	49.5208	23.9989	NaN	NaN
+18-Feb-2025 12:45:01	27.6903	0.9709	NaN	0.5350	0.5390	49.5313	24.1493	NaN	NaN
+18-Feb-2025 13:00:00	27.7097	0.5473	NaN	0.5310	0.5360	49.5417	23.8650	NaN	NaN
+18-Feb-2025 13:15:01	27.7042	0.7029	NaN	0.5280	0.5320	49.5521	23.9706	NaN	NaN
+18-Feb-2025 13:30:01	28.2087	0.5471	NaN	0.5300	0.5340	49.5625	24.2566	NaN	NaN
+18-Feb-2025 13:45:00	28.1146	0.7895	NaN	0.5390	0.5430	49.5729	24.3563	NaN	NaN
+18-Feb-2025 14:00:01	28.6776	0.9757	NaN	0.5430	0.5480	49.5833	24.9364	NaN	NaN
+18-Feb-2025 14:15:01	28.3537	1.0642	NaN	0.5460	0.5500	49.5938	24.7437	NaN	NaN
+18-Feb-2025 14:30:00	28.5032	1.0324	NaN	0.5440	0.5480	49.6042	24.8395	NaN	NaN
+18-Feb-2025 14:45:01	28.1868	0.7077	NaN	0.5080	0.5120	49.6146	24.3546	NaN	NaN
+18-Feb-2025 15:00:01	28.2938	0.7463	NaN	0.5120	0.5160	49.6250	24.4667	NaN	NaN
+18-Feb-2025 15:15:00	28.7350	0.9975	NaN	0.4970	0.5010	49.6354	24.9978	NaN	NaN
+18-Feb-2025 15:30:01	28.4779	1.6095	NaN	0.4670	0.4700	49.6458	25.2401	NaN	NaN
+18-Feb-2025 15:45:01	28.1339	1.3508	NaN	0.4690	0.4730	49.6563	24.7753	NaN	NaN
 18-Feb-2025 16:00:00	27.9948	1.6302	NaN	0.4620	0.4660	49.6667	24.8646	NaN	NaN
 18-Feb-2025 16:15:01	27.8386	1.7048	NaN	0.4630	0.4670	49.6771	24.7917	NaN	NaN
 18-Feb-2025 16:30:01	27.4944	1.8931	NaN	0.4240	0.4270	49.6875	24.6460	NaN	NaN
