@@ -333,13 +333,24 @@ def offshore_generate_points_along_line(json_data, resolution=200, points_count=
 def generate_tangent_points(json_data, resolution=HYPERRESOLUTION, points_count=HYPERPOINTS):
     if 'TANGENT' not in json_data:
         json_data['TANGENT'] = {}
+    
+    # Group by original station IDs (strip 'm' or 'M' from runup_id)
     for runup_id, runup_data in json_data['RUNUP'].items():
+        # Extract original station ID (e.g., '40' from '40m' or '40M')
+        station_id = runup_id.rstrip('mM')
+        
+        # Only process one entry per station (skip duplicates)
+        if station_id in json_data['TANGENT']:
+            continue
+        
         shoreline_lat, shoreline_lon = float(runup_data['latitude']), float(runup_data['longitude'])
         surf_lat, surf_lon = float(runup_data['surfLatitude']), float(runup_data['surfLongitude'])
         tangent_lat, tangent_lon = float(runup_data['tangentLatitude']), float(runup_data['tangentLongitude'])
         bearing = calculate_bearing(shoreline_lat, shoreline_lon, surf_lat, surf_lon)
-        json_data['TANGENT'][runup_id] = {}
+        
+        json_data['TANGENT'][station_id] = {}
         point_counter = 0
+        
         for i in range(-points_count // 4, 3 * points_count // 4 + 1):
             distance = i * resolution
             new_lat, new_lon = calculate_new_point(tangent_lat, tangent_lon, bearing, distance)
@@ -347,12 +358,12 @@ def generate_tangent_points(json_data, resolution=HYPERRESOLUTION, points_count=
                 "id": "RUNUP",
                 "source": "RUNUP",
                 "distance": str(distance),
-                "name": f"{runup_data['name']} Tangent {distance:.3f} m",
+                "name": f"{runup_data['name'].replace(' Deepline Min', '').replace(' Deepline Max', '')} Tangent {distance:.3f} m",
                 "latitude": f"{new_lat:.6f}",
                 "longitude": f"{new_lon:.6f}"
             }
-            new_key = f"{runup_id}{point_counter:03d}"
-            json_data['TANGENT'][runup_id][new_key] = new_point
+            new_key = f"{station_id}{point_counter:03d}"
+            json_data['TANGENT'][station_id][new_key] = new_point
             point_counter += 1
 
 # NORMAL stations
