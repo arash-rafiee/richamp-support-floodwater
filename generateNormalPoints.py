@@ -14,22 +14,35 @@ DEEPLINE_DISTANCES = [
     37500, 39500, 41500
 ]
 
-# Deeplines for 20m depth
-# Station-specific deepline distances
-DEEPLINE_DISTANCE_1 = 2315  # For Napatree1 (runup_id: 10)
-DEEPLINE_DISTANCE_2 = 2260  # For Napatree2 (runup_id: 20)
-DEEPLINE_DISTANCE_3 = 2230  # For Napatree3 (runup_id: 30)
-DEEPLINE_DISTANCE_4 = 2200  # For Napatree4 (runup_id: 40)
-DEEPLINE_DISTANCE_5 = 2170  # For Napatree5 (runup_id: 50)
+# Deeplines for 7m depth (Minimum)
+MIN_DEEPLINE_DISTANCE_1 = 700   # For Napatree1 (runup_id: 10)
+MIN_DEEPLINE_DISTANCE_2 = 550   # For Napatree2 (runup_id: 20)
+MIN_DEEPLINE_DISTANCE_3 = 400   # For Napatree3 (runup_id: 30)
+MIN_DEEPLINE_DISTANCE_4 = 400   # For Napatree4 (runup_id: 40)
+MIN_DEEPLINE_DISTANCE_5 = 550   # For Napatree5 (runup_id: 50)
 
+# Deeplines for 20m depth (Maximum)
+MAX_DEEPLINE_DISTANCE_1 = 2315  # For Napatree1 (runup_id: 10)
+MAX_DEEPLINE_DISTANCE_2 = 2260  # For Napatree2 (runup_id: 20)
+MAX_DEEPLINE_DISTANCE_3 = 2230  # For Napatree3 (runup_id: 30)
+MAX_DEEPLINE_DISTANCE_4 = 2200  # For Napatree4 (runup_id: 40)
+MAX_DEEPLINE_DISTANCE_5 = 2170  # For Napatree5 (runup_id: 50)
 
-# Dictionary to map runup_id to deepline distance
-DEEPLINE_DISTANCE_MAP = {
-    '10': DEEPLINE_DISTANCE_1,
-    '20': DEEPLINE_DISTANCE_2,
-    '30': DEEPLINE_DISTANCE_3,
-    '40': DEEPLINE_DISTANCE_4,
-    '50': DEEPLINE_DISTANCE_5
+# Dictionary to map runup_id to deepline distances
+MIN_DEEPLINE_DISTANCE_MAP = {
+    '10': MIN_DEEPLINE_DISTANCE_1,
+    '20': MIN_DEEPLINE_DISTANCE_2,
+    '30': MIN_DEEPLINE_DISTANCE_3,
+    '40': MIN_DEEPLINE_DISTANCE_4,
+    '50': MIN_DEEPLINE_DISTANCE_5
+}
+
+MAX_DEEPLINE_DISTANCE_MAP = {
+    '10': MAX_DEEPLINE_DISTANCE_1,
+    '20': MAX_DEEPLINE_DISTANCE_2,
+    '30': MAX_DEEPLINE_DISTANCE_3,
+    '40': MAX_DEEPLINE_DISTANCE_4,
+    '50': MAX_DEEPLINE_DISTANCE_5
 }
 
 def calculate_bearing(lat1, lon1, lat2, lon2):
@@ -143,27 +156,70 @@ def generate_slope_stations(json_data, min_distance=MIN_SLOPELINE_DISTANCE, max_
     
     return slope_data
 
+
 def generate_deepline_points(json_data):
+    new_runup = {}
+    
     for runup_id, runup_data in json_data['RUNUP'].items():
         shoreline_lat, shoreline_lon = float(runup_data['latitude']), float(runup_data['longitude'])
         surf_lat, surf_lon = float(runup_data['surfLatitude']), float(runup_data['surfLongitude'])
-        deepline_key = runup_data['deeplineKey']
-        
-        # Get station-specific deepline distance
-        distance = DEEPLINE_DISTANCE_MAP.get(runup_id, DEEPLINE_DISTANCE_1)  # Fallback to DEEPLINE_DISTANCE_1 if runup_id not found
-        
         bearing = calculate_bearing(shoreline_lat, shoreline_lon, surf_lat, surf_lon)
-        new_lat, new_lon = calculate_new_point(shoreline_lat, shoreline_lon, bearing, distance)
-        deepline_point = {
+        
+        # Get station-specific min and max deepline distances
+        min_distance = MIN_DEEPLINE_DISTANCE_MAP.get(runup_id, MIN_DEEPLINE_DISTANCE_1)
+        max_distance = MAX_DEEPLINE_DISTANCE_MAP.get(runup_id, MAX_DEEPLINE_DISTANCE_1)
+        
+        # Create RUNUP entry for minimum deepline
+        min_key = f"{runup_id}m"
+        min_deepline_key = runup_data['deeplineKey'] + 'm'  # Append 'm' to original deeplineKey
+        new_runup[min_key] = runup_data.copy()
+        new_runup[min_key]['deeplineKey'] = min_deepline_key
+        new_runup[min_key]['name'] = f"{runup_data['name']} Deepline Min"
+        
+        min_lat, min_lon = calculate_new_point(shoreline_lat, shoreline_lon, bearing, min_distance)
+        new_runup[min_key]['deeplineLatitude'] = f"{min_lat:.6f}"
+        new_runup[min_key]['deeplineLongitude'] = f"{min_lon:.6f}"
+        
+        min_deepline_point = {
             "id": "RUNUP",
             "source": "RUNUP",
-            "name": f"{runup_data['name']} Deepline",
-            "latitude": f"{new_lat:.6f}",
-            "longitude": f"{new_lon:.6f}"
+            "name": f"{runup_data['name']} Deepline Min",
+            "latitude": f"{min_lat:.6f}",
+            "longitude": f"{min_lon:.6f}"
         }
+        
+        # Create RUNUP entry for maximum deepline
+        max_key = f"{runup_id}M"
+        max_deepline_key = runup_data['deeplineKey'] + 'M'  # Append 'M' to original deeplineKey
+        new_runup[max_key] = runup_data.copy()
+        new_runup[max_key]['deeplineKey'] = max_deepline_key
+        new_runup[max_key]['name'] = f"{runup_data['name']} Deepline Max"
+        
+        max_lat, max_lon = calculate_new_point(shoreline_lat, shoreline_lon, bearing, max_distance)
+        new_runup[max_key]['deeplineLatitude'] = f"{max_lat:.6f}"
+        new_runup[max_key]['deeplineLongitude'] = f"{max_lon:.6f}"
+        
+        max_deepline_point = {
+            "id": "RUNUP",
+            "source": "RUNUP",
+            "name": f"{runup_data['name']} Deepline Max",
+            "latitude": f"{max_lat:.6f}",
+            "longitude": f"{max_lon:.6f}"
+        }
+        
+        # Update ASSET, NDBC, NOS sections for both min and max deepline points
         for section in ['ASSET', 'NDBC', 'NOS']:
-            if deepline_key in json_data[section]:
-                json_data[section][deepline_key] = deepline_point
+            if runup_data['deeplineKey'] in json_data[section]:
+                # Add min deepline point
+                json_data[section][min_deepline_key] = min_deepline_point
+                # Add max deepline point
+                json_data[section][max_deepline_key] = max_deepline_point
+                # Remove original deepline point if it exists
+                if runup_data['deeplineKey'] in json_data[section]:
+                    del json_data[section][runup_data['deeplineKey']]
+    
+    # Replace RUNUP section with new entries
+    json_data['RUNUP'] = new_runup
 
 def generate_multiple_deepline_points(json_data, distances=DEEPLINE_DISTANCES):
     if 'NORMAL' not in json_data:

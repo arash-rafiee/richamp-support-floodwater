@@ -2136,6 +2136,99 @@ class Grapher:
                 plt.savefig(graph_directory + stationName + '_slope.png')
                 plt.close()
 
+
+# Graph all runup
+
+        fig, ax = plt.subplots(figsize=(16,9))
+        for index in range(numberOfRunupDatapoints):
+
+            stationName = self.runupLabels[index]
+            if("1" in stationName[0:stationName.index(" ")]):
+                ax.plot(self.runupTimes, self.datapointsRunupHolmanMid[index], label=stationName)
+
+        ax.legend(loc="upper left")
+        ax.format_xdata = mdates.DateFormatter('%d')
+        plt.xticks(fontsize=12)
+        plt.yticks(fontsize=12)
+        plt.title(self.titlePrefix + "Napatree1 all runup: ", fontsize=18)
+#                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
+        plt.tight_layout()
+        plt.ylabel("Runup (meters)", fontsize=14)
+        plt.savefig(graph_directory + 'Napatree1_all_runup.png')
+        plt.close()
+        
+        fig, ax = plt.subplots(figsize=(16,9))
+        for index in range(numberOfRunupDatapoints):
+
+            stationName = self.runupLabels[index]
+            if("2" in stationName[0:stationName.index(" ")]):
+                ax.plot(self.runupTimes, self.datapointsRunupHolmanMid[index], label=stationName)
+
+        ax.legend(loc="upper left")
+        ax.format_xdata = mdates.DateFormatter('%d')
+        plt.xticks(fontsize=12)
+        plt.yticks(fontsize=12)
+        plt.title(self.titlePrefix + "Napatree2 all runup: ", fontsize=18)
+#                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
+        plt.tight_layout()
+        plt.ylabel("Runup (meters)", fontsize=14)
+        plt.savefig(graph_directory + 'Napatree2_all_runup.png')
+        plt.close()
+        
+        fig, ax = plt.subplots(figsize=(16,9))
+        for index in range(numberOfRunupDatapoints):
+
+            stationName = self.runupLabels[index]
+            if("3" in stationName[0:stationName.index(" ")]):
+                ax.plot(self.runupTimes, self.datapointsRunupHolmanMid[index], label=stationName)
+
+        ax.legend(loc="upper left")
+        ax.format_xdata = mdates.DateFormatter('%d')
+        plt.xticks(fontsize=12)
+        plt.yticks(fontsize=12)
+        plt.title(self.titlePrefix + "Napatree3 all runup: ", fontsize=18)
+#                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
+        plt.tight_layout()
+        plt.ylabel("Runup (meters)", fontsize=14)
+        plt.savefig(graph_directory + 'Napatree3_all_runup.png')
+        plt.close()
+        
+        fig, ax = plt.subplots(figsize=(16,9))
+        for index in range(numberOfRunupDatapoints):
+
+            stationName = self.runupLabels[index]
+            if("4" in stationName[0:stationName.index(" ")]):
+                ax.plot(self.runupTimes, self.datapointsRunupHolmanMid[index], label=stationName)
+
+        ax.legend(loc="upper left")
+        ax.format_xdata = mdates.DateFormatter('%d')
+        plt.xticks(fontsize=12)
+        plt.yticks(fontsize=12)
+        plt.title(self.titlePrefix + "Napatree4 all runup: ", fontsize=18)
+#                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
+        plt.tight_layout()
+        plt.ylabel("Runup (meters)", fontsize=14)
+        plt.savefig(graph_directory + 'Napatree4_all_runup.png')
+        plt.close()
+        
+        fig, ax = plt.subplots(figsize=(16,9))
+        for index in range(numberOfRunupDatapoints):
+
+            stationName = self.runupLabels[index]
+            if("5" in stationName[0:stationName.index(" ")]):
+                ax.plot(self.runupTimes, self.datapointsRunupHolmanMid[index], label=stationName)
+
+        ax.legend(loc="upper left")
+        ax.format_xdata = mdates.DateFormatter('%d')
+        plt.xticks(fontsize=12)
+        plt.yticks(fontsize=12)
+        plt.title(self.titlePrefix + "Napatree5 all runup: ", fontsize=18)
+#                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
+        plt.tight_layout()
+        plt.ylabel("Runup (meters)", fontsize=14)
+        plt.savefig(graph_directory + 'Napatree5_all_runup.png')
+        plt.close()
+#         
     #               graph all deepwater swh                
 #         fig, ax = plt.subplots(figsize=(16,9))
 #         for index in range(numberOfRunupDatapoints):
@@ -2158,7 +2251,7 @@ class Grapher:
 #         plt.ylabel("Deepwater SWH (meters)", fontsize=14)
 #         plt.savefig(graph_directory + 'Napatree1_all_deepwater_swh.png')
 #         plt.close()
-#         
+# #         
 #         deeplineDistances = []
 #         deeplineElevations = []
 #         deeplineSWH = []
