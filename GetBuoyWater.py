@@ -14,6 +14,7 @@ import signal
 import os
 import time 
 
+MOORING_DEPTH = 0.5
 
 # Add logic to pull loaded data from txt file depending on source in station
 def alarm_handler(signum, frame):
@@ -132,6 +133,7 @@ class GetBuoyWater:
 #                 stationElevation = meshDict[key]["elevation"]
 #                 print("station elevation", key, stationElevation)
 #                 waters = waters + stationElevation
+                waters = waters - MOORING_DEPTH
 #                 
                 waterDict[key] = {}
                 waterDict[key]["times"] = unixTimes
