@@ -60,6 +60,8 @@ class GetBuoyWind:
                 windDirections = data["IOOS_Wind"]["Wind_Direction"][0][0].flatten()
                 windSpeeds = data["IOOS_Wind"]["Wind_Speed"][0][0].flatten()
                 windGusts = data["IOOS_Wind"]["Wind_Gust"][0][0].flatten()
+                
+                windDirections = (windDirections + 90) % 360
                 windDict[key] = {}
                 windDict[key]["times"] = unixTimes
                 windDict[key]["directions"] = windDirections
