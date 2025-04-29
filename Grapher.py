@@ -1618,7 +1618,7 @@ class Grapher:
         for index in range(numberOfWaterDatapoints):
             if(len(self.datapointsWaters) > 0):
                 fig, ax = plt.subplots(figsize=(16,9))
-                ax.plot(self.waterTimes, self.datapointsWaters[index], label="SWL + setup")
+                ax.plot(self.waterTimes, self.datapointsWaters[index], label="Water Level")
                 if(self.stillwaterExists):
                     ax.plot(self.stillwaterTimes, self.datapointsStillwaters[index], label="SWL")
                 if(self.tidewaterExists):
@@ -1637,6 +1637,21 @@ class Grapher:
                 plt.ylabel("elevation (meters)", fontsize=14)
                 plt.savefig(graph_directory + stationName + '_water.png')
                 plt.close()
+                
+
+                if(self.tideExists):
+                    fig, ax = plt.subplots(figsize=(16,9))
+                    ax.plot(self.tideDatapointsTimes[index], self.tideDatapointsWaters[index], label="Station")
+                    ax.legend(loc="upper left")
+                    ax.format_xdata = mdates.DateFormatter('%d')
+                    plt.xticks(fontsize=12)
+                    plt.yticks(fontsize=12)
+                    stationName = self.tideLabels[index]
+                    plt.title(self.titlePrefix + stationName + " station water depth", fontsize=18)
+                    plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
+                    plt.ylabel("depth (meters)", fontsize=14)
+                    plt.savefig(graph_directory + stationName + '_station_water.png')
+                    plt.close()
 #         No loop because no timeseries
         if(len(self.datapointsElevation) > 0):
             fig, ax = plt.subplots(figsize=(16,13))
