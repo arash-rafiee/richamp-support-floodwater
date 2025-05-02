@@ -132,8 +132,8 @@ class GetBuoyWater:
                 
                 stationElevation = meshDict[key]["elevation"]
                 print("station elevation", key, stationElevation)
-                waters = waters + MOORING_LENGTH
-                waters = waters + stationElevation
+#                 waters = waters + MOORING_LENGTH
+#                 waters = waters + stationElevation
 #                 
                 waterDict[key] = {}
                 waterDict[key]["times"] = unixTimes

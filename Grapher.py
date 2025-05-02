@@ -15,6 +15,7 @@ from geographiclib.geodesic import Geodesic
 
 class Grapher:
     DATE_FORMAT = "%m/%d/%y-%HZ"    
+    CONVERT_TO_WATER_DEPTH = True
         
     def extractLatitudeIndex(self, nodeIndex):
         return int(nodeIndex[1: nodeIndex.find(",")])
@@ -585,6 +586,44 @@ class Grapher:
                             self.gaugeDatapointsRains.append(gaugeRains)
             gaugeLabelsInitialized = True
             
+            
+  
+        if(self.meshExists):
+            with open(dataToGraph["MESH"]) as outfile:
+                meshDataset = json.load(outfile)
+                
+            for stationKey in meshDataset.keys():
+                if(stationKey == "map_data"):
+                    self.mapElevationTriangles = meshDataset["map_data"]["map_triangles"]
+                    self.mapElevationMaskedTriangles = meshDataset["map_data"]["map_maskedTriangles"]
+                    self.mapElevationPoints = meshDataset["map_data"]["map_points"]
+                    self.mapElevationPointsLatitudes = meshDataset["map_data"]["map_pointsLatitudes"]
+                    self.mapElevationPointsLongitudes = meshDataset["map_data"]["map_pointsLongitude"]
+                    self.mapElevation = meshDataset["map_data"]["map_elevation"]
+                    for nodeIndex in range(len(self.mapElevation)):
+                        pointElevation = self.mapElevation[nodeIndex]
+                        if(pointElevation > self.maxElevation):
+                            self.maxElevation = pointElevation
+                else:
+                    nodeIndex = meshDataset[stationKey]["nodeIndex"]
+                    if(not self.meshExists or (stationKey in meshDataset.keys())):
+                        self.elevationLabels.append(nodeIndex)
+                        self.elevationLatitudes.append(meshDataset[stationKey]["latitude"])
+                        self.elevationLongitudes.append(meshDataset[stationKey]["longitude"])
+                
+                        if(not assetLabelsInitialized):
+                            self.assetLabels.append(self.obsMetadata["ASSET"][stationKey]["name"])
+                            self.assetLatitudes.append(float(self.obsMetadata["ASSET"][stationKey]["latitude"]))
+                            self.assetLongitudes.append(float(self.obsMetadata["ASSET"][stationKey]["longitude"]))
+
+                        elevation = meshDataset[stationKey]["elevation"]
+                        self.datapointsElevation.append(elevation)
+                    
+                        if(self.assetExists):
+                            assetElevation = assetDataset[stationKey]["elevation"]
+                            self.assetDatapointsElevation.append(assetElevation)
+            assetLabelsInitialized = True
+            
         if(self.waterExists):
             with open(dataToGraph["WATER"]) as outfile:
                 waterDataset = json.load(outfile)
@@ -625,7 +664,7 @@ class Grapher:
                             self.tideLabels.append(self.obsMetadata["NOS"][stationKey]["name"])
                             self.tideLatitudes.append(float(self.obsMetadata["NOS"][stationKey]["latitude"]))
                             self.tideLongitudes.append(float(self.obsMetadata["NOS"][stationKey]["longitude"]))
-    
+
                         datapointWaters = []
                         for index in range(len(waterDataset[stationKey]["times"])):
                             if(self.waterStartDate == None):
@@ -634,6 +673,9 @@ class Grapher:
                                 self.waterTimes.append(self.unixTimeToDeltaHours(waterDataset[stationKey]["times"][index], self.waterStartDate))
                             datapointWaters.append(waterDataset[stationKey]["water"][index])
                         waterTimestampsInitialized = True
+                        if(CONVERT_TO_WATER_DEPTH and meshDataset[stationKey] != None):
+                            stationElevation = meshDataset[stationKey]["elevation"]
+                            datapointWaters = datapointWaters + (stationElevation * -1)
                         self.datapointsWaters.append(datapointWaters)
                         if(self.stillwaterExists):
                             datapointStillwaters = []
@@ -672,6 +714,8 @@ class Grapher:
                             self.tideDatapointsPredictionWaters.append(tidePredictionWaters)
             tideLabelsInitialized = True
                       
+                      
+        
         if(self.etaExists):
             with open(dataToGraph["ETA"]) as outfile:
                 etaDataset = json.load(outfile)
@@ -731,42 +775,6 @@ class Grapher:
                             self.tideDatapointsPredictionTimes.append(tidePredictionTimes)
                             self.tideDatapointsPredictionWaters.append(tidePredictionWaters)
             tideLabelsInitialized = True                      
-  
-        if(self.meshExists):
-            with open(dataToGraph["MESH"]) as outfile:
-                meshDataset = json.load(outfile)
-                
-            for stationKey in meshDataset.keys():
-                if(stationKey == "map_data"):
-                    self.mapElevationTriangles = meshDataset["map_data"]["map_triangles"]
-                    self.mapElevationMaskedTriangles = meshDataset["map_data"]["map_maskedTriangles"]
-                    self.mapElevationPoints = meshDataset["map_data"]["map_points"]
-                    self.mapElevationPointsLatitudes = meshDataset["map_data"]["map_pointsLatitudes"]
-                    self.mapElevationPointsLongitudes = meshDataset["map_data"]["map_pointsLongitude"]
-                    self.mapElevation = meshDataset["map_data"]["map_elevation"]
-                    for nodeIndex in range(len(self.mapElevation)):
-                        pointElevation = self.mapElevation[nodeIndex]
-                        if(pointElevation > self.maxElevation):
-                            self.maxElevation = pointElevation
-                else:
-                    nodeIndex = meshDataset[stationKey]["nodeIndex"]
-                    if(not self.meshExists or (stationKey in meshDataset.keys())):
-                        self.elevationLabels.append(nodeIndex)
-                        self.elevationLatitudes.append(meshDataset[stationKey]["latitude"])
-                        self.elevationLongitudes.append(meshDataset[stationKey]["longitude"])
-                
-                        if(not assetLabelsInitialized):
-                            self.assetLabels.append(self.obsMetadata["ASSET"][stationKey]["name"])
-                            self.assetLatitudes.append(float(self.obsMetadata["ASSET"][stationKey]["latitude"]))
-                            self.assetLongitudes.append(float(self.obsMetadata["ASSET"][stationKey]["longitude"]))
-
-                        elevation = meshDataset[stationKey]["elevation"]
-                        self.datapointsElevation.append(elevation)
-                    
-                        if(self.assetExists):
-                            assetElevation = assetDataset[stationKey]["elevation"]
-                            self.assetDatapointsElevation.append(assetElevation)
-            assetLabelsInitialized = True
   
         if(self.wavesExists):
             swhExists = False
