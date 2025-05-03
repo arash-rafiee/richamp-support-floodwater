@@ -701,6 +701,9 @@ class Grapher:
                                 tideTimes.append(self.unixTimeToDeltaHours(tideDataset[stationKey]["times"][index], self.waterStartDate))
                                 tideWater = tideDataset[stationKey]["water"][index]
                                 tideWaters.append(tideWater)
+                            if(self.CONVERT_TO_WATER_DEPTH and stationKey in meshDataset.keys()):
+                                stationElevation = meshDataset[stationKey]["elevation"]
+                                tideWaters = np.array(tideWaters) + (stationElevation * -1)
                             self.tideDatapointsTimes.append(tideTimes)
                             self.tideDatapointsWaters.append(tideWaters)
                             tidePredictionTimes = []
