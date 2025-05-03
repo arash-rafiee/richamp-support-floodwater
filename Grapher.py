@@ -673,7 +673,7 @@ class Grapher:
                                 self.waterTimes.append(self.unixTimeToDeltaHours(waterDataset[stationKey]["times"][index], self.waterStartDate))
                             datapointWaters.append(waterDataset[stationKey]["water"][index])
                         waterTimestampsInitialized = True
-                        if(self.CONVERT_TO_WATER_DEPTH and and stationKey in meshDataset.keys()):
+                        if(self.CONVERT_TO_WATER_DEPTH and stationKey in meshDataset.keys()):
                             stationElevation = meshDataset[stationKey]["elevation"]
                             datapointWaters = datapointWaters + (stationElevation * -1)
                         self.datapointsWaters.append(datapointWaters)
