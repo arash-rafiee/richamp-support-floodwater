@@ -675,7 +675,7 @@ class Grapher:
                         waterTimestampsInitialized = True
                         if(self.CONVERT_TO_WATER_DEPTH and stationKey in meshDataset.keys()):
                             stationElevation = meshDataset[stationKey]["elevation"]
-                            datapointWaters = datapointWaters + (stationElevation * -1)
+                            datapointWaters = np.array(datapointWaters) + (stationElevation * -1)
                         self.datapointsWaters.append(datapointWaters)
                         if(self.stillwaterExists):
                             datapointStillwaters = []
