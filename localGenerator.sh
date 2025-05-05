@@ -119,7 +119,7 @@
 
 # python generateGraphs.py --stations WINNAPAUG_STATIONS.json --obsExists true --meshExists true --mesh /scratch3/workspace/pranav_sai_uri_edu-runup/Feb25PrinciplesRun/forecast_RI_track_next/fort.14 --gfsExists true --wind /scratch3/workspace/pranav_sai_uri_edu-runup/Feb25PrinciplesRun/feb25next.nc --waterExists true --water /scratch3/workspace/pranav_sai_uri_edu-runup/Feb25PrinciplesRun/forecast_RI_track_next/fort.63.nc --tidewaterExists true --tidewater /scratch3/workspace/pranav_sai_uri_edu-runup/Feb25PrinciplesRun/forecast_RI_track_next_tides/fort.63.nc --tempDir /scratch3/workspace/pranav_sai_uri_edu-runup/temp/ --backgroundChoice WINNAPAUG_OUTLINE
 
-python generateGraphs.py --stations OBS_STATIONS.json --obsExists true --gfsExists true --wind /scratch3/workspace/pranav_sai_uri_edu-runup/Dec172023RunupRun/dec23wind.nc --tempDir /scratch3/workspace/pranav_sai_uri_edu-runup/temp/ --backgroundChoice NAPATREE_BEACH
+# python generateGraphs.py --stations OBS_STATIONS.json --obsExists true --gfsExists true --wind /scratch3/workspace/pranav_sai_uri_edu-runup/Dec172023RunupRun/dec23wind.nc --tempDir /scratch3/workspace/pranav_sai_uri_edu-runup/temp/ --backgroundChoice NAPATREE_BEACH
 
 # USE THIS
 python generateGraphs.py --stations NAPATREE_NORMAL_STATIONS.json \

@@ -320,7 +320,7 @@ class GetRunup:
             offshoreMwd = mwdDict[deeplineKey]["mwd"]
             offshorePwp = pwpDict[deeplineKey]["pwp"]
 
-            meshDict[slopelineKey]["elevation"]
+#             meshDict[slopelineKey]["elevation"]
             
             
             print("deepline SWH Max: ", np.max(offshoreSwh))
