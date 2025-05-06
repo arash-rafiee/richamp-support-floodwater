@@ -992,7 +992,7 @@ class Grapher:
                     datapointStockdonRunupLow.append(runupDataset[stationKey]["runupStockdonLow"][index])
                     datapointAdcircSetup.append(runupDataset[stationKey]["setupAdcirc"][index])
                     datapointAdcircRunup.append(runupDataset[stationKey]["runupAdcirc"][index])
-                    datapointDuneHeights.append(runupDataset[stationKey]["duneHeights"])
+                    datapointDuneHeights.append(runupDataset[stationKey]["duneHeights"][index])
                     
                 runupTimestampsInitialized = True
                 self.datapointsRunup.append(datapointRunup)    

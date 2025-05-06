@@ -150,13 +150,11 @@ class GetRunup:
         
         # Find the closest timestamp <= time
         for entry in sorted_heights:
-            print("entry['timestamp'] <= time:", entry['timestamp'] <= time)
-            print(entry['timestamp'], time)
-            if entry['timestamp'] <= time:
+            if time <= entry['timestamp']:
                 return entry['height']
         
-        # If no timestamp is <= time, return the earliest height
-        return sorted_heights[0]['height']
+        # If no timestamp is <= time, return the latest height
+        return sorted_heights[-1]['height']
         
     def calculateStockdonRunupNoSetup(self, averageSlope, waveHeight, deepwaterWavelength):
         swash = np.sqrt(waveHeight * deepwaterWavelength * (((averageSlope**2) * 0.563) + 0.004))
@@ -344,9 +342,9 @@ class GetRunup:
             duneHeights = []
             for index, time in enumerate(runupTimes):
                 duneHeights.append(self.findDuneHeight(time, stationDict["duneHeights"]))
-                print("time", time, stationDict["duneHeights"])
-            print("duneHeights", duneHeights)
-            quit()
+#                 print("time", time, stationDict["duneHeights"])
+#             print("duneHeights", duneHeights)
+#             quit()
             print("deepline SWH Max: ", np.max(offshoreSwh))
             print("deepline PWP Max: ", np.max(offshorePwp))
 
