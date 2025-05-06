@@ -150,6 +150,8 @@ class GetRunup:
         
         # Find the closest timestamp <= time
         for entry in sorted_heights:
+            print("entry['timestamp'] <= time:", entry['timestamp'] <= time)
+            print(entry['timestamp'], time)
             if entry['timestamp'] <= time:
                 return entry['height']
         
