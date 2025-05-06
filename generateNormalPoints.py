@@ -1,6 +1,7 @@
 import json
 import copy
 import math
+import datetime
 
 HYPERRESOLUTION = 1
 HYPERPOINTS = 120
@@ -43,6 +44,51 @@ MAX_DEEPLINE_DISTANCE_MAP = {
     '30': MAX_DEEPLINE_DISTANCE_3,
     '40': MAX_DEEPLINE_DISTANCE_4,
     '50': MAX_DEEPLINE_DISTANCE_5
+}
+
+# Function to convert GMT datetime string to Unix timestamp
+def datetime_to_timestamp(dt_str):
+    """Convert a GMT datetime string (YYYY-MM-DD HH:MM:SS) to Unix timestamp."""
+    dt = datetime.datetime.strptime(dt_str, "%Y-%m-%d %H:%M:%S")
+    dt = dt.replace(tzinfo=datetime.timezone.utc)  # Ensure GMT/UTC
+    return int(dt.timestamp())
+
+# Station-specific dune heights with GMT datetime strings
+DUNE_HEIGHTS_1 = [
+    {"datetime": "2023-12-13 04:00:00", "height": 6.04},
+    {"datetime": "2023-12-19 04:00:00", "height": 6.08}
+]
+DUNE_HEIGHTS_2 = [
+    {"datetime": "2023-12-13 04:00:00", "height": 4.81},
+    {"datetime": "2023-12-19 04:00:00", "height": 4.82}
+]
+DUNE_HEIGHTS_3 = [
+    {"datetime": "2023-12-13 04:00:00", "height": 4.02},
+    {"datetime": "2023-12-19 04:00:00", "height": 4.06}
+]
+DUNE_HEIGHTS_4 = [
+    {"datetime": "2023-12-13 04:00:00", "height": 3.89},
+    {"datetime": "2023-12-19 04:00:00", "height": 3.92}
+]
+DUNE_HEIGHTS_5 = [
+    {"datetime": "2023-12-13 04:00:00", "height": 3.32},
+    {"datetime": "2023-12-19 04:00:00", "height": 3.22}
+]
+
+# Convert datetime strings to timestamps for JSON output
+DUNE_HEIGHTS_1 = [{"timestamp": datetime_to_timestamp(h["datetime"]), "height": h["height"]} for h in DUNE_HEIGHTS_1]
+DUNE_HEIGHTS_2 = [{"timestamp": datetime_to_timestamp(h["datetime"]), "height": h["height"]} for h in DUNE_HEIGHTS_2]
+DUNE_HEIGHTS_3 = [{"timestamp": datetime_to_timestamp(h["datetime"]), "height": h["height"]} for h in DUNE_HEIGHTS_3]
+DUNE_HEIGHTS_4 = [{"timestamp": datetime_to_timestamp(h["datetime"]), "height": h["height"]} for h in DUNE_HEIGHTS_4]
+DUNE_HEIGHTS_5 = [{"timestamp": datetime_to_timestamp(h["datetime"]), "height": h["height"]} for h in DUNE_HEIGHTS_5]
+
+# Dictionary to map runup_id to dune heights
+DUNE_HEIGHTS_MAP = {
+    '10': DUNE_HEIGHTS_1,
+    '20': DUNE_HEIGHTS_2,
+    '30': DUNE_HEIGHTS_3,
+    '40': DUNE_HEIGHTS_4,
+    '50': DUNE_HEIGHTS_5
 }
 
 def calculate_bearing(lat1, lon1, lat2, lon2):
@@ -165,16 +211,19 @@ def generate_deepline_points(json_data):
         surf_lat, surf_lon = float(runup_data['surfLatitude']), float(runup_data['surfLongitude'])
         bearing = calculate_bearing(shoreline_lat, shoreline_lon, surf_lat, surf_lon)
         
-        # Get station-specific min and max deepline distances
-        min_distance = MIN_DEEPLINE_DISTANCE_MAP.get(runup_id, MIN_DEEPLINE_DISTANCE_1)
-        max_distance = MAX_DEEPLINE_DISTANCE_MAP.get(runup_id, MAX_DEEPLINE_DISTANCE_1)
+        # Get station-specific min and max deepline distances and dune heights
+        station_id = runup_id.rstrip('mM')
+        min_distance = MIN_DEEPLINE_DISTANCE_MAP.get(station_id, MIN_DEEPLINE_DISTANCE_1)
+        max_distance = MAX_DEEPLINE_DISTANCE_MAP.get(station_id, MAX_DEEPLINE_DISTANCE_1)
+        dune_heights = DUNE_HEIGHTS_MAP.get(station_id, DUNE_HEIGHTS_1)
         
         # Create RUNUP entry for minimum deepline
         min_key = f"{runup_id}m"
-        min_deepline_key = runup_data['deeplineKey'] + 'm'  # Append 'm' to original deeplineKey
+        min_deepline_key = runup_data['deeplineKey'] + 'm'
         new_runup[min_key] = runup_data.copy()
         new_runup[min_key]['deeplineKey'] = min_deepline_key
         new_runup[min_key]['name'] = f"{runup_data['name']} Deepline Min"
+        new_runup[min_key]['duneHeights'] = dune_heights
         
         min_lat, min_lon = calculate_new_point(shoreline_lat, shoreline_lon, bearing, min_distance)
         new_runup[min_key]['deeplineLatitude'] = f"{min_lat:.6f}"
@@ -190,10 +239,11 @@ def generate_deepline_points(json_data):
         
         # Create RUNUP entry for maximum deepline
         max_key = f"{runup_id}M"
-        max_deepline_key = runup_data['deeplineKey'] + 'M'  # Append 'M' to original deeplineKey
+        max_deepline_key = runup_data['deeplineKey'] + 'M'
         new_runup[max_key] = runup_data.copy()
         new_runup[max_key]['deeplineKey'] = max_deepline_key
         new_runup[max_key]['name'] = f"{runup_data['name']} Deepline Max"
+        new_runup[max_key]['duneHeights'] = dune_heights
         
         max_lat, max_lon = calculate_new_point(shoreline_lat, shoreline_lon, bearing, max_distance)
         new_runup[max_key]['deeplineLatitude'] = f"{max_lat:.6f}"
@@ -210,11 +260,8 @@ def generate_deepline_points(json_data):
         # Update ASSET, NDBC, NOS sections for both min and max deepline points
         for section in ['ASSET', 'NDBC', 'NOS']:
             if runup_data['deeplineKey'] in json_data[section]:
-                # Add min deepline point
                 json_data[section][min_deepline_key] = min_deepline_point
-                # Add max deepline point
                 json_data[section][max_deepline_key] = max_deepline_point
-                # Remove original deepline point if it exists
                 if runup_data['deeplineKey'] in json_data[section]:
                     del json_data[section][runup_data['deeplineKey']]
     
@@ -233,6 +280,10 @@ def generate_multiple_deepline_points(json_data, distances=DEEPLINE_DISTANCES):
         surf_lat, surf_lon = float(runup_data['surfLatitude']), float(runup_data['surfLongitude'])
         tangent_lat, tangent_lon = float(runup_data['tangentLatitude']), float(runup_data['tangentLongitude'])
         bearing = calculate_bearing(shoreline_lat, shoreline_lon, surf_lat, surf_lon)
+        
+        # Get station-specific dune heights
+        station_id = orig_runup_id.rstrip('mM')
+        dune_heights = DUNE_HEIGHTS_MAP.get(station_id, DUNE_HEIGHTS_1)
         
         # Generate NORMAL points
         json_data['NORMAL'][orig_runup_id] = {}
@@ -255,7 +306,7 @@ def generate_multiple_deepline_points(json_data, distances=DEEPLINE_DISTANCES):
             point_counter += 1
         
         # Generate TANGENT points
-        json_data['TANGENT'][orig_runup_id] = {}
+        json_data['TANGENT'][station_id] = {}
         point_counter = 0
         for i in range(-HYPERPOINTS // 4, 3 * HYPERPOINTS // 4 + 1):
             distance = i * HYPERRESOLUTION
@@ -264,12 +315,12 @@ def generate_multiple_deepline_points(json_data, distances=DEEPLINE_DISTANCES):
                 "id": "RUNUP",
                 "source": "RUNUP",
                 "distance": str(distance),
-                "name": f"{runup_data['name']} Tangent {distance:.3f} m",
+                "name": f"{runup_data['name'].replace(' Deepline Min', '').replace(' Deepline Max', '')} Tangent {distance:.3f} m",
                 "latitude": f"{new_lat:.6f}",
                 "longitude": f"{new_lon:.6f}"
             }
-            new_key = f"{orig_runup_id}{point_counter:03d}"
-            json_data['TANGENT'][orig_runup_id][new_key] = new_point
+            new_key = f"{station_id}{point_counter:03d}"
+            json_data['TANGENT'][station_id][new_key] = new_point
             point_counter += 1
         
         # Generate multiple deepline points
@@ -283,7 +334,7 @@ def generate_multiple_deepline_points(json_data, distances=DEEPLINE_DISTANCES):
                 "surfKey": runup_data['surfKey'],
                 "offshoreKey": runup_data['offshoreKey'],
                 "deeplineKey": new_key,
-                "name": f"{runup_data['name']} Deepline {distance}m",
+                "name": f"{runup_data['name'].replace(' Deepline Min', '').replace(' Deepline Max', '')} Deepline {distance}m",
                 "latitude": runup_data['latitude'],
                 "longitude": runup_data['longitude'],
                 "tangentLatitude": runup_data['tangentLatitude'],
@@ -293,13 +344,14 @@ def generate_multiple_deepline_points(json_data, distances=DEEPLINE_DISTANCES):
                 "offshoreLatitude": runup_data['offshoreLatitude'],
                 "offshoreLongitude": runup_data['offshoreLongitude'],
                 "deeplineLatitude": f"{new_lat:.6f}",
-                "deeplineLongitude": f"{new_lon:.6f}"
+                "deeplineLongitude": f"{new_lon:.6f}",
+                "duneHeights": dune_heights
             }
             
             deepline_point = {
                 "id": "RUNUP",
                 "source": "RUNUP",
-                "name": f"{runup_data['name']} Deepline {distance}m",
+                "name": f"{runup_data['name'].replace(' Deepline Min', '').replace(' Deepline Max', '')} Deepline {distance}m",
                 "latitude": f"{new_lat:.6f}",
                 "longitude": f"{new_lon:.6f}"
             }

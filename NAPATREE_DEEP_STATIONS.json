@@ -12313,7 +12313,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.300965",
-      "deeplineLongitude": "-71.871133"
+      "deeplineLongitude": "-71.871133",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.89
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.92
+        }
+      ]
     },
     "40d01": {
       "id": "RUNUP",
@@ -12331,7 +12341,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.291166",
-      "deeplineLongitude": "-71.865114"
+      "deeplineLongitude": "-71.865114",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.89
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.92
+        }
+      ]
     },
     "40d02": {
       "id": "RUNUP",
@@ -12349,7 +12369,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.280550",
-      "deeplineLongitude": "-71.858596"
+      "deeplineLongitude": "-71.858596",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.89
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.92
+        }
+      ]
     },
     "40d03": {
       "id": "RUNUP",
@@ -12367,7 +12397,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.264218",
-      "deeplineLongitude": "-71.848571"
+      "deeplineLongitude": "-71.848571",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.89
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.92
+        }
+      ]
     },
     "40d04": {
       "id": "RUNUP",
@@ -12385,7 +12425,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.247884",
-      "deeplineLongitude": "-71.838552"
+      "deeplineLongitude": "-71.838552",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.89
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.92
+        }
+      ]
     },
     "40d05": {
       "id": "RUNUP",
@@ -12403,7 +12453,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.231550",
-      "deeplineLongitude": "-71.828538"
+      "deeplineLongitude": "-71.828538",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.89
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.92
+        }
+      ]
     },
     "40d06": {
       "id": "RUNUP",
@@ -12421,7 +12481,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.223383",
-      "deeplineLongitude": "-71.823533"
+      "deeplineLongitude": "-71.823533",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.89
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.92
+        }
+      ]
     },
     "40d07": {
       "id": "RUNUP",
@@ -12439,7 +12509,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.207047",
-      "deeplineLongitude": "-71.813526"
+      "deeplineLongitude": "-71.813526",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.89
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.92
+        }
+      ]
     },
     "40d08": {
       "id": "RUNUP",
@@ -12457,7 +12537,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.190711",
-      "deeplineLongitude": "-71.803524"
+      "deeplineLongitude": "-71.803524",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.89
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.92
+        }
+      ]
     },
     "40d09": {
       "id": "RUNUP",
@@ -12475,7 +12565,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.174374",
-      "deeplineLongitude": "-71.793527"
+      "deeplineLongitude": "-71.793527",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.89
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.92
+        }
+      ]
     },
     "40d10": {
       "id": "RUNUP",
@@ -12493,7 +12593,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.158035",
-      "deeplineLongitude": "-71.783536"
+      "deeplineLongitude": "-71.783536",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.89
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.92
+        }
+      ]
     },
     "40d11": {
       "id": "RUNUP",
@@ -12511,7 +12621,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.141697",
-      "deeplineLongitude": "-71.773549"
+      "deeplineLongitude": "-71.773549",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.89
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.92
+        }
+      ]
     },
     "40d12": {
       "id": "RUNUP",
@@ -12529,7 +12649,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.125357",
-      "deeplineLongitude": "-71.763567"
+      "deeplineLongitude": "-71.763567",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.89
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.92
+        }
+      ]
     },
     "40d13": {
       "id": "RUNUP",
@@ -12547,7 +12677,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.109016",
-      "deeplineLongitude": "-71.753590"
+      "deeplineLongitude": "-71.753590",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.89
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.92
+        }
+      ]
     },
     "40d14": {
       "id": "RUNUP",
@@ -12565,7 +12705,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.092674",
-      "deeplineLongitude": "-71.743618"
+      "deeplineLongitude": "-71.743618",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.89
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.92
+        }
+      ]
     },
     "40d15": {
       "id": "RUNUP",
@@ -12583,7 +12733,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.076332",
-      "deeplineLongitude": "-71.733652"
+      "deeplineLongitude": "-71.733652",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.89
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.92
+        }
+      ]
     },
     "40d16": {
       "id": "RUNUP",
@@ -12601,7 +12761,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.068160",
-      "deeplineLongitude": "-71.728670"
+      "deeplineLongitude": "-71.728670",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.89
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.92
+        }
+      ]
     },
     "40d17": {
       "id": "RUNUP",
@@ -12619,7 +12789,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.051817",
-      "deeplineLongitude": "-71.718710"
+      "deeplineLongitude": "-71.718710",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.89
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.92
+        }
+      ]
     },
     "40d18": {
       "id": "RUNUP",
@@ -12637,7 +12817,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.035472",
-      "deeplineLongitude": "-71.708756"
+      "deeplineLongitude": "-71.708756",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.89
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.92
+        }
+      ]
     },
     "40d19": {
       "id": "RUNUP",
@@ -12655,7 +12845,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.019127",
-      "deeplineLongitude": "-71.698806"
+      "deeplineLongitude": "-71.698806",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.89
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.92
+        }
+      ]
     },
     "40d20": {
       "id": "RUNUP",
@@ -12673,7 +12873,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.002780",
-      "deeplineLongitude": "-71.688862"
+      "deeplineLongitude": "-71.688862",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.89
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.92
+        }
+      ]
     },
     "40d21": {
       "id": "RUNUP",
@@ -12691,7 +12901,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "40.986433",
-      "deeplineLongitude": "-71.678922"
+      "deeplineLongitude": "-71.678922",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.89
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.92
+        }
+      ]
     },
     "40d22": {
       "id": "RUNUP",
@@ -12709,7 +12929,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "40.970085",
-      "deeplineLongitude": "-71.668987"
+      "deeplineLongitude": "-71.668987",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.89
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.92
+        }
+      ]
     },
     "50d00": {
       "id": "RUNUP",
@@ -12727,7 +12957,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.299550",
-      "deeplineLongitude": "-71.874383"
+      "deeplineLongitude": "-71.874383",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.32
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.22
+        }
+      ]
     },
     "50d01": {
       "id": "RUNUP",
@@ -12745,7 +12985,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.289903",
-      "deeplineLongitude": "-71.867943"
+      "deeplineLongitude": "-71.867943",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.32
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.22
+        }
+      ]
     },
     "50d02": {
       "id": "RUNUP",
@@ -12763,7 +13013,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.279452",
-      "deeplineLongitude": "-71.860969"
+      "deeplineLongitude": "-71.860969",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.32
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.22
+        }
+      ]
     },
     "50d03": {
       "id": "RUNUP",
@@ -12781,7 +13041,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.263374",
-      "deeplineLongitude": "-71.850243"
+      "deeplineLongitude": "-71.850243",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.32
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.22
+        }
+      ]
     },
     "50d04": {
       "id": "RUNUP",
@@ -12799,7 +13069,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.247294",
-      "deeplineLongitude": "-71.839523"
+      "deeplineLongitude": "-71.839523",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.32
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.22
+        }
+      ]
     },
     "50d05": {
       "id": "RUNUP",
@@ -12817,7 +13097,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.231213",
-      "deeplineLongitude": "-71.828808"
+      "deeplineLongitude": "-71.828808",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.32
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.22
+        }
+      ]
     },
     "50d06": {
       "id": "RUNUP",
@@ -12835,7 +13125,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.223172",
-      "deeplineLongitude": "-71.823453"
+      "deeplineLongitude": "-71.823453",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.32
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.22
+        }
+      ]
     },
     "50d07": {
       "id": "RUNUP",
@@ -12853,7 +13153,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.207090",
-      "deeplineLongitude": "-71.812746"
+      "deeplineLongitude": "-71.812746",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.32
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.22
+        }
+      ]
     },
     "50d08": {
       "id": "RUNUP",
@@ -12871,7 +13181,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.191006",
-      "deeplineLongitude": "-71.802044"
+      "deeplineLongitude": "-71.802044",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.32
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.22
+        }
+      ]
     },
     "50d09": {
       "id": "RUNUP",
@@ -12889,7 +13209,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.174922",
-      "deeplineLongitude": "-71.791348"
+      "deeplineLongitude": "-71.791348",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.32
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.22
+        }
+      ]
     },
     "50d10": {
       "id": "RUNUP",
@@ -12907,7 +13237,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.158837",
-      "deeplineLongitude": "-71.780656"
+      "deeplineLongitude": "-71.780656",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.32
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.22
+        }
+      ]
     },
     "50d11": {
       "id": "RUNUP",
@@ -12925,7 +13265,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.142751",
-      "deeplineLongitude": "-71.769970"
+      "deeplineLongitude": "-71.769970",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.32
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.22
+        }
+      ]
     },
     "50d12": {
       "id": "RUNUP",
@@ -12943,7 +13293,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.126663",
-      "deeplineLongitude": "-71.759290"
+      "deeplineLongitude": "-71.759290",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.32
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.22
+        }
+      ]
     },
     "50d13": {
       "id": "RUNUP",
@@ -12961,7 +13321,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.110575",
-      "deeplineLongitude": "-71.748614"
+      "deeplineLongitude": "-71.748614",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.32
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.22
+        }
+      ]
     },
     "50d14": {
       "id": "RUNUP",
@@ -12979,7 +13349,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.094486",
-      "deeplineLongitude": "-71.737944"
+      "deeplineLongitude": "-71.737944",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.32
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.22
+        }
+      ]
     },
     "50d15": {
       "id": "RUNUP",
@@ -12997,7 +13377,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.078396",
-      "deeplineLongitude": "-71.727279"
+      "deeplineLongitude": "-71.727279",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.32
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.22
+        }
+      ]
     },
     "50d16": {
       "id": "RUNUP",
@@ -13015,7 +13405,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.070350",
-      "deeplineLongitude": "-71.721948"
+      "deeplineLongitude": "-71.721948",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.32
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.22
+        }
+      ]
     },
     "50d17": {
       "id": "RUNUP",
@@ -13033,7 +13433,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.054258",
-      "deeplineLongitude": "-71.711291"
+      "deeplineLongitude": "-71.711291",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.32
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.22
+        }
+      ]
     },
     "50d18": {
       "id": "RUNUP",
@@ -13051,7 +13461,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.038166",
-      "deeplineLongitude": "-71.700639"
+      "deeplineLongitude": "-71.700639",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.32
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.22
+        }
+      ]
     },
     "50d19": {
       "id": "RUNUP",
@@ -13069,7 +13489,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.022072",
-      "deeplineLongitude": "-71.689992"
+      "deeplineLongitude": "-71.689992",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.32
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.22
+        }
+      ]
     },
     "50d20": {
       "id": "RUNUP",
@@ -13087,7 +13517,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.005977",
-      "deeplineLongitude": "-71.679351"
+      "deeplineLongitude": "-71.679351",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.32
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.22
+        }
+      ]
     },
     "50d21": {
       "id": "RUNUP",
@@ -13105,7 +13545,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "40.989882",
-      "deeplineLongitude": "-71.668714"
+      "deeplineLongitude": "-71.668714",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.32
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.22
+        }
+      ]
     },
     "50d22": {
       "id": "RUNUP",
@@ -13123,7 +13573,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "40.973785",
-      "deeplineLongitude": "-71.658083"
+      "deeplineLongitude": "-71.658083",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.32
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.22
+        }
+      ]
     },
     "30d00": {
       "id": "RUNUP",
@@ -13141,7 +13601,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.301689",
-      "deeplineLongitude": "-71.868698"
+      "deeplineLongitude": "-71.868698",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.02
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.06
+        }
+      ]
     },
     "30d01": {
       "id": "RUNUP",
@@ -13159,7 +13629,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.291424",
-      "deeplineLongitude": "-71.864265"
+      "deeplineLongitude": "-71.864265",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.02
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.06
+        }
+      ]
     },
     "30d02": {
       "id": "RUNUP",
@@ -13177,7 +13657,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.280303",
-      "deeplineLongitude": "-71.859464"
+      "deeplineLongitude": "-71.859464",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.02
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.06
+        }
+      ]
     },
     "30d03": {
       "id": "RUNUP",
@@ -13195,7 +13685,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.263194",
-      "deeplineLongitude": "-71.852080"
+      "deeplineLongitude": "-71.852080",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.02
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.06
+        }
+      ]
     },
     "30d04": {
       "id": "RUNUP",
@@ -13213,7 +13713,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.246085",
-      "deeplineLongitude": "-71.844701"
+      "deeplineLongitude": "-71.844701",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.02
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.06
+        }
+      ]
     },
     "30d05": {
       "id": "RUNUP",
@@ -13231,7 +13741,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.228975",
-      "deeplineLongitude": "-71.837325"
+      "deeplineLongitude": "-71.837325",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.02
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.06
+        }
+      ]
     },
     "30d06": {
       "id": "RUNUP",
@@ -13249,7 +13769,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.220420",
-      "deeplineLongitude": "-71.833639"
+      "deeplineLongitude": "-71.833639",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.02
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.06
+        }
+      ]
     },
     "30d07": {
       "id": "RUNUP",
@@ -13267,7 +13797,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.203309",
-      "deeplineLongitude": "-71.826269"
+      "deeplineLongitude": "-71.826269",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.02
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.06
+        }
+      ]
     },
     "30d08": {
       "id": "RUNUP",
@@ -13285,7 +13825,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.186198",
-      "deeplineLongitude": "-71.818903"
+      "deeplineLongitude": "-71.818903",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.02
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.06
+        }
+      ]
     },
     "30d09": {
       "id": "RUNUP",
@@ -13303,7 +13853,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.169087",
-      "deeplineLongitude": "-71.811541"
+      "deeplineLongitude": "-71.811541",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.02
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.06
+        }
+      ]
     },
     "30d10": {
       "id": "RUNUP",
@@ -13321,7 +13881,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.151975",
-      "deeplineLongitude": "-71.804182"
+      "deeplineLongitude": "-71.804182",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.02
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.06
+        }
+      ]
     },
     "30d11": {
       "id": "RUNUP",
@@ -13339,7 +13909,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.134862",
-      "deeplineLongitude": "-71.796828"
+      "deeplineLongitude": "-71.796828",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.02
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.06
+        }
+      ]
     },
     "30d12": {
       "id": "RUNUP",
@@ -13357,7 +13937,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.117749",
-      "deeplineLongitude": "-71.789477"
+      "deeplineLongitude": "-71.789477",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.02
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.06
+        }
+      ]
     },
     "30d13": {
       "id": "RUNUP",
@@ -13375,7 +13965,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.100636",
-      "deeplineLongitude": "-71.782130"
+      "deeplineLongitude": "-71.782130",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.02
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.06
+        }
+      ]
     },
     "30d14": {
       "id": "RUNUP",
@@ -13393,7 +13993,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.083522",
-      "deeplineLongitude": "-71.774787"
+      "deeplineLongitude": "-71.774787",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.02
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.06
+        }
+      ]
     },
     "30d15": {
       "id": "RUNUP",
@@ -13411,7 +14021,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.066407",
-      "deeplineLongitude": "-71.767448"
+      "deeplineLongitude": "-71.767448",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.02
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.06
+        }
+      ]
     },
     "30d16": {
       "id": "RUNUP",
@@ -13429,7 +14049,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.057850",
-      "deeplineLongitude": "-71.763780"
+      "deeplineLongitude": "-71.763780",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.02
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.06
+        }
+      ]
     },
     "30d17": {
       "id": "RUNUP",
@@ -13447,7 +14077,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.040735",
-      "deeplineLongitude": "-71.756446"
+      "deeplineLongitude": "-71.756446",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.02
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.06
+        }
+      ]
     },
     "30d18": {
       "id": "RUNUP",
@@ -13465,7 +14105,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.023620",
-      "deeplineLongitude": "-71.749117"
+      "deeplineLongitude": "-71.749117",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.02
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.06
+        }
+      ]
     },
     "30d19": {
       "id": "RUNUP",
@@ -13483,7 +14133,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.006504",
-      "deeplineLongitude": "-71.741791"
+      "deeplineLongitude": "-71.741791",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.02
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.06
+        }
+      ]
     },
     "30d20": {
       "id": "RUNUP",
@@ -13501,7 +14161,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "40.989387",
-      "deeplineLongitude": "-71.734469"
+      "deeplineLongitude": "-71.734469",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.02
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.06
+        }
+      ]
     },
     "30d21": {
       "id": "RUNUP",
@@ -13519,7 +14189,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "40.972270",
-      "deeplineLongitude": "-71.727151"
+      "deeplineLongitude": "-71.727151",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.02
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.06
+        }
+      ]
     },
     "30d22": {
       "id": "RUNUP",
@@ -13537,7 +14217,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "40.955153",
-      "deeplineLongitude": "-71.719836"
+      "deeplineLongitude": "-71.719836",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.02
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.06
+        }
+      ]
     },
     "20d00": {
       "id": "RUNUP",
@@ -13555,7 +14245,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.301855",
-      "deeplineLongitude": "-71.868182"
+      "deeplineLongitude": "-71.868182",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.81
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.82
+        }
+      ]
     },
     "20d01": {
       "id": "RUNUP",
@@ -13573,7 +14273,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.291121",
-      "deeplineLongitude": "-71.866704"
+      "deeplineLongitude": "-71.866704",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.81
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.82
+        }
+      ]
     },
     "20d02": {
       "id": "RUNUP",
@@ -13591,7 +14301,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.279492",
-      "deeplineLongitude": "-71.865104"
+      "deeplineLongitude": "-71.865104",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.81
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.82
+        }
+      ]
     },
     "20d03": {
       "id": "RUNUP",
@@ -13609,7 +14329,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.261601",
-      "deeplineLongitude": "-71.862644"
+      "deeplineLongitude": "-71.862644",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.81
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.82
+        }
+      ]
     },
     "20d04": {
       "id": "RUNUP",
@@ -13627,7 +14357,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.243709",
-      "deeplineLongitude": "-71.860185"
+      "deeplineLongitude": "-71.860185",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.81
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.82
+        }
+      ]
     },
     "20d05": {
       "id": "RUNUP",
@@ -13645,7 +14385,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.225818",
-      "deeplineLongitude": "-71.857728"
+      "deeplineLongitude": "-71.857728",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.81
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.82
+        }
+      ]
     },
     "20d06": {
       "id": "RUNUP",
@@ -13663,7 +14413,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.216872",
-      "deeplineLongitude": "-71.856499"
+      "deeplineLongitude": "-71.856499",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.81
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.82
+        }
+      ]
     },
     "20d07": {
       "id": "RUNUP",
@@ -13681,7 +14441,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.198981",
-      "deeplineLongitude": "-71.854044"
+      "deeplineLongitude": "-71.854044",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.81
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.82
+        }
+      ]
     },
     "20d08": {
       "id": "RUNUP",
@@ -13699,7 +14469,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.181090",
-      "deeplineLongitude": "-71.851590"
+      "deeplineLongitude": "-71.851590",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.81
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.82
+        }
+      ]
     },
     "20d09": {
       "id": "RUNUP",
@@ -13717,7 +14497,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.163198",
-      "deeplineLongitude": "-71.849137"
+      "deeplineLongitude": "-71.849137",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.81
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.82
+        }
+      ]
     },
     "20d10": {
       "id": "RUNUP",
@@ -13735,7 +14525,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.145307",
-      "deeplineLongitude": "-71.846685"
+      "deeplineLongitude": "-71.846685",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.81
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.82
+        }
+      ]
     },
     "20d11": {
       "id": "RUNUP",
@@ -13753,7 +14553,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.127415",
-      "deeplineLongitude": "-71.844235"
+      "deeplineLongitude": "-71.844235",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.81
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.82
+        }
+      ]
     },
     "20d12": {
       "id": "RUNUP",
@@ -13771,7 +14581,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.109524",
-      "deeplineLongitude": "-71.841786"
+      "deeplineLongitude": "-71.841786",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.81
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.82
+        }
+      ]
     },
     "20d13": {
       "id": "RUNUP",
@@ -13789,7 +14609,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.091632",
-      "deeplineLongitude": "-71.839339"
+      "deeplineLongitude": "-71.839339",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.81
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.82
+        }
+      ]
     },
     "20d14": {
       "id": "RUNUP",
@@ -13807,7 +14637,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.073741",
-      "deeplineLongitude": "-71.836893"
+      "deeplineLongitude": "-71.836893",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.81
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.82
+        }
+      ]
     },
     "20d15": {
       "id": "RUNUP",
@@ -13825,7 +14665,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.055849",
-      "deeplineLongitude": "-71.834448"
+      "deeplineLongitude": "-71.834448",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.81
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.82
+        }
+      ]
     },
     "20d16": {
       "id": "RUNUP",
@@ -13843,7 +14693,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.046903",
-      "deeplineLongitude": "-71.833226"
+      "deeplineLongitude": "-71.833226",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.81
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.82
+        }
+      ]
     },
     "20d17": {
       "id": "RUNUP",
@@ -13861,7 +14721,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.029011",
-      "deeplineLongitude": "-71.830783"
+      "deeplineLongitude": "-71.830783",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.81
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.82
+        }
+      ]
     },
     "20d18": {
       "id": "RUNUP",
@@ -13879,7 +14749,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "41.011119",
-      "deeplineLongitude": "-71.828342"
+      "deeplineLongitude": "-71.828342",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.81
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.82
+        }
+      ]
     },
     "20d19": {
       "id": "RUNUP",
@@ -13897,7 +14777,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "40.993227",
-      "deeplineLongitude": "-71.825901"
+      "deeplineLongitude": "-71.825901",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.81
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.82
+        }
+      ]
     },
     "20d20": {
       "id": "RUNUP",
@@ -13915,7 +14805,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "40.975335",
-      "deeplineLongitude": "-71.823462"
+      "deeplineLongitude": "-71.823462",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.81
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.82
+        }
+      ]
     },
     "20d21": {
       "id": "RUNUP",
@@ -13933,7 +14833,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "40.957443",
-      "deeplineLongitude": "-71.821025"
+      "deeplineLongitude": "-71.821025",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.81
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.82
+        }
+      ]
     },
     "20d22": {
       "id": "RUNUP",
@@ -13951,7 +14861,17 @@
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
       "deeplineLatitude": "40.939551",
-      "deeplineLongitude": "-71.818589"
+      "deeplineLongitude": "-71.818589",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.81
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.82
+        }
+      ]
     },
     "10d00": {
       "id": "RUNUP",
@@ -13969,7 +14889,17 @@
       "offshoreLatitude": "41.302815",
       "offshoreLongitude": "-71.866260",
       "deeplineLatitude": "41.301990",
-      "deeplineLongitude": "-71.866364"
+      "deeplineLongitude": "-71.866364",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 6.04
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 6.08
+        }
+      ]
     },
     "10d01": {
       "id": "RUNUP",
@@ -13987,7 +14917,17 @@
       "offshoreLatitude": "41.302815",
       "offshoreLongitude": "-71.866260",
       "deeplineLatitude": "41.291246",
-      "deeplineLongitude": "-71.867714"
+      "deeplineLongitude": "-71.867714",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 6.04
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 6.08
+        }
+      ]
     },
     "10d02": {
       "id": "RUNUP",
@@ -14005,7 +14945,17 @@
       "offshoreLatitude": "41.302815",
       "offshoreLongitude": "-71.866260",
       "deeplineLatitude": "41.279606",
-      "deeplineLongitude": "-71.869177"
+      "deeplineLongitude": "-71.869177",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 6.04
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 6.08
+        }
+      ]
     },
     "10d03": {
       "id": "RUNUP",
@@ -14023,7 +14973,17 @@
       "offshoreLatitude": "41.302815",
       "offshoreLongitude": "-71.866260",
       "deeplineLatitude": "41.261699",
-      "deeplineLongitude": "-71.871426"
+      "deeplineLongitude": "-71.871426",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 6.04
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 6.08
+        }
+      ]
     },
     "10d04": {
       "id": "RUNUP",
@@ -14041,7 +15001,17 @@
       "offshoreLatitude": "41.302815",
       "offshoreLongitude": "-71.866260",
       "deeplineLatitude": "41.243792",
-      "deeplineLongitude": "-71.873674"
+      "deeplineLongitude": "-71.873674",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 6.04
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 6.08
+        }
+      ]
     },
     "10d05": {
       "id": "RUNUP",
@@ -14059,7 +15029,17 @@
       "offshoreLatitude": "41.302815",
       "offshoreLongitude": "-71.866260",
       "deeplineLatitude": "41.225886",
-      "deeplineLongitude": "-71.875920"
+      "deeplineLongitude": "-71.875920",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 6.04
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 6.08
+        }
+      ]
     },
     "10d06": {
       "id": "RUNUP",
@@ -14077,7 +15057,17 @@
       "offshoreLatitude": "41.302815",
       "offshoreLongitude": "-71.866260",
       "deeplineLatitude": "41.216932",
-      "deeplineLongitude": "-71.877043"
+      "deeplineLongitude": "-71.877043",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 6.04
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 6.08
+        }
+      ]
     },
     "10d07": {
       "id": "RUNUP",
@@ -14095,7 +15085,17 @@
       "offshoreLatitude": "41.302815",
       "offshoreLongitude": "-71.866260",
       "deeplineLatitude": "41.199025",
-      "deeplineLongitude": "-71.879288"
+      "deeplineLongitude": "-71.879288",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 6.04
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 6.08
+        }
+      ]
     },
     "10d08": {
       "id": "RUNUP",
@@ -14113,7 +15113,17 @@
       "offshoreLatitude": "41.302815",
       "offshoreLongitude": "-71.866260",
       "deeplineLatitude": "41.181118",
-      "deeplineLongitude": "-71.881531"
+      "deeplineLongitude": "-71.881531",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 6.04
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 6.08
+        }
+      ]
     },
     "10d09": {
       "id": "RUNUP",
@@ -14131,7 +15141,17 @@
       "offshoreLatitude": "41.302815",
       "offshoreLongitude": "-71.866260",
       "deeplineLatitude": "41.163211",
-      "deeplineLongitude": "-71.883774"
+      "deeplineLongitude": "-71.883774",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 6.04
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 6.08
+        }
+      ]
     },
     "10d10": {
       "id": "RUNUP",
@@ -14149,7 +15169,17 @@
       "offshoreLatitude": "41.302815",
       "offshoreLongitude": "-71.866260",
       "deeplineLatitude": "41.145304",
-      "deeplineLongitude": "-71.886015"
+      "deeplineLongitude": "-71.886015",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 6.04
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 6.08
+        }
+      ]
     },
     "10d11": {
       "id": "RUNUP",
@@ -14167,7 +15197,17 @@
       "offshoreLatitude": "41.302815",
       "offshoreLongitude": "-71.866260",
       "deeplineLatitude": "41.127397",
-      "deeplineLongitude": "-71.888255"
+      "deeplineLongitude": "-71.888255",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 6.04
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 6.08
+        }
+      ]
     },
     "10d12": {
       "id": "RUNUP",
@@ -14185,7 +15225,17 @@
       "offshoreLatitude": "41.302815",
       "offshoreLongitude": "-71.866260",
       "deeplineLatitude": "41.109490",
-      "deeplineLongitude": "-71.890493"
+      "deeplineLongitude": "-71.890493",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 6.04
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 6.08
+        }
+      ]
     },
     "10d13": {
       "id": "RUNUP",
@@ -14203,7 +15253,17 @@
       "offshoreLatitude": "41.302815",
       "offshoreLongitude": "-71.866260",
       "deeplineLatitude": "41.091582",
-      "deeplineLongitude": "-71.892731"
+      "deeplineLongitude": "-71.892731",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 6.04
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 6.08
+        }
+      ]
     },
     "10d14": {
       "id": "RUNUP",
@@ -14221,7 +15281,17 @@
       "offshoreLatitude": "41.302815",
       "offshoreLongitude": "-71.866260",
       "deeplineLatitude": "41.073675",
-      "deeplineLongitude": "-71.894967"
+      "deeplineLongitude": "-71.894967",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 6.04
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 6.08
+        }
+      ]
     },
     "10d15": {
       "id": "RUNUP",
@@ -14239,7 +15309,17 @@
       "offshoreLatitude": "41.302815",
       "offshoreLongitude": "-71.866260",
       "deeplineLatitude": "41.055768",
-      "deeplineLongitude": "-71.897202"
+      "deeplineLongitude": "-71.897202",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 6.04
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 6.08
+        }
+      ]
     },
     "10d16": {
       "id": "RUNUP",
@@ -14257,7 +15337,17 @@
       "offshoreLatitude": "41.302815",
       "offshoreLongitude": "-71.866260",
       "deeplineLatitude": "41.046814",
-      "deeplineLongitude": "-71.898319"
+      "deeplineLongitude": "-71.898319",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 6.04
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 6.08
+        }
+      ]
     },
     "10d17": {
       "id": "RUNUP",
@@ -14275,7 +15365,17 @@
       "offshoreLatitude": "41.302815",
       "offshoreLongitude": "-71.866260",
       "deeplineLatitude": "41.028907",
-      "deeplineLongitude": "-71.900552"
+      "deeplineLongitude": "-71.900552",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 6.04
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 6.08
+        }
+      ]
     },
     "10d18": {
       "id": "RUNUP",
@@ -14293,7 +15393,17 @@
       "offshoreLatitude": "41.302815",
       "offshoreLongitude": "-71.866260",
       "deeplineLatitude": "41.010999",
-      "deeplineLongitude": "-71.902784"
+      "deeplineLongitude": "-71.902784",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 6.04
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 6.08
+        }
+      ]
     },
     "10d19": {
       "id": "RUNUP",
@@ -14311,7 +15421,17 @@
       "offshoreLatitude": "41.302815",
       "offshoreLongitude": "-71.866260",
       "deeplineLatitude": "40.993092",
-      "deeplineLongitude": "-71.905015"
+      "deeplineLongitude": "-71.905015",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 6.04
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 6.08
+        }
+      ]
     },
     "10d20": {
       "id": "RUNUP",
@@ -14329,7 +15449,17 @@
       "offshoreLatitude": "41.302815",
       "offshoreLongitude": "-71.866260",
       "deeplineLatitude": "40.975184",
-      "deeplineLongitude": "-71.907244"
+      "deeplineLongitude": "-71.907244",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 6.04
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 6.08
+        }
+      ]
     },
     "10d21": {
       "id": "RUNUP",
@@ -14347,7 +15477,17 @@
       "offshoreLatitude": "41.302815",
       "offshoreLongitude": "-71.866260",
       "deeplineLatitude": "40.957277",
-      "deeplineLongitude": "-71.909472"
+      "deeplineLongitude": "-71.909472",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 6.04
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 6.08
+        }
+      ]
     },
     "10d22": {
       "id": "RUNUP",
@@ -14365,7 +15505,17 @@
       "offshoreLatitude": "41.302815",
       "offshoreLongitude": "-71.866260",
       "deeplineLatitude": "40.939369",
-      "deeplineLongitude": "-71.911700"
+      "deeplineLongitude": "-71.911700",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 6.04
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 6.08
+        }
+      ]
     }
   },
   "NORMAL": {

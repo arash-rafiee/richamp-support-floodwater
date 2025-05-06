@@ -392,6 +392,8 @@ class Grapher:
         self.datapointsRunupLongitudes = []
         self.datapointsRunupLatitudes = []
         self.runupAverageSlopes = []
+        
+        self.datapointsDuneHeights = []
     
 
 #        So loading obs, wind, and waves should be able to cover and set all available data
@@ -940,6 +942,7 @@ class Grapher:
                 datapointStockdonRunupLow = []
                 datapointAdcircSetup = []
                 datapointAdcircRunup = []
+                datapointDuneHeights = []
                 
                 for index in range(len(runupDataset[stationKey]["times"])):
                     if(self.runupStartDate == None):
@@ -989,6 +992,7 @@ class Grapher:
                     datapointStockdonRunupLow.append(runupDataset[stationKey]["runupStockdonLow"][index])
                     datapointAdcircSetup.append(runupDataset[stationKey]["setupAdcirc"][index])
                     datapointAdcircRunup.append(runupDataset[stationKey]["runupAdcirc"][index])
+                    datapointDuneHeights.append(runupDataset[stationKey]["duneHeights"])
                     
                 runupTimestampsInitialized = True
                 self.datapointsRunup.append(datapointRunup)    
@@ -1021,6 +1025,7 @@ class Grapher:
                 self.datapointsRunupStockdonLow.append(datapointStockdonRunupLow)
                 self.datapointsSetupAdcirc.append(datapointAdcircSetup)
                 self.datapointsRunupAdcirc.append(datapointAdcircRunup)
+                self.datapointsDuneHeights.append(datapointDuneHeights)
                 
 
     def generateGraphs(self):
@@ -2168,12 +2173,15 @@ class Grapher:
 # Graph all runup
 
         fig, ax = plt.subplots(figsize=(16,9))
+        duneHeights = []
         for index in range(numberOfRunupDatapoints):
 
             stationName = self.runupLabels[index]
+            duneHeights = self.datapointsDuneHeights[index]
             if("1" in stationName[0:stationName.index(" ")]):
                 ax.plot(self.runupTimes, self.datapointsRunupHolmanMid[index], label=stationName)
 
+        ax.plot(self.runupTimes, duneHeights, label="Dune Height")
         ax.legend(loc="upper left")
         ax.format_xdata = mdates.DateFormatter('%d')
         plt.xticks(fontsize=12)
@@ -2186,12 +2194,15 @@ class Grapher:
         plt.close()
         
         fig, ax = plt.subplots(figsize=(16,9))
+        duneHeights = []
         for index in range(numberOfRunupDatapoints):
 
             stationName = self.runupLabels[index]
+            duneHeights = self.datapointsDuneHeights[index]
             if("2" in stationName[0:stationName.index(" ")]):
                 ax.plot(self.runupTimes, self.datapointsRunupHolmanMid[index], label=stationName)
 
+        ax.plot(self.runupTimes, duneHeights, label="Dune Height")
         ax.legend(loc="upper left")
         ax.format_xdata = mdates.DateFormatter('%d')
         plt.xticks(fontsize=12)
@@ -2204,12 +2215,15 @@ class Grapher:
         plt.close()
         
         fig, ax = plt.subplots(figsize=(16,9))
+        duneHeights = []
         for index in range(numberOfRunupDatapoints):
 
             stationName = self.runupLabels[index]
+            duneHeights = self.datapointsDuneHeights[index]
             if("3" in stationName[0:stationName.index(" ")]):
                 ax.plot(self.runupTimes, self.datapointsRunupHolmanMid[index], label=stationName)
 
+        ax.plot(self.runupTimes, duneHeights, label="Dune Height")
         ax.legend(loc="upper left")
         ax.format_xdata = mdates.DateFormatter('%d')
         plt.xticks(fontsize=12)
@@ -2222,12 +2236,15 @@ class Grapher:
         plt.close()
         
         fig, ax = plt.subplots(figsize=(16,9))
+        duneHeights = []
         for index in range(numberOfRunupDatapoints):
 
             stationName = self.runupLabels[index]
+            duneHeights = self.datapointsDuneHeights[index]
             if("4" in stationName[0:stationName.index(" ")]):
                 ax.plot(self.runupTimes, self.datapointsRunupHolmanMid[index], label=stationName)
 
+        ax.plot(self.runupTimes, duneHeights, label="Dune Height")
         ax.legend(loc="upper left")
         ax.format_xdata = mdates.DateFormatter('%d')
         plt.xticks(fontsize=12)
@@ -2240,12 +2257,15 @@ class Grapher:
         plt.close()
         
         fig, ax = plt.subplots(figsize=(16,9))
+        duneHeights = []
         for index in range(numberOfRunupDatapoints):
 
             stationName = self.runupLabels[index]
+            duneHeights = self.datapointsDuneHeights[index]
             if("5" in stationName[0:stationName.index(" ")]):
                 ax.plot(self.runupTimes, self.datapointsRunupHolmanMid[index], label=stationName)
 
+        ax.plot(self.runupTimes, duneHeights, label="Dune Height")
         ax.legend(loc="upper left")
         ax.format_xdata = mdates.DateFormatter('%d')
         plt.xticks(fontsize=12)

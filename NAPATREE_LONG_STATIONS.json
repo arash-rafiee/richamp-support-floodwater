@@ -2122,6 +2122,16 @@
       "surfLongitude": "-71.872599",
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.89
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.92
+        }
+      ],
       "deeplineLatitude": "41.305864",
       "deeplineLongitude": "-71.874143"
     },
@@ -2140,6 +2150,16 @@
       "surfLongitude": "-71.872599",
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.89
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.92
+        }
+      ],
       "deeplineLatitude": "41.291166",
       "deeplineLongitude": "-71.865114"
     },
@@ -2158,6 +2178,16 @@
       "surfLongitude": "-71.875477",
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.32
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.22
+        }
+      ],
       "deeplineLatitude": "41.303167",
       "deeplineLongitude": "-71.876798"
     },
@@ -2176,6 +2206,16 @@
       "surfLongitude": "-71.875477",
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 3.32
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 3.22
+        }
+      ],
       "deeplineLatitude": "41.290144",
       "deeplineLongitude": "-71.868104"
     },
@@ -2194,6 +2234,16 @@
       "surfLongitude": "-71.869495",
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.02
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.06
+        }
+      ],
       "deeplineLatitude": "41.306821",
       "deeplineLongitude": "-71.870916"
     },
@@ -2212,6 +2262,16 @@
       "surfLongitude": "-71.869495",
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.02
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.06
+        }
+      ],
       "deeplineLatitude": "41.291167",
       "deeplineLongitude": "-71.864154"
     },
@@ -2230,6 +2290,16 @@
       "surfLongitude": "-71.868526",
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.81
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.82
+        }
+      ],
       "deeplineLatitude": "41.305881",
       "deeplineLongitude": "-71.868736"
     },
@@ -2248,6 +2318,16 @@
       "surfLongitude": "-71.868526",
       "offshoreLatitude": "41.19892",
       "offshoreLongitude": "-71.80623",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 4.81
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 4.82
+        }
+      ],
       "deeplineLatitude": "41.290584",
       "deeplineLongitude": "-71.866630"
     },
@@ -2266,6 +2346,16 @@
       "surfLongitude": "-71.866260",
       "offshoreLatitude": "41.302815",
       "offshoreLongitude": "-71.866260",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 6.04
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 6.08
+        }
+      ],
       "deeplineLatitude": "41.304676",
       "deeplineLongitude": "-71.866026"
     },
@@ -2284,6 +2374,16 @@
       "surfLongitude": "-71.866260",
       "offshoreLatitude": "41.302815",
       "offshoreLongitude": "-71.866260",
+      "duneHeights": [
+        {
+          "timestamp": 1702440000,
+          "height": 6.04
+        },
+        {
+          "timestamp": 1702958400,
+          "height": 6.08
+        }
+      ],
       "deeplineLatitude": "41.290216",
       "deeplineLongitude": "-71.867844"
     }

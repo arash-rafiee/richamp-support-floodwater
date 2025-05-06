@@ -136,7 +136,25 @@ class GetRunup:
         swash = np.sqrt(waveHeight * deepwaterWavelength * (((averageSlope**2) * 0.563) + 0.004))
         return (1.1 * (setup + (swash/2.0))) + stillwaterLevel
         
+    def findDuneHeight(self, time, duneHeights):
+        """
+        Find the dune height for a given Unix timestamp from the duneHeights list.
+        Returns the height of the closest timestamp that is less than or equal to the given time.
+        If no such timestamp exists, returns the earliest height.
+        """
+        if not duneHeights:
+            return 0.0  # Default if no heights are defined
         
+        # Sort by timestamp to ensure correct order
+        sorted_heights = sorted(duneHeights, key=lambda x: x['timestamp'])
+        
+        # Find the closest timestamp <= time
+        for entry in sorted_heights:
+            if entry['timestamp'] <= time:
+                return entry['height']
+        
+        # If no timestamp is <= time, return the earliest height
+        return sorted_heights[0]['height']
         
     def calculateStockdonRunupNoSetup(self, averageSlope, waveHeight, deepwaterWavelength):
         swash = np.sqrt(waveHeight * deepwaterWavelength * (((averageSlope**2) * 0.563) + 0.004))
@@ -321,8 +339,9 @@ class GetRunup:
             offshorePwp = pwpDict[deeplineKey]["pwp"]
 
 #             meshDict[slopelineKey]["elevation"]
-            
-            
+            duneHeights = []
+            for index, time in range(runupTimes):
+                duneHeights.append(self.findDuneHeight(time, stationDict["duneHeights"]))
             print("deepline SWH Max: ", np.max(offshoreSwh))
             print("deepline PWP Max: ", np.max(offshorePwp))
 
@@ -785,6 +804,8 @@ class GetRunup:
             runupDict[key]["nodeIndex"] = stationName
             runupDict[key]["latitude"] = shorelineCoordinates[0]
             runupDict[key]["longitude"] = shorelineCoordinates[1]
+            
+            runupDict[key]["duneHeights"] = duneHeights
         
         # print(windDict)
         print("Writing runup data file!")
