@@ -342,6 +342,7 @@ class GetRunup:
             duneHeights = []
             for index, time in enumerate(runupTimes):
                 duneHeights.append(self.findDuneHeight(time, stationDict["duneHeights"]))
+                print("time", time, stationDict["duneHeights"])
             print("duneHeights", duneHeights)
             quit()
             print("deepline SWH Max: ", np.max(offshoreSwh))
