@@ -149,8 +149,8 @@ class GetRunup:
         sorted_heights = sorted(duneHeights, key=lambda x: x['timestamp'])
         
         # Find the closest timestamp <= time
-        for entry in sorted_heights:
-            if time <= entry['timestamp']:
+        for entry in reversed(sorted_heights):
+            if time >= entry['timestamp']:
                 return entry['height']
         
         # If no timestamp is <= time, return the latest height
