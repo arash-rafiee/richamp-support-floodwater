@@ -222,7 +222,7 @@ def generate_deepline_points(json_data):
         min_deepline_key = runup_data['deeplineKey'] + 'm'
         new_runup[min_key] = runup_data.copy()
         new_runup[min_key]['deeplineKey'] = min_deepline_key
-        new_runup[min_key]['name'] = f"{runup_data['name']} Deepline Min"
+        new_runup[min_key]['name'] = f"{runup_data['name']} 7m Depth Waves"
         new_runup[min_key]['duneHeights'] = dune_heights
         
         min_lat, min_lon = calculate_new_point(shoreline_lat, shoreline_lon, bearing, min_distance)
@@ -232,7 +232,7 @@ def generate_deepline_points(json_data):
         min_deepline_point = {
             "id": "RUNUP",
             "source": "RUNUP",
-            "name": f"{runup_data['name']} Deepline Min",
+            "name": f"{runup_data['name']} 7m Depth Waves",
             "latitude": f"{min_lat:.6f}",
             "longitude": f"{min_lon:.6f}"
         }
@@ -242,7 +242,7 @@ def generate_deepline_points(json_data):
         max_deepline_key = runup_data['deeplineKey'] + 'M'
         new_runup[max_key] = runup_data.copy()
         new_runup[max_key]['deeplineKey'] = max_deepline_key
-        new_runup[max_key]['name'] = f"{runup_data['name']} Deepline Max"
+        new_runup[max_key]['name'] = f"{runup_data['name']} 20m Depth Waves"
         new_runup[max_key]['duneHeights'] = dune_heights
         
         max_lat, max_lon = calculate_new_point(shoreline_lat, shoreline_lon, bearing, max_distance)
@@ -252,7 +252,7 @@ def generate_deepline_points(json_data):
         max_deepline_point = {
             "id": "RUNUP",
             "source": "RUNUP",
-            "name": f"{runup_data['name']} Deepline Max",
+            "name": f"{runup_data['name']} 20m Depth Waves",
             "latitude": f"{max_lat:.6f}",
             "longitude": f"{max_lon:.6f}"
         }
@@ -315,7 +315,7 @@ def generate_multiple_deepline_points(json_data, distances=DEEPLINE_DISTANCES):
                 "id": "RUNUP",
                 "source": "RUNUP",
                 "distance": str(distance),
-                "name": f"{runup_data['name'].replace(' Deepline Min', '').replace(' Deepline Max', '')} Tangent {distance:.3f} m",
+                "name": f"{runup_data['name'].replace(' 7m Depth Waves', '').replace(' 20m Depth Waves', '')} Tangent {distance:.3f} m",
                 "latitude": f"{new_lat:.6f}",
                 "longitude": f"{new_lon:.6f}"
             }
@@ -334,7 +334,7 @@ def generate_multiple_deepline_points(json_data, distances=DEEPLINE_DISTANCES):
                 "surfKey": runup_data['surfKey'],
                 "offshoreKey": runup_data['offshoreKey'],
                 "deeplineKey": new_key,
-                "name": f"{runup_data['name'].replace(' Deepline Min', '').replace(' Deepline Max', '')} Deepline {distance}m",
+                "name": f"{runup_data['name'].replace(' 7m Depth Waves', '').replace(' 20m Depth Waves', '')} Deepline {distance}m",
                 "latitude": runup_data['latitude'],
                 "longitude": runup_data['longitude'],
                 "tangentLatitude": runup_data['tangentLatitude'],
@@ -351,7 +351,7 @@ def generate_multiple_deepline_points(json_data, distances=DEEPLINE_DISTANCES):
             deepline_point = {
                 "id": "RUNUP",
                 "source": "RUNUP",
-                "name": f"{runup_data['name'].replace(' Deepline Min', '').replace(' Deepline Max', '')} Deepline {distance}m",
+                "name": f"{runup_data['name'].replace(' 7m Depth Waves', '').replace(' 20m Depth Waves', '')} Deepline {distance}m",
                 "latitude": f"{new_lat:.6f}",
                 "longitude": f"{new_lon:.6f}"
             }
@@ -410,7 +410,7 @@ def generate_tangent_points(json_data, resolution=HYPERRESOLUTION, points_count=
                 "id": "RUNUP",
                 "source": "RUNUP",
                 "distance": str(distance),
-                "name": f"{runup_data['name'].replace(' Deepline Min', '').replace(' Deepline Max', '')} Tangent {distance:.3f} m",
+                "name": f"{runup_data['name'].replace(' 7m Depth Waves', '').replace(' 20m Depth Waves', '')} Tangent {distance:.3f} m",
                 "latitude": f"{new_lat:.6f}",
                 "longitude": f"{new_lon:.6f}"
             }

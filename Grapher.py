@@ -2177,8 +2177,8 @@ class Grapher:
         for index in range(numberOfRunupDatapoints):
 
             stationName = self.runupLabels[index]
-            duneHeights = self.datapointsDuneHeights[index]
             if("1" in stationName[0:stationName.index(" ")]):
+                duneHeights = self.datapointsDuneHeights[index]
                 ax.plot(self.runupTimes, self.datapointsRunupHolmanMid[index], label=stationName)
 
         ax.plot(self.runupTimes, duneHeights, label="Dune Height")
@@ -2198,8 +2198,8 @@ class Grapher:
         for index in range(numberOfRunupDatapoints):
 
             stationName = self.runupLabels[index]
-            duneHeights = self.datapointsDuneHeights[index]
             if("2" in stationName[0:stationName.index(" ")]):
+                duneHeights = self.datapointsDuneHeights[index]
                 ax.plot(self.runupTimes, self.datapointsRunupHolmanMid[index], label=stationName)
 
         ax.plot(self.runupTimes, duneHeights, label="Dune Height")
@@ -2219,8 +2219,8 @@ class Grapher:
         for index in range(numberOfRunupDatapoints):
 
             stationName = self.runupLabels[index]
-            duneHeights = self.datapointsDuneHeights[index]
             if("3" in stationName[0:stationName.index(" ")]):
+                duneHeights = self.datapointsDuneHeights[index]
                 ax.plot(self.runupTimes, self.datapointsRunupHolmanMid[index], label=stationName)
 
         ax.plot(self.runupTimes, duneHeights, label="Dune Height")
@@ -2240,8 +2240,8 @@ class Grapher:
         for index in range(numberOfRunupDatapoints):
 
             stationName = self.runupLabels[index]
-            duneHeights = self.datapointsDuneHeights[index]
             if("4" in stationName[0:stationName.index(" ")]):
+                duneHeights = self.datapointsDuneHeights[index]
                 ax.plot(self.runupTimes, self.datapointsRunupHolmanMid[index], label=stationName)
 
         ax.plot(self.runupTimes, duneHeights, label="Dune Height")
@@ -2261,8 +2261,8 @@ class Grapher:
         for index in range(numberOfRunupDatapoints):
 
             stationName = self.runupLabels[index]
-            duneHeights = self.datapointsDuneHeights[index]
             if("5" in stationName[0:stationName.index(" ")]):
+                duneHeights = self.datapointsDuneHeights[index]
                 ax.plot(self.runupTimes, self.datapointsRunupHolmanMid[index], label=stationName)
 
         ax.plot(self.runupTimes, duneHeights, label="Dune Height")
@@ -2640,52 +2640,52 @@ class Grapher:
 #         plt.close()
 
                 
-        if(len(self.runupTimes) > 0):
-            vmin = -1
-            vminSwath = 0
-#             vmax = math.ceil(self.maxWater)
-            vmax = 5
-#             vmax = 20
-            levels = 100
-            levelBoundaries = np.linspace(vmin, vmax, levels + 1)
-            levelBoundariesSwath = np.linspace(vminSwath, vmax, levels + 1)
-#             waterTriangulation = Triangulation(self.mapWaterPointsLongitudes, self.mapWaterPointsLatitudes, triangles=self.mapWaterTriangles, mask=self.mapWaterMaskedTriangles)
-            for index in range(len(self.runupTimes)):
-                fig, ax = plt.subplots(figsize=(9,9))
-    #             print(self.endWavePointsLongitudes)
-    #             print(self.endWavePointsLatitudes)
-    #             print(self.endSWH)
-                plt.imshow(img, extent=self.backgroundAxis, alpha=0.6, aspect=aspectRatio, zorder=2)
-                
-#                 Plot points
-                if(self.meshExists):
-                    ax.scatter(self.assetLongitudes, self.assetLatitudes, label="Assets", zorder=3, alpha=0.7, marker=".", s=40, color="black")
-                    
-                if(self.runupExists):
-                    for runupIndex, runupLabel in enumerate(self.runupLabels):
-                        self.plotExtendedLines(ax, runupIndex, index, runupLabel)
-#                         print("datapointsWaterlineLongitudes", type(self.datapointsWaterlineLongitudes[runupIndex][index]))
-#                         ax.plot(self.datapointsWaterlineLongitudes[runupIndex][index], self.datapointsWaterlineLatitudes[runupIndex][index], label=runupLabel, zorder=3, alpha=0.7, marker=".", color="green")
-#                         ax.plot(self.datapointsRunupLongitudes[runupIndex][index], self.datapointsRunupLatitudes[runupIndex][index], label=runupLabel, zorder=3, alpha=0.7, marker=".", color="red")
-
-#               Todo: Fix triangulation errors
-#                 contourset = ax.tripcolor(self.mapWaterPointsLongitudes, self.mapWaterPointsLatitudes, self.mapWaters[index], shading='gouraud', cmap="jet", vmin=vmin, vmax=vmax, zorder=1)
-                plt.axis(plotAxis)
-                plt.title(self.titlePrefix + "Runup Waterline")
-                plt.xlabel(self.runupTimes[index])
-    #             plt.gca().invert_yaxis()
-
-                plt.savefig(graph_directory + 'map_runup_' + str(index) + '.png')
-                plt.close()
-                gc.collect()
-            with imageio.get_writer(graph_directory + 'runup.gif', mode='I') as writer:
-                for index in range(len(self.runupTimes)):
-                    filename = "map_runup_" + str(index) + ".png"
-                    image = imageio.imread(graph_directory + filename)
-                    writer.append_data(image)
-                for index in range(len(self.runupTimes)):
-                    filename = "map_runup_" + str(index) + ".png"
-                    os.remove(graph_directory + filename)
-            plt.close()
-            gc.collect()
+#         if(len(self.runupTimes) > 0):
+#             vmin = -1
+#             vminSwath = 0
+# #             vmax = math.ceil(self.maxWater)
+#             vmax = 5
+# #             vmax = 20
+#             levels = 100
+#             levelBoundaries = np.linspace(vmin, vmax, levels + 1)
+#             levelBoundariesSwath = np.linspace(vminSwath, vmax, levels + 1)
+# #             waterTriangulation = Triangulation(self.mapWaterPointsLongitudes, self.mapWaterPointsLatitudes, triangles=self.mapWaterTriangles, mask=self.mapWaterMaskedTriangles)
+#             for index in range(len(self.runupTimes)):
+#                 fig, ax = plt.subplots(figsize=(9,9))
+#     #             print(self.endWavePointsLongitudes)
+#     #             print(self.endWavePointsLatitudes)
+#     #             print(self.endSWH)
+#                 plt.imshow(img, extent=self.backgroundAxis, alpha=0.6, aspect=aspectRatio, zorder=2)
+#                 
+# #                 Plot points
+#                 if(self.meshExists):
+#                     ax.scatter(self.assetLongitudes, self.assetLatitudes, label="Assets", zorder=3, alpha=0.7, marker=".", s=40, color="black")
+#                     
+#                 if(self.runupExists):
+#                     for runupIndex, runupLabel in enumerate(self.runupLabels):
+#                         self.plotExtendedLines(ax, runupIndex, index, runupLabel)
+# #                         print("datapointsWaterlineLongitudes", type(self.datapointsWaterlineLongitudes[runupIndex][index]))
+# #                         ax.plot(self.datapointsWaterlineLongitudes[runupIndex][index], self.datapointsWaterlineLatitudes[runupIndex][index], label=runupLabel, zorder=3, alpha=0.7, marker=".", color="green")
+# #                         ax.plot(self.datapointsRunupLongitudes[runupIndex][index], self.datapointsRunupLatitudes[runupIndex][index], label=runupLabel, zorder=3, alpha=0.7, marker=".", color="red")
+# 
+# #               Todo: Fix triangulation errors
+# #                 contourset = ax.tripcolor(self.mapWaterPointsLongitudes, self.mapWaterPointsLatitudes, self.mapWaters[index], shading='gouraud', cmap="jet", vmin=vmin, vmax=vmax, zorder=1)
+#                 plt.axis(plotAxis)
+#                 plt.title(self.titlePrefix + "Runup Waterline")
+#                 plt.xlabel(self.runupTimes[index])
+#     #             plt.gca().invert_yaxis()
+# 
+#                 plt.savefig(graph_directory + 'map_runup_' + str(index) + '.png')
+#                 plt.close()
+#                 gc.collect()
+#             with imageio.get_writer(graph_directory + 'runup.gif', mode='I') as writer:
+#                 for index in range(len(self.runupTimes)):
+#                     filename = "map_runup_" + str(index) + ".png"
+#                     image = imageio.imread(graph_directory + filename)
+#                     writer.append_data(image)
+#                 for index in range(len(self.runupTimes)):
+#                     filename = "map_runup_" + str(index) + ".png"
+#                     os.remove(graph_directory + filename)
+#             plt.close()
+#             gc.collect()
 
