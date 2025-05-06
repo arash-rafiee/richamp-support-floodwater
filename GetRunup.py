@@ -340,7 +340,7 @@ class GetRunup:
 
 #             meshDict[slopelineKey]["elevation"]
             duneHeights = []
-            for index, time in range(runupTimes):
+            for index, time in enumerate(runupTimes):
                 duneHeights.append(self.findDuneHeight(time, stationDict["duneHeights"]))
             print("deepline SWH Max: ", np.max(offshoreSwh))
             print("deepline PWP Max: ", np.max(offshorePwp))
