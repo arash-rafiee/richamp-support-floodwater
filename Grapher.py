@@ -1702,8 +1702,8 @@ class Grapher:
         for index in range(numberOfWaveDatapoints):
             if(self.wavesExists):
                 if(len(self.datapointsSWH[index]) > 0):
-                    fig, ax = plt.subplots()
-                    ax.scatter(self.waveTimes, self.datapointsSWH[index], marker=".", label="Forecast")
+                    fig, ax = plt.subplots(figsize=(16,9))
+                    ax.scatter(self.waveTimes, self.datapointsSWH[index], marker=".", label="$H_s$")
                     if(self.buoyExists):
                         ax.scatter(self.buoyDatapointsTimes[index], self.buoyDatapointsSWH[index], label="Buoy")
                     ax.legend(loc="lower right")
@@ -1741,8 +1741,8 @@ class Grapher:
                     plt.savefig(graph_directory + stationName + '_wave_mwp.png')
                     plt.close()
                 if(len(self.datapointsPWP[index]) > 0):
-                    fig, ax = plt.subplots()
-                    ax.scatter(self.waveTimes, self.datapointsPWP[index], marker=".", label="Forecast")
+                    fig, ax = plt.subplots(figsize=(16,9))
+                    ax.scatter(self.waveTimes, self.datapointsPWP[index], marker=".", label="$H_s$")
                     if(self.buoyExists):
                         ax.scatter(self.buoyDatapointsTimes[index], self.buoyDatapointsPWP[index], label="Buoy")
                     ax.legend(loc="lower right")

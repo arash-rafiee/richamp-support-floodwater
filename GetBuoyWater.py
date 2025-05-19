@@ -46,14 +46,14 @@ def safe_urlretrieve(url, filename, timeout=10, max_retries=3):
     return False  # If all retries fail
         
 class GetBuoyWater:
-    def __init__(self, STATIONS_FILE="", ADCIRC_MESH_DATA_FILE="", OBS_WATER_DATA_FILE="", startDateObject="", endDateObject=""):
+    def __init__(self, STATIONS_FILE="", OBS_WATER_DATA_FILE="", startDateObject="", endDateObject=""):
         temp_directory = OBS_WATER_DATA_FILE[0:OBS_WATER_DATA_FILE.rfind("/") + 1]
         print(type(startDateObject), flush=True)
         print(startDateObject, flush=True)
         with open(STATIONS_FILE) as stations_file:
             stationsDict = json.load(stations_file)
-        with open(ADCIRC_MESH_DATA_FILE) as datafile:
-            meshDict = json.load(datafile)
+#         with open(ADCIRC_MESH_DATA_FILE) as datafile:
+#             meshDict = json.load(datafile)
 
         # stationIds = [8413320, 8443970, 8447435, 8449130, 8447930, 8452660, 8510560, 8418150, 8419870, 8454049, 8454000, 8461490, 8411060, 8531680, 8534720, 8452944]
         # stationNames = ['Bar Harbor', 'Boston', 'Chatham', 'Nantucket', 'Woods Hole', 'Newport', 'Montauk', 'Portland', 'Seavey Island, ME', 'Quonset Point', 'Providence', 'New London', 'Cutler Faris Wharf', 'Sandy Hook', 'Altlantic City', 'Conimicut Light'] 

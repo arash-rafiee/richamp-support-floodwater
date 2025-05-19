@@ -563,7 +563,7 @@ def main():
         if(args.waterExists):
             print("Parsed start and end date from netCDF, ", waterStartDateObject, waterEndDateObject, flush=True)
             OBS_WATER_DATA_FILE = wind_temp_directory + "obs_water_data_file" + ".json"
-            GetBuoyWater(STATIONS_FILE=STATIONS_FILE, ADCIRC_MESH_DATA_FILE=ADCIRC_MESH_DATA_FILE, OBS_WATER_DATA_FILE=OBS_WATER_DATA_FILE, startDateObject=waterStartDateObject, endDateObject=waterEndDateObject)
+            GetBuoyWater(STATIONS_FILE=STATIONS_FILE, OBS_WATER_DATA_FILE=OBS_WATER_DATA_FILE, startDateObject=waterStartDateObject, endDateObject=waterEndDateObject)
             dataToGraph["TIDE"] = OBS_WATER_DATA_FILE
         if(args.meshExists):
             print("Calling get observational elevation data", flush=True)
