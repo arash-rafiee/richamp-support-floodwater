@@ -2296,7 +2296,7 @@ class Grapher:
         plt.title(self.titlePrefix + r"Napatree1 deepwater SWH $H_0$: ", fontsize=18)
 #                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
         plt.tight_layout()
-        plt.ylabel(r"H_0 (meters)", fontsize=14)
+        plt.ylabel(r"$H_0$ (meters)", fontsize=14)
         plt.savefig(graph_directory + 'Napatree1_all_deepwater_swh.png')
         plt.close()
 # #         
