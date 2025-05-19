@@ -50,6 +50,9 @@ DEEPLINE_DISTANCES_MAP = {
     '50': DEEPLINE_DISTANCES_5
 }
 
+# Plain deepline keys to remove
+PLAIN_DEEPLINE_KEYS = ['13', '23', '33', '43', '53']
+
 # Function to convert GMT datetime string to Unix timestamp
 def datetime_to_timestamp(dt_str):
     """Convert a GMT datetime string (YYYY-MM-DD HH:MM:SS) to Unix timestamp."""
@@ -115,23 +118,12 @@ def calculate_new_point(lat, lon, bearing, distance):
     return math.degrees(new_lat), math.degrees(new_lon)
 
 def findDuneHeight(time, duneHeights):
-    """
-    Find the dune height for a given Unix timestamp from the duneHeights list.
-    Returns the height of the closest timestamp that is less than or equal to the given time.
-    If no such timestamp exists, returns the earliest height.
-    """
     if not duneHeights:
-        return 0.0  # Default if no heights are defined
-    
-    # Sort by timestamp to ensure correct order
+        return 0.0
     sorted_heights = sorted(duneHeights, key=lambda x: x['timestamp'])
-    
-    # Find the closest timestamp <= time
     for entry in sorted_heights:
         if entry['timestamp'] <= time:
             return entry['height']
-    
-    # If no timestamp is <= time, return the earliest height
     return sorted_heights[0]['height']
 
 def generate_points_along_line(json_data, resolution=HYPERRESOLUTION, points_count=HYPERPOINTS):
@@ -165,19 +157,11 @@ def generate_slopeline_points(json_data, distance=MAX_SLOPELINE_DISTANCE):
         shoreline_lat, shoreline_lon = float(runup_data['latitude']), float(runup_data['longitude'])
         surf_lat, surf_lon = float(runup_data['surfLatitude']), float(runup_data['surfLongitude'])
         bearing = calculate_bearing(shoreline_lat, shoreline_lon, surf_lat, surf_lon)
-        
-        # Calculate slopeline coordinates
         new_lat, new_lon = calculate_new_point(shoreline_lat, shoreline_lon, bearing, distance)
-        
-        # Create unique key for slopeline
         slopeline_key = f"{runup_id}s"
-        
-        # Add slopelineKey and coordinates to RUNUP section
         runup_data['slopelineKey'] = slopeline_key
         runup_data['slopelineLatitude'] = f"{new_lat:.6f}"
         runup_data['slopelineLongitude'] = f"{new_lon:.6f}"
-        
-        # Create slopeline point
         slopeline_point = {
             "id": "RUNUP",
             "source": "RUNUP",
@@ -185,19 +169,15 @@ def generate_slopeline_points(json_data, distance=MAX_SLOPELINE_DISTANCE):
             "latitude": f"{new_lat:.6f}",
             "longitude": f"{new_lon:.6f}"
         }
-        
-        # Add to ASSET section
         json_data['ASSET'][slopeline_key] = slopeline_point
 
 def generate_slope_stations(json_data, min_distance=MIN_SLOPELINE_DISTANCE, max_distance=MAX_SLOPELINE_DISTANCE, delim_distance=SLOPELINE_DELIM_DISTANCE):
     slope_data = copy.deepcopy(json_data)
     slope_data['ASSET'] = {}
-    
     for runup_id, runup_data in slope_data['RUNUP'].items():
         shoreline_lat, shoreline_lon = float(runup_data['latitude']), float(runup_data['longitude'])
         surf_lat, surf_lon = float(runup_data['surfLatitude']), float(runup_data['surfLongitude'])
         bearing = calculate_bearing(shoreline_lat, shoreline_lon, surf_lat, surf_lon)
-        
         point_counter = 0
         distance = min_distance
         while distance <= max_distance:
@@ -205,7 +185,6 @@ def generate_slope_stations(json_data, min_distance=MIN_SLOPELINE_DISTANCE, max_
             adjusted_distance = abs(distance)
             new_lat, new_lon = calculate_new_point(shoreline_lat, shoreline_lon, adjusted_bearing, adjusted_distance)
             new_key = f"{runup_id}sl{point_counter:03d}"
-            
             slope_point = {
                 "id": "RUNUP",
                 "source": "RUNUP",
@@ -213,38 +192,43 @@ def generate_slope_stations(json_data, min_distance=MIN_SLOPELINE_DISTANCE, max_
                 "latitude": f"{new_lat:.6f}",
                 "longitude": f"{new_lon:.6f}"
             }
-            
             slope_data['ASSET'][new_key] = slope_point
             distance += delim_distance
             point_counter += 1
-    
     return slope_data
 
 def generate_deepline_points(json_data):
     new_runup = {}
     
-    for runup_id, runup_data in json_data['RUNUP'].items():
+    # Remove plain deepline keys from ASSET, NDBC, NOS
+    for section in ['ASSET', 'NDBC', 'NOS']:
+        for key in PLAIN_DEEPLINE_KEYS:
+            if key in json_data[section]:
+                del json_data[section][key]
+    
+    for runup_id, runup_data in list(json_data['RUNUP'].items()):
+        station_id = runup_id.rstrip('d0123456789')
         shoreline_lat, shoreline_lon = float(runup_data['latitude']), float(runup_data['longitude'])
         surf_lat, surf_lon = float(runup_data['surfLatitude']), float(runup_data['surfLongitude'])
         bearing = calculate_bearing(shoreline_lat, shoreline_lon, surf_lat, surf_lon)
         
-        # Get station-specific deepline distances and dune heights
-        station_id = runup_id.rstrip('d0123456789')  # Strip any trailing deepline index
         deepline_distances = DEEPLINE_DISTANCES_MAP.get(station_id, DEEPLINE_DISTANCES_1)
         dune_heights = DUNE_HEIGHTS_MAP.get(station_id, DUNE_HEIGHTS_1)
         
-        # Create a RUNUP entry for each deepline distance
+        # Ensure deeplineKey exists
+        if 'deeplineKey' not in runup_data:
+            runup_data['deeplineKey'] = f"{station_id}d"
+        
         for idx, deepline_info in enumerate(deepline_distances):
             distance = deepline_info['distance']
             depth = deepline_info['depth']
             
-            # Create unique key for this deepline
-            deepline_key = f"{runup_id}d{idx}"
-            new_runup_key = f"{runup_id}d{idx}"
+            deepline_key = f"{runup_data['deeplineKey']}d{idx}"
+            new_runup_key = f"{station_id}d{idx}"
             
             new_runup[new_runup_key] = runup_data.copy()
             new_runup[new_runup_key]['deeplineKey'] = deepline_key
-            new_runup[new_runup_key]['name'] = f"{runup_data['name']} {depth} Depth Waves"
+            new_runup[new_runup_key]['name'] = f"{runup_data['name'].split(' ')[0]} {depth} Depth Waves"
             new_runup[new_runup_key]['duneHeights'] = dune_heights
             
             new_lat, new_lon = calculate_new_point(shoreline_lat, shoreline_lon, bearing, distance)
@@ -254,20 +238,50 @@ def generate_deepline_points(json_data):
             deepline_point = {
                 "id": "RUNUP",
                 "source": "RUNUP",
-                "name": f"{runup_data['name']} {depth} Depth Waves",
+                "name": f"{runup_data['name'].split(' ')[0]} {depth} Depth Waves",
                 "latitude": f"{new_lat:.6f}",
                 "longitude": f"{new_lon:.6f}"
             }
             
-            # Update ASSET, NDBC, NOS sections
+            # Write deepline point to ASSET, NDBC, NOS sections
             for section in ['ASSET', 'NDBC', 'NOS']:
-                if runup_data['deeplineKey'] in json_data[section]:
-                    json_data[section][deepline_key] = deepline_point
-                    if runup_data['deeplineKey'] in json_data[section]:
-                        del json_data[section][runup_data['deeplineKey']]
+                json_data[section][deepline_key] = deepline_point
     
-    # Replace RUNUP section with new entries
     json_data['RUNUP'] = new_runup
+
+def generate_deepline_only_stations(json_data):
+    deepline_data = {"ASSET": {}}
+    
+    for runup_id, runup_data in json_data['RUNUP'].items():
+        station_id = runup_id.rstrip('d0123456789')
+        shoreline_lat, shoreline_lon = float(runup_data['latitude']), float(runup_data['longitude'])
+        surf_lat, surf_lon = float(runup_data['surfLatitude']), float(runup_data['surfLongitude'])
+        bearing = calculate_bearing(shoreline_lat, shoreline_lon, surf_lat, surf_lon)
+        
+        deepline_distances = DEEPLINE_DISTANCES_MAP.get(station_id, DEEPLINE_DISTANCES_1)
+        
+        # Ensure deeplineKey exists
+        if 'deeplineKey' not in runup_data:
+            runup_data['deeplineKey'] = f"{station_id}d"
+        
+        for idx, deepline_info in enumerate(deepline_distances):
+            distance = deepline_info['distance']
+            depth = deepline_info['depth']
+            
+            deepline_key = f"{runup_data['deeplineKey']}d{idx}"
+            
+            new_lat, new_lon = calculate_new_point(shoreline_lat, shoreline_lon, bearing, distance)
+            deepline_point = {
+                "id": "RUNUP",
+                "source": "RUNUP",
+                "name": f"{runup_data['name'].split(' ')[0]} {depth} Depth Waves",
+                "latitude": f"{new_lat:.6f}",
+                "longitude": f"{new_lon:.6f}"
+            }
+            
+            deepline_data['ASSET'][deepline_key] = deepline_point
+    
+    return deepline_data
 
 def generate_multiple_deepline_points(json_data, distances=DEEPLINE_DISTANCES):
     if 'NORMAL' not in json_data:
@@ -276,14 +290,19 @@ def generate_multiple_deepline_points(json_data, distances=DEEPLINE_DISTANCES):
         json_data['TANGENT'] = {}
     new_runup = {}
     
+    # Remove plain deepline keys from ASSET, NDBC, NOS
+    for section in ['ASSET', 'NDBC', 'NOS']:
+        for key in PLAIN_DEEPLINE_KEYS:
+            if key in json_data[section]:
+                del json_data[section][key]
+    
     for orig_runup_id, runup_data in json_data['RUNUP'].items():
+        station_id = orig_runup_id.rstrip('d0123456789')
         shoreline_lat, shoreline_lon = float(runup_data['latitude']), float(runup_data['longitude'])
         surf_lat, surf_lon = float(runup_data['surfLatitude']), float(runup_data['surfLongitude'])
         tangent_lat, tangent_lon = float(runup_data['tangentLatitude']), float(runup_data['tangentLongitude'])
         bearing = calculate_bearing(shoreline_lat, shoreline_lon, surf_lat, surf_lon)
         
-        # Get station-specific dune heights
-        station_id = orig_runup_id.rstrip('d0123456789')
         dune_heights = DUNE_HEIGHTS_MAP.get(station_id, DUNE_HEIGHTS_1)
         
         # Generate NORMAL points
@@ -327,7 +346,7 @@ def generate_multiple_deepline_points(json_data, distances=DEEPLINE_DISTANCES):
         # Generate multiple deepline points
         for idx, distance in enumerate(distances):
             new_lat, new_lon = calculate_new_point(shoreline_lat, shoreline_lon, bearing, distance)
-            new_key = f"{orig_runup_id}d{idx:02d}"
+            new_key = f"{station_id}d{idx:02d}"
             
             new_runup[new_key] = {
                 "id": "RUNUP",
@@ -446,3 +465,10 @@ with open('RUNUP_NAPATREE_STATIONS.json', 'r') as file:
 slope_data = generate_slope_stations(data_slope)
 with open('NAPATREE_SLOPE_STATIONS.json', 'w') as file:
     json.dump(slope_data, file, indent=2)
+
+# DEEPLINE stations
+with open('RUNUP_NAPATREE_STATIONS.json', 'r') as file:
+    data_deepline = json.load(file)
+deepline_data = generate_deepline_only_stations(data_deepline)
+with open('NAPATREE_DEEPLINE_STATIONS.json', 'w') as file:
+    json.dump(deepline_data, file, indent=2)
