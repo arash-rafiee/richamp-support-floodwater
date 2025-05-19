@@ -1634,13 +1634,13 @@ class Grapher:
         for index in range(numberOfWaterDatapoints):
             if(len(self.datapointsWaters) > 0):
                 fig, ax = plt.subplots(figsize=(16,9))
-                ax.plot(self.waterTimes, self.datapointsWaters[index], label="Water Level")
+                ax.plot(self.waterTimes, self.datapointsWaters[index], label="\\eta")
                 if(self.stillwaterExists):
-                    ax.plot(self.stillwaterTimes, self.datapointsStillwaters[index], label="SWL")
+                    ax.plot(self.stillwaterTimes, self.datapointsStillwaters[index], label="\\eta_{still}")
                 if(self.tidewaterExists):
-                    ax.plot(self.tidewaterTimes, self.datapointsTidewaters[index], label="Tide")
+                    ax.plot(self.tidewaterTimes, self.datapointsTidewaters[index], label="\\eta_{tide}")
                 if(self.tideExists):
-                    ax.plot(self.tideDatapointsTimes[index], self.tideDatapointsWaters[index], label="Station")
+                    ax.plot(self.tideDatapointsTimes[index], self.tideDatapointsWaters[index], label="Obs")
 #                     ax.plot(self.tideDatapointsPredictionTimes[index], self.tideDatapointsPredictionWaters[index], label="Prediction")
                 ax.legend(loc="upper left")
                 ax.format_xdata = mdates.DateFormatter('%d')
@@ -1648,7 +1648,7 @@ class Grapher:
                 plt.yticks(fontsize=12)
                 stationName = self.tideLabels[index]
                 maxElevation = str(round(max(self.datapointsWaters[index]), 2))
-                plt.title(self.titlePrefix + stationName + " station water elevation max: " + maxElevation, fontsize=18)
+                plt.title(self.titlePrefix + stationName + " station water elevation", fontsize=18)
                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
                 plt.ylabel("elevation (meters)", fontsize=14)
                 plt.savefig(graph_directory + stationName + '_water.png')

@@ -141,6 +141,59 @@ class GetBuoyWater:
                 waterDict[key]["prediction_times"] = []
                 waterDict[key]["prediction_water"] = []
                 
+                
+            if ".csv" in stationSource:
+                print("Pulling Data from Tides and Currents Station File")
+    
+                # Path to the CSV file
+                file_path = stationSource
+    
+                # Step 1: Load the data
+                # The file is comma-separated with headers
+                column_names = ["Date", "Time (GMT)", "Predicted (m)", "Preliminary (m)", "Verified (m)"]
+                data = pd.read_csv(file_path, sep=",", names=column_names, header=0, parse_dates=False)
+    
+                # Step 2: Combine Date and Time (GMT) into a single datetime column
+                data["datetime"] = pd.to_datetime(data["Date"] + " " + data["Time (GMT)"], format="%Y/%m/%d %H:%M")
+    
+                # Step 3: Localize datetime to GMT
+                data["datetime"] = data["datetime"].dt.tz_localize("GMT")
+    
+                # Step 4: Filter data based on the time range (startDateObject to endDateObject)
+                filtered_data = data[
+                    (data["datetime"] >= startDateObject) & (data["datetime"] <= endDateObject)
+                ]
+    
+                # Step 5: Convert filtered datetime to Unix timestamps and extract water levels
+                if not filtered_data.empty:
+                    unixTimes = (filtered_data["datetime"].astype("int64") // 10**9).to_numpy()
+        
+                    # Use Verified (m) if available, otherwise fall back to Preliminary (m)
+                    waters = filtered_data["Verified (m)"].replace("-", np.nan).astype(float)
+                    waters = waters.fillna(filtered_data["Preliminary (m)"].replace("-", np.nan).astype(float)).to_numpy()
+        
+                    # Extract predicted water levels
+                    prediction_waters = filtered_data["Predicted (m)"].replace("-", np.nan).astype(float).to_numpy()
+        
+                    # Add MOORING_LENGTH to waters
+                    waters = waters + MOORING_LENGTH
+                else:
+                    # Handle empty filtered data
+                    unixTimes = np.array([], dtype=np.int64)
+                    waters = np.array([], dtype=np.float64)
+                    prediction_waters = np.array([], dtype=np.float64)
+    
+                # Step 6: Get station elevation
+                stationElevation = meshDict[key]["elevation"]
+                print("station elevation", key, stationElevation)
+    
+                # Step 7: Populate waterDict
+                waterDict[key] = {}
+                waterDict[key]["times"] = unixTimes
+                waterDict[key]["water"] = waters
+                waterDict[key]["prediction_times"] = unixTimes  # Same timestamps for predictions
+                waterDict[key]["prediction_water"] = prediction_waters
+                
             else:
     # https://opendap.co-ops.nos.noaa.gov/erddap/tabledap/IOOS_Hourly_Height_Verified_Water_Level.htmlTable?STATION_ID%2CDATUM%2CBEGIN_DATE%2CEND_DATE%2Ctime%2CWL_VALUE%2CSIGMA&STATION_ID=%228452660%22&DATUM%3E=%22MSL%22&BEGIN_DATE%3E=%222024-07-29%22&END_DATE%3E=%222024-08-10%22
                 url = "https://opendap.co-ops.nos.noaa.gov/erddap/tabledap/IOOS_Hourly_Height_Verified_Water_Level.mat?STATION_ID%2CDATUM%2CBEGIN_DATE%2CEND_DATE%2Ctime%2CWL_VALUE%2CSIGMA&STATION_ID=%22"  + stationId + "%22&DATUM%3E=%22MSL%22&BEGIN_DATE%3E=%22" + startDateFormat + "%22&END_DATE%3E=%22" + endDateFormat + "%22"

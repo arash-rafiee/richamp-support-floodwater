@@ -259,7 +259,7 @@
   "NOS": {
     "82": {
       "id": "8454000",
-      "source": "NOS",
+      "source": "CO-OPS_8454000_met.csv",
       "name": "Providence, RI",
       "latitude": "41.8068",
       "longitude": "-71.3988",
@@ -267,7 +267,7 @@
     },
     "83": {
       "id": "8452660",
-      "source": "NOS",
+      "source": "CO-OPS_8452660_met.csv",
       "name": "Newport, RI",
       "latitude": "41.505",
       "longitude": "-71.326667",
