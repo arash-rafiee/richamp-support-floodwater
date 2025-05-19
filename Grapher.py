@@ -1672,7 +1672,7 @@ class Grapher:
         if(len(self.datapointsElevation) > 0):
             fig, ax = plt.subplots(figsize=(16,13))
 #             print(len(self.assetLabels), len(self.datapointsElevation))
-            ax.scatter(self.assetLabels[-1:-20:-1], self.datapointsElevation[-1:-20:-1], label="Mesh")
+            ax.scatter(self.assetLabels, self.datapointsElevation, label="Mesh")
             if(self.assetExists):
                 ax.scatter(self.assetLabels, self.assetDatapointsElevation, label="Asset")
 #                     ax.plot(self.tideDatapointsPredictionTimes[index], self.tideDatapointsPredictionWaters[index], label="Prediction")
