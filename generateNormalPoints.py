@@ -16,37 +16,37 @@ DEEPLINE_DISTANCES = [
 
 # Station-specific deepline distances with depths
 DEEPLINE_DISTANCES_1 = [
-    {"distance": 400, "depth": "7m1"},
-    {"distance": 500, "depth": "7m2"},
-    {"distance": 600, "depth": "7m3"},   # Napatree1 (runup_id: 10)
+    {"distance": 650, "depth": "7m1"},
+    {"distance": 700, "depth": "7m2"},
+    {"distance": 750, "depth": "7m3"},   # Napatree1 (runup_id: 10)
     {"distance": 1500, "depth": "15m"},
     {"distance": 2320, "depth": "20m"}
 ]
 DEEPLINE_DISTANCES_2 = [
-    {"distance": 400, "depth": "7m1"},
+    {"distance": 420, "depth": "7m1"},
     {"distance": 450, "depth": "7m2"},
-    {"distance": 500, "depth": "7m3"},   # Napatree2 (runup_id: 20)
+    {"distance": 470, "depth": "7m3"},   # Napatree2 (runup_id: 20)
     {"distance": 1400, "depth": "15m"},
     {"distance": 2000, "depth": "20m"}
 ]
 DEEPLINE_DISTANCES_3 = [
-    {"distance": 200, "depth": "7m1"},
-    {"distance": 250, "depth": "7m2"},
-    {"distance": 300, "depth": "7m3"},  # Napatree3 (runup_id: 30)
+    {"distance": 175, "depth": "7m1"},
+    {"distance": 200, "depth": "7m2"},
+    {"distance": 225, "depth": "7m3"},  # Napatree3 (runup_id: 30)
     {"distance": 1300, "depth": "15m"},
     {"distance": 2140, "depth": "20m"}
 ]
 DEEPLINE_DISTANCES_4 = [
-    {"distance": 200, "depth": "7m1"},
+    {"distance": 240, "depth": "7m1"},
     {"distance": 250, "depth": "7m2"},
-    {"distance": 350, "depth": "7m3"},   # Napatree4 (runup_id: 40)
+    {"distance": 260, "depth": "7m3"},   # Napatree4 (runup_id: 40)
     {"distance": 1200, "depth": "15m"},
     {"distance": 2050, "depth": "20m"}
 ]
 DEEPLINE_DISTANCES_5 = [
-    {"distance": 200, "depth": "7m1"},
-    {"distance": 250, "depth": "7m2"},
-    {"distance": 350, "depth": "7m3"},   # Napatree5 (runup_id: 50)
+    {"distance": 175, "depth": "7m1"},
+    {"distance": 200, "depth": "7m2"},
+    {"distance": 225, "depth": "7m3"},   # Napatree5 (runup_id: 50)
     {"distance": 1100, "depth": "15m"},
     {"distance": 1900, "depth": "20m"}
 ]
