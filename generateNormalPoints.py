@@ -224,7 +224,7 @@ def generate_deepline_points(json_data):
             depth = deepline_info['depth']
             
             deepline_key = f"{runup_data['deeplineKey']}d{idx}"
-            new_runup_key = f"{station_id}d{idx}"
+            new_runup_key = f"{runup_id}d{idx}"  # Use full runup_id, e.g., "10d1", "20d1"
             
             new_runup[new_runup_key] = runup_data.copy()
             new_runup[new_runup_key]['deeplineKey'] = deepline_key
