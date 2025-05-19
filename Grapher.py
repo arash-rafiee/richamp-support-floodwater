@@ -15,7 +15,7 @@ from geographiclib.geodesic import Geodesic
 
 class Grapher:
     DATE_FORMAT = "%m/%d/%y-%HZ"    
-    CONVERT_TO_WATER_DEPTH = True
+    CONVERT_TO_WATER_DEPTH = False
         
     def extractLatitudeIndex(self, nodeIndex):
         return int(nodeIndex[1: nodeIndex.find(",")])
