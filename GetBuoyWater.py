@@ -175,8 +175,8 @@ class GetBuoyWater:
                     # Extract predicted water levels
                     prediction_waters = filtered_data["Predicted (m)"].replace("-", np.nan).astype(float).to_numpy()
         
-                    # Add MOORING_LENGTH to waters
-                    waters = waters + MOORING_LENGTH
+#                     # Add MOORING_LENGTH to waters
+#                     waters = waters + MOORING_LENGTH
                 else:
                     # Handle empty filtered data
                     unixTimes = np.array([], dtype=np.int64)

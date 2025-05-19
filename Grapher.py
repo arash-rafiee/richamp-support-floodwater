@@ -1703,12 +1703,12 @@ class Grapher:
             if(self.wavesExists):
                 if(len(self.datapointsSWH[index]) > 0):
                     fig, ax = plt.subplots(figsize=(16,9))
-                    ax.scatter(self.waveTimes, self.datapointsSWH[index], marker=".", label="$H_s$")
+                    ax.scatter(self.waveTimes, self.datapointsSWH[index], marker=".", label=r"$H_s$")
                     if(self.buoyExists):
-                        ax.scatter(self.buoyDatapointsTimes[index], self.buoyDatapointsSWH[index], label="Buoy")
+                        ax.scatter(self.buoyDatapointsTimes[index], self.buoyDatapointsSWH[index], label="Obs")
                     ax.legend(loc="lower right")
                     stationName = self.buoyLabels[index]
-                    plt.title(stationName + " station significant wave height")
+                    plt.title(stationName + " significant wave height")
 #                     plt.xlabel("Hours since " + self.waveStartDate.strftime(self.DATE_FORMAT))
                     ax.format_xdata = mdates.DateFormatter('%d')
                     plt.ylabel("SWH (meters)")
@@ -1742,12 +1742,12 @@ class Grapher:
                     plt.close()
                 if(len(self.datapointsPWP[index]) > 0):
                     fig, ax = plt.subplots(figsize=(16,9))
-                    ax.scatter(self.waveTimes, self.datapointsPWP[index], marker=".", label="$H_s$")
+                    ax.scatter(self.waveTimes, self.datapointsPWP[index], marker=".", label=r"$T_p$")
                     if(self.buoyExists):
-                        ax.scatter(self.buoyDatapointsTimes[index], self.buoyDatapointsPWP[index], label="Buoy")
+                        ax.scatter(self.buoyDatapointsTimes[index], self.buoyDatapointsPWP[index], label="Obs")
                     ax.legend(loc="lower right")
                     stationName = self.buoyLabels[index]
-                    plt.title(stationName + " station peak wave period")
+                    plt.title(stationName + " peak wave period")
 #                     plt.xlabel("Hours since " + self.waveStartDate.strftime(self.DATE_FORMAT))
                     ax.format_xdata = mdates.DateFormatter('%d')
                     plt.ylabel("PWP (seconds)")
