@@ -1672,12 +1672,11 @@ class Grapher:
         if(len(self.datapointsElevation) > 0):
             fig, ax = plt.subplots(figsize=(16,13))
 #             print(len(self.assetLabels), len(self.datapointsElevation))
-            ax.scatter(self.assetLabels, self.datapointsElevation, label="Mesh")
+            ax.scatter(self.assetLabels[-1:-20:-1], self.datapointsElevation[-1:-20:-1], label="Mesh")
             if(self.assetExists):
                 ax.scatter(self.assetLabels, self.assetDatapointsElevation, label="Asset")
 #                     ax.plot(self.tideDatapointsPredictionTimes[index], self.tideDatapointsPredictionWaters[index], label="Prediction")
             ax.legend(loc="upper left")
-            stationName = self.assetLabels[index]
             plt.title("Asset Elevation vs. Mesh Elevation", fontsize=18)
             plt.xlabel("asset name")
             plt.xticks(fontsize=8, rotation=45, ha='right')
@@ -2170,143 +2169,281 @@ class Grapher:
                 plt.close()
 
 
-# Graph all runup
+        # Combined runup plots for all transects
+        fig, axes = plt.subplots(5, 1, figsize=(16, 20), sharex=True)
+        for transect in range(1, 6):
+            ax = axes[transect - 1]
+            dune_heights = []
+            unique_heights = set()
 
-        fig, ax = plt.subplots(figsize=(16,9))
-        duneHeights = []
-        for index in range(numberOfRunupDatapoints):
+            for index in range(numberOfRunupDatapoints):
+                stationName = self.runupLabels[index]
+                if str(transect) in stationName[0:stationName.index(" ")]:
+                    dune_heights = self.datapointsDuneHeights[index]
+                    ax.plot(self.runupTimes, self.datapointsRunupHolmanMid[index], label=stationName)
+                    unique_heights.update(dune_heights)
 
-            stationName = self.runupLabels[index]
-            if("1" in stationName[0:stationName.index(" ")]):
-                duneHeights = self.datapointsDuneHeights[index]
-                ax.plot(self.runupTimes, self.datapointsRunupHolmanMid[index], label=stationName)
+            # Plot horizontal lines for each unique dune height
+            for height in unique_heights:
+                ax.axhline(y=height, linestyle='--', color='gray', label=f'Dune Height {height:.2f}m' if height == list(unique_heights)[0] else None)
 
-        ax.plot(self.runupTimes, duneHeights, label="Dune Height")
-        ax.legend(loc="upper left")
-        ax.format_xdata = mdates.DateFormatter('%d')
-        plt.xticks(fontsize=12)
-        plt.yticks(fontsize=12)
-        plt.title(self.titlePrefix + "Napatree1 all runup: ", fontsize=18)
-#                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
+            ax.legend(loc="upper left", fontsize=10)
+            ax.xaxis.set_major_formatter(mdates.DateFormatter('%d'))
+            ax.tick_params(axis='both', labelsize=12)
+            ax.set_ylabel("Runup (meters)", fontsize=12)
+            ax.set_title(f"{self.titlePrefix}Napatree{transect} Runup", fontsize=14)
+
+        plt.xlabel("Day", fontsize=14)
         plt.tight_layout()
-        plt.ylabel("Runup (meters)", fontsize=14)
-        plt.savefig(graph_directory + 'Napatree1_all_runup.png')
+        plt.savefig(graph_directory + 'Napatree_all_runup.png')
         plt.close()
-        
-        fig, ax = plt.subplots(figsize=(16,9))
-        duneHeights = []
-        for index in range(numberOfRunupDatapoints):
 
-            stationName = self.runupLabels[index]
-            if("2" in stationName[0:stationName.index(" ")]):
-                duneHeights = self.datapointsDuneHeights[index]
-                ax.plot(self.runupTimes, self.datapointsRunupHolmanMid[index], label=stationName)
+        # Combined deepwater significant wave height (H_0) plots for all transects
+        fig, axes = plt.subplots(5, 1, figsize=(16, 20), sharex=True)
+        for transect in range(1, 6):
+            ax = axes[transect - 1]
 
-        ax.plot(self.runupTimes, duneHeights, label="Dune Height")
-        ax.legend(loc="upper left")
-        ax.format_xdata = mdates.DateFormatter('%d')
-        plt.xticks(fontsize=12)
-        plt.yticks(fontsize=12)
-        plt.title(self.titlePrefix + "Napatree2 all runup: ", fontsize=18)
-#                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
+            for index in range(numberOfRunupDatapoints):
+                stationName = self.runupLabels[index]
+                if str(transect) in stationName[0:stationName.index(" ")]:
+                    ax.plot(self.runupTimes, self.datapointsRunupHolmanLow[index], label=stationName)
+
+            ax.legend(loc="upper left", fontsize=10)
+            ax.xaxis.set_major_formatter(mdates.DateFormatter('%d'))
+            ax.tick_params(axis='both', labelsize=12)
+            ax.set_ylabel(r"$H_0$ (meters)", fontsize=12)
+            ax.set_title(f"{self.titlePrefix}Napatree{transect} Deepwater SWH", fontsize=14)
+
+        plt.xlabel("Day", fontsize=14)
         plt.tight_layout()
-        plt.ylabel("Runup (meters)", fontsize=14)
-        plt.savefig(graph_directory + 'Napatree2_all_runup.png')
+        plt.savefig(graph_directory + 'Napatree_all_deepwater_swh.png')
         plt.close()
-        
-        fig, ax = plt.subplots(figsize=(16,9))
-        duneHeights = []
-        for index in range(numberOfRunupDatapoints):
 
-            stationName = self.runupLabels[index]
-            if("3" in stationName[0:stationName.index(" ")]):
-                duneHeights = self.datapointsDuneHeights[index]
-                ax.plot(self.runupTimes, self.datapointsRunupHolmanMid[index], label=stationName)
+        # Combined significant wave height (H_s) plots for all transects
+        fig, axes = plt.subplots(5, 1, figsize=(16, 20), sharex=True)
+        for transect in range(1, 6):
+            ax = axes[transect - 1]
 
-        ax.plot(self.runupTimes, duneHeights, label="Dune Height")
-        ax.legend(loc="upper left")
-        ax.format_xdata = mdates.DateFormatter('%d')
-        plt.xticks(fontsize=12)
-        plt.yticks(fontsize=12)
-        plt.title(self.titlePrefix + "Napatree3 all runup: ", fontsize=18)
-#                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
+            for index in range(numberOfRunupDatapoints):
+                stationName = self.runupLabels[index]
+                if str(transect) in stationName[0:stationName.index(" ")] and stationName[-1] in ['0', '1', '2']:  # Match deepline indices
+                    swhIndex = self.buoyLabels.index(stationName)
+                    ax.plot(self.runupTimes, self.datapointsSWH[swhIndex], label=stationName)
+
+            ax.legend(loc="upper left", fontsize=10)
+            ax.xaxis.set_major_formatter(mdates.DateFormatter('%d'))
+            ax.tick_params(axis='both', labelsize=12)
+            ax.set_ylabel(r"$H_s$ (meters)", fontsize=12)
+            ax.set_title(f"{self.titlePrefix}Napatree{transect} SWH", fontsize=14)
+
+        plt.xlabel("Day", fontsize=14)
         plt.tight_layout()
-        plt.ylabel("Runup (meters)", fontsize=14)
-        plt.savefig(graph_directory + 'Napatree3_all_runup.png')
+        plt.savefig(graph_directory + 'Napatree_all_swh.png')
         plt.close()
-        
-        fig, ax = plt.subplots(figsize=(16,9))
-        duneHeights = []
-        for index in range(numberOfRunupDatapoints):
 
-            stationName = self.runupLabels[index]
-            if("4" in stationName[0:stationName.index(" ")]):
-                duneHeights = self.datapointsDuneHeights[index]
-                ax.plot(self.runupTimes, self.datapointsRunupHolmanMid[index], label=stationName)
+        # Combined elevation, max SWH, and max deepwater SWH plots for all transects
+        fig, axes = plt.subplots(5, 1, figsize=(16, 20), sharex=True)
+        for transect in range(1, 6):
+            ax = axes[transect - 1]
+            ax2 = ax.twinx()  # Second y-axis for elevation
 
-        ax.plot(self.runupTimes, duneHeights, label="Dune Height")
-        ax.legend(loc="upper left")
-        ax.format_xdata = mdates.DateFormatter('%d')
-        plt.xticks(fontsize=12)
-        plt.yticks(fontsize=12)
-        plt.title(self.titlePrefix + "Napatree4 all runup: ", fontsize=18)
-#                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
+            deeplineDistances = []
+            deeplineElevations = []
+            deeplineSWH = []
+            deeplineDeepwaterSWH = []
+
+            for index in range(numberOfRunupDatapoints):
+                stationName = self.runupLabels[index]
+                if str(transect) in stationName[0:stationName.index(" ")]:
+                    swhIndex = self.buoyLabels.index(stationName)
+                    deeplineSWH.append(np.max(self.datapointsSWH[swhIndex]))
+                    elevationIndex = self.assetLabels.index(stationName)
+                    deeplineElevations.append(self.datapointsElevation[elevationIndex])
+                    deeplineDeepwaterSWH.append(np.max(self.datapointsRunupHolmanLow[index]))
+                    # Extract distance from name (e.g., "1000m" -> 1000)
+                    distance_str = stationName[stationName.rindex(" ") + 1:-1]
+                    deeplineDistances.append(int(distance_str))
+
+            # Plot SWH and deepwater SWH on primary y-axis
+            ax.plot(deeplineDistances, deeplineSWH, label="Max SWH", color='blue')
+            ax.plot(deeplineDistances, deeplineDeepwaterSWH, label="Max Deepwater SWH", color='green')
+            # Plot elevation on secondary y-axis
+            ax2.plot(deeplineDistances, deeplineElevations, label="Elevation", color='red')
+
+            # Customize axes
+            ax.set_ylabel("SWH (meters)", fontsize=12, color='blue')
+            ax2.set_ylabel("Elevation (meters)", fontsize=12, color='red')
+            ax.tick_params(axis='y', labelcolor='blue', labelsize=12)
+            ax2.tick_params(axis='y', labelcolor='red', labelsize=12)
+            ax.tick_params(axis='x', labelsize=12)
+            ax.set_title(f"{self.titlePrefix}Napatree{transect} Deepline Metrics", fontsize=14)
+
+            # Combine legends
+            lines1, labels1 = ax.get_legend_handles_labels()
+            lines2, labels2 = ax2.get_legend_handles_labels()
+            ax.legend(lines1 + lines2, labels1 + labels2, loc="upper left", fontsize=10)
+
+        plt.xlabel("Distance (meters)", fontsize=14)
         plt.tight_layout()
-        plt.ylabel("Runup (meters)", fontsize=14)
-        plt.savefig(graph_directory + 'Napatree4_all_runup.png')
+        plt.savefig(graph_directory + 'Napatree_all_deepline_metrics.png')
         plt.close()
-        
-        fig, ax = plt.subplots(figsize=(16,9))
-        duneHeights = []
-        for index in range(numberOfRunupDatapoints):
 
-            stationName = self.runupLabels[index]
-            if("5" in stationName[0:stationName.index(" ")]):
-                duneHeights = self.datapointsDuneHeights[index]
-                ax.plot(self.runupTimes, self.datapointsRunupHolmanMid[index], label=stationName)
-
-        ax.plot(self.runupTimes, duneHeights, label="Dune Height")
-        ax.legend(loc="upper left")
-        ax.format_xdata = mdates.DateFormatter('%d')
-        plt.xticks(fontsize=12)
-        plt.yticks(fontsize=12)
-        plt.title(self.titlePrefix + "Napatree5 all runup: ", fontsize=18)
-#                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
-        plt.tight_layout()
-        plt.ylabel("Runup (meters)", fontsize=14)
-        plt.savefig(graph_directory + 'Napatree5_all_runup.png')
-        plt.close()
+# 
+# # Graph all runup
+# 
+#         fig, ax = plt.subplots(figsize=(16,9))
+#         duneHeights = []
+#         for index in range(numberOfRunupDatapoints):
+# 
+#             stationName = self.runupLabels[index]
+#             if("1" in stationName[0:stationName.index(" ")]):
+#                 duneHeights = self.datapointsDuneHeights[index]
+#                 ax.plot(self.runupTimes, self.datapointsRunupHolmanMid[index], label=stationName)
+# 
+#         ax.plot(self.runupTimes, duneHeights, label="Dune Height")
+#         ax.legend(loc="upper left")
+#         ax.format_xdata = mdates.DateFormatter('%d')
+#         plt.xticks(fontsize=12)
+#         plt.yticks(fontsize=12)
+#         plt.title(self.titlePrefix + "Napatree1 all runup: ", fontsize=18)
+# #                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
+#         plt.tight_layout()
+#         plt.ylabel("Runup (meters)", fontsize=14)
+#         plt.savefig(graph_directory + 'Napatree1_all_runup.png')
+#         plt.close()
 #         
-    #               graph all deepwater swh                
-        fig, ax = plt.subplots(figsize=(16,9))
-        for index in range(numberOfRunupDatapoints):
-
-            stationName = self.runupLabels[index]
-            if("1" in stationName[0:stationName.index(" ")]):
-                ax.plot(self.runupTimes, self.datapointsRunupHolmanLow[index], label=stationName)
-        #                 ax.plot(self.runupTimes, self.datapointsRunupStockdonNoSetup[index], label="Stockdon Swash (S/2)")
-        #                 ax.plot(self.runupTimes, self.datapointsRunupStockdonLow[index], label="Stockdon Low")
-        #                 ax.plot(self.runupTimes, self.datapointsRunupAdcirc[index], label="[SWL + setup] + 1.1(S/2)")
-
-
-        ax.legend(loc="upper left")
-        ax.format_xdata = mdates.DateFormatter('%d')
-        plt.xticks(fontsize=12)
-        plt.yticks(fontsize=12)
-        plt.title(self.titlePrefix + r"Napatree1 deepwater SWH $H_0$: ", fontsize=18)
-#                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
-        plt.tight_layout()
-        plt.ylabel(r"$H_0$ (meters)", fontsize=14)
-        plt.savefig(graph_directory + 'Napatree1_all_deepwater_swh.png')
-        plt.close()
+#         fig, ax = plt.subplots(figsize=(16,9))
+#         duneHeights = []
+#         for index in range(numberOfRunupDatapoints):
+# 
+#             stationName = self.runupLabels[index]
+#             if("2" in stationName[0:stationName.index(" ")]):
+#                 duneHeights = self.datapointsDuneHeights[index]
+#                 ax.plot(self.runupTimes, self.datapointsRunupHolmanMid[index], label=stationName)
+# 
+#         ax.plot(self.runupTimes, duneHeights, label="Dune Height")
+#         ax.legend(loc="upper left")
+#         ax.format_xdata = mdates.DateFormatter('%d')
+#         plt.xticks(fontsize=12)
+#         plt.yticks(fontsize=12)
+#         plt.title(self.titlePrefix + "Napatree2 all runup: ", fontsize=18)
+# #                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
+#         plt.tight_layout()
+#         plt.ylabel("Runup (meters)", fontsize=14)
+#         plt.savefig(graph_directory + 'Napatree2_all_runup.png')
+#         plt.close()
+#         
+#         fig, ax = plt.subplots(figsize=(16,9))
+#         duneHeights = []
+#         for index in range(numberOfRunupDatapoints):
+# 
+#             stationName = self.runupLabels[index]
+#             if("3" in stationName[0:stationName.index(" ")]):
+#                 duneHeights = self.datapointsDuneHeights[index]
+#                 ax.plot(self.runupTimes, self.datapointsRunupHolmanMid[index], label=stationName)
+# 
+#         ax.plot(self.runupTimes, duneHeights, label="Dune Height")
+#         ax.legend(loc="upper left")
+#         ax.format_xdata = mdates.DateFormatter('%d')
+#         plt.xticks(fontsize=12)
+#         plt.yticks(fontsize=12)
+#         plt.title(self.titlePrefix + "Napatree3 all runup: ", fontsize=18)
+# #                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
+#         plt.tight_layout()
+#         plt.ylabel("Runup (meters)", fontsize=14)
+#         plt.savefig(graph_directory + 'Napatree3_all_runup.png')
+#         plt.close()
+#         
+#         fig, ax = plt.subplots(figsize=(16,9))
+#         duneHeights = []
+#         for index in range(numberOfRunupDatapoints):
+# 
+#             stationName = self.runupLabels[index]
+#             if("4" in stationName[0:stationName.index(" ")]):
+#                 duneHeights = self.datapointsDuneHeights[index]
+#                 ax.plot(self.runupTimes, self.datapointsRunupHolmanMid[index], label=stationName)
+# 
+#         ax.plot(self.runupTimes, duneHeights, label="Dune Height")
+#         ax.legend(loc="upper left")
+#         ax.format_xdata = mdates.DateFormatter('%d')
+#         plt.xticks(fontsize=12)
+#         plt.yticks(fontsize=12)
+#         plt.title(self.titlePrefix + "Napatree4 all runup: ", fontsize=18)
+# #                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
+#         plt.tight_layout()
+#         plt.ylabel("Runup (meters)", fontsize=14)
+#         plt.savefig(graph_directory + 'Napatree4_all_runup.png')
+#         plt.close()
+#         
+#         fig, ax = plt.subplots(figsize=(16,9))
+#         duneHeights = []
+#         for index in range(numberOfRunupDatapoints):
+# 
+#             stationName = self.runupLabels[index]
+#             if("5" in stationName[0:stationName.index(" ")]):
+#                 duneHeights = self.datapointsDuneHeights[index]
+#                 ax.plot(self.runupTimes, self.datapointsRunupHolmanMid[index], label=stationName)
+# 
+#         ax.plot(self.runupTimes, duneHeights, label="Dune Height")
+#         ax.legend(loc="upper left")
+#         ax.format_xdata = mdates.DateFormatter('%d')
+#         plt.xticks(fontsize=12)
+#         plt.yticks(fontsize=12)
+#         plt.title(self.titlePrefix + "Napatree5 all runup: ", fontsize=18)
+# #                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
+#         plt.tight_layout()
+#         plt.ylabel("Runup (meters)", fontsize=14)
+#         plt.savefig(graph_directory + 'Napatree5_all_runup.png')
+#         plt.close()
 # #         
+#     #               graph all deepwater swh                
+#         fig, ax = plt.subplots(figsize=(16,9))
+#         for index in range(numberOfRunupDatapoints):
+# 
+#             stationName = self.runupLabels[index]
+#             if("1" in stationName[0:stationName.index(" ")]):
+#                 ax.plot(self.runupTimes, self.datapointsRunupHolmanLow[index], label=stationName)
+#         #                 ax.plot(self.runupTimes, self.datapointsRunupStockdonNoSetup[index], label="Stockdon Swash (S/2)")
+#         #                 ax.plot(self.runupTimes, self.datapointsRunupStockdonLow[index], label="Stockdon Low")
+#         #                 ax.plot(self.runupTimes, self.datapointsRunupAdcirc[index], label="[SWL + setup] + 1.1(S/2)")
+# 
+# 
+#         ax.legend(loc="upper left")
+#         ax.format_xdata = mdates.DateFormatter('%d')
+#         plt.xticks(fontsize=12)
+#         plt.yticks(fontsize=12)
+#         plt.title(self.titlePrefix + r"Napatree1 deepwater significant wave height $H_0$: ", fontsize=18)
+# #                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
+#         plt.tight_layout()
+#         plt.ylabel(r"$H_0$ (meters)", fontsize=14)
+#         plt.savefig(graph_directory + 'Napatree1_all_deepwater_swh.png')
+#         plt.close()
+# # #         
+#         fig, ax = plt.subplots(figsize=(16,9))
+#         for index in range(numberOfRunupDatapoints):
+#             stationName = self.runupLabels[index]
+#             if("1" in stationName[0:stationName.index(" ")] and stationName[-1] == "m"):
+#                 swhIndex = self.buoyLabels.index(stationName)
+#                 ax.plot(self.runupTimes, self.datapointsSWH[swhIndex], label=stationName)
+#                 
+#         ax.legend(loc="upper left")
+#         ax.format_xdata = mdates.DateFormatter('%d')
+#         plt.xticks(fontsize=12)
+#         plt.yticks(fontsize=12)
+#         plt.title(self.titlePrefix + r"Napatree1 significant wave height $H_s$: ", fontsize=18)
+# #                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
+#         plt.tight_layout()
+#         plt.ylabel(r"$H_s$ (meters)", fontsize=14)
+#         plt.savefig(graph_directory + 'Napatree1_all_swh.png')
+#         plt.close()
+# 
 #         deeplineDistances = []
 #         deeplineElevations = []
 #         deeplineSWH = []
 #         deeplineDeepwaterSWH = []
 #         for index in range(numberOfRunupDatapoints):
 #             stationName = self.runupLabels[index]
-#             if("1" in stationName[0:stationName.index(" ")] and stationName[-1] == "m"):
+#             if("1" in stationName[0:stationName.index(" ")]):
 #                 swhIndex = self.buoyLabels.index(stationName)
 #                 deeplineSWH.append(np.max(self.datapointsSWH[swhIndex]))
 #                 elevationIndex = self.assetLabels.index(stationName)
@@ -2326,7 +2463,7 @@ class Grapher:
 #         plt.tight_layout()
 #         plt.savefig(graph_directory + 'Napatree1_all_elevations.png')
 #         plt.close()
-        
+#         
 #         fig, ax = plt.subplots(figsize=(16,9))
 #         plt.xticks(fontsize=12)
 #         plt.yticks(fontsize=12)
