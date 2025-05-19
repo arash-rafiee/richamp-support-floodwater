@@ -1634,11 +1634,11 @@ class Grapher:
         for index in range(numberOfWaterDatapoints):
             if(len(self.datapointsWaters) > 0):
                 fig, ax = plt.subplots(figsize=(16,9))
-                ax.plot(self.waterTimes, self.datapointsWaters[index], label="\\eta")
+                ax.plot(self.waterTimes, self.datapointsWaters[index], label="$\eta$")
                 if(self.stillwaterExists):
-                    ax.plot(self.stillwaterTimes, self.datapointsStillwaters[index], label="\\eta_{still}")
+                    ax.plot(self.stillwaterTimes, self.datapointsStillwaters[index], label="$\eta_{still}$")
                 if(self.tidewaterExists):
-                    ax.plot(self.tidewaterTimes, self.datapointsTidewaters[index], label="\\eta_{tide}")
+                    ax.plot(self.tidewaterTimes, self.datapointsTidewaters[index], label="$\eta_{tide}$")
                 if(self.tideExists):
                     ax.plot(self.tideDatapointsTimes[index], self.tideDatapointsWaters[index], label="Obs")
 #                     ax.plot(self.tideDatapointsPredictionTimes[index], self.tideDatapointsPredictionWaters[index], label="Prediction")
