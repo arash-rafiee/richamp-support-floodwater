@@ -184,8 +184,8 @@ class GetBuoyWater:
                     prediction_waters = np.array([], dtype=np.float64)
     
                 # Step 6: Get station elevation
-                stationElevation = meshDict[key]["elevation"]
-                print("station elevation", key, stationElevation)
+#                 stationElevation = meshDict[key]["elevation"]
+#                 print("station elevation", key, stationElevation)
     
                 # Step 7: Populate waterDict
                 waterDict[key] = {}

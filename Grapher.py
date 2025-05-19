@@ -1284,12 +1284,12 @@ class Grapher:
 #             ax.scatter(self.mapElevationPointsLongitudes, self.mapElevationPointsLatitudes, label="Nodes", zorder=3, alpha=0.7, marker=".", s=1, color="black")
 #           Below line graphs ASSET points without the need for observational asset data to have been generated
             ax.scatter(self.elevationLongitudes, self.elevationLatitudes, label="Data Locations", zorder=3, alpha=0.7, marker=".", s=40, color="black")
-            for index in range(len(self.datapointsElevation)):
-                ax.annotate(str(round(self.datapointsElevation[index], 2)), (self.elevationLongitudes[index], self.elevationLatitudes[index]))
+#             for index in range(len(self.datapointsElevation)):
+#                 ax.annotate(str(round(self.datapointsElevation[index], 2)), (self.elevationLongitudes[index], self.elevationLatitudes[index]))
             plt.axis(plotAxis)
-            plt.title("Map Elevation")
+            plt.title("Elevation Map")
 #             plt.title("Map Elevation - " + "surf distance: " + self.runupSurfDistance[index] + " offshore distance: " + self.runupOffshoreDistance[index] + " slope: " + self.runupAverageSlope[index])
-            ax.legend(loc="upper right")
+#             ax.legend(loc="upper right")
 #             plt.xlabel(datetime.fromtimestamp(int(self.mapWindTimes[index]), timezone.utc))
 #             graphs up to 10 m/s, ~20 knots
             plt.colorbar(
