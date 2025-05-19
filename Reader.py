@@ -1238,7 +1238,7 @@ class Fort63Reader:
         initializeClosestWaterNodes = True
         if(initializeClosestWaterNodes):
 #             thresholdDistance = 10
-            thresholdDistance = 0.5
+            thresholdDistance = 0.25
             self.reader.initializeClosestNodes(waterDataset, thresholdDistance, "water")
         spaceSparseness = 1
 #         spaceSparseness = 10
