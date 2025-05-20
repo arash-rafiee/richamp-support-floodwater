@@ -497,9 +497,9 @@ class GetRunup:
                 if(startOfDayTime == None):
                     startOfDayTime = time
                 waterlineKey = waterlineKeys[index]
-                if(waterlineKey > maxWaterlineKey or maxWaterlineKey == None):
+                if(maxWaterlineKey == None or waterlineKey > maxWaterlineKey):
                     maxWaterlineKey = waterlineKey
-                if(waterlineKey < minWaterlineKey or minWaterlineKey == None):
+                if(minWaterlineKey == None or waterlineKey < minWaterlineKey):
                     minWaterlineKey = waterlineKey
                 if((time - startOfDayTime) == DAY_IN_UNIX_TIME or index == (len(runupTimes) - 1)):
                     waterlineStation = normalDict[minWaterlineKey]
