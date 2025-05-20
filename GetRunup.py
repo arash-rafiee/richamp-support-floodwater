@@ -524,6 +524,7 @@ class GetRunup:
                         averageSlopes.append(averageSlope)
                         print("APPENDING AVERAGE SLOPE", averageSlope)
                     numIndexes = 0
+                    startOfDayTime = None
                     
             print("AVERAGE SLOPES", averageSlopes)
 #             From this point, iterate through each timestep in the wave file.
