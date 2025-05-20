@@ -623,7 +623,7 @@ class GetRunup:
                 stockdonSetupLow = self.calculateStockdonLowSetup(offshoreSwh[index], offshoreWavelength[index])                
                 stockdonSwashLow = self.calculateStockdonLowSwash(offshoreSwh[index], offshoreWavelength[index])
                 stockdonRunup = self.calculateStockdonRunup(averageSlope, offshoreSwh[index], offshoreWavelength[index], waterlineStillwaterValue)
-                stockdonRunup = self.calculateStockdonRunup(averageSlope, offshoreSwh[index], offshoreWavelength[index], waterlineTidewaterValue)
+#                 stockdonRunup = self.calculateStockdonRunup(averageSlope, offshoreSwh[index], offshoreWavelength[index], waterlineTidewaterValue)
                 stockdonRunupNoSetup = self.calculateStockdonRunupNoSetup(averageSlope, offshoreSwh[index], offshoreWavelength[index])
                 stockdonRunupLow = self.calculateStockdonLowRunup(offshoreSwh[index], offshoreWavelength[index]) 
                 
