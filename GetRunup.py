@@ -522,11 +522,12 @@ class GetRunup:
                     averageSlope = math.atan((waterlineElevation - adjacentWaterlineElevation) / waterlineDistance)
                     for averageSlopeIndex in range(numIndexes):
                         averageSlopes.append(averageSlope)
-                        print("APPENDING AVERAGE SLOPE", averageSlope)
+#                         print("APPENDING AVERAGE SLOPE", averageSlope)
                     numIndexes = 0
                     startOfDayTime = None
                     
             print("AVERAGE SLOPES", averageSlopes)
+            quit()
 #             From this point, iterate through each timestep in the wave file.
             for index, waterValue in enumerate(offshoreWater):
                 waterlineKey = None
