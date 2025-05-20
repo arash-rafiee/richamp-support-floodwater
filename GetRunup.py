@@ -649,7 +649,7 @@ class GetRunup:
                 runupHolmanHigh = adcircStormSurge
                 adcircSetup = adcircSetup + adcircStormSurge
                 runupHolmanMid = self.calculateAdcircRunupUsingSetup(adcircSetup, stockdonRunupNoSetup, waterlineStillwaterValue)
-                runupHolmanMid = self.calculateAdcircRunupUsingSetup(adcircSetup, stockdonRunupNoSetup, waterlineTidewaterValue)
+#                 runupHolmanMid = self.calculateAdcircRunupUsingSetup(adcircSetup, stockdonRunupNoSetup, waterlineTidewaterValue)
                 runupHolmanLow = offshoreSwh[index]
                 
 #                 Define runupHolmanMid as 1.1(S/2) + eta
