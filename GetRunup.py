@@ -502,6 +502,7 @@ class GetRunup:
                 if(minWaterlineKey == None or waterlineKey < minWaterlineKey):
                     minWaterlineKey = waterlineKey
                 if((time - startOfDayTime) == DAY_IN_UNIX_TIME or index == (len(runupTimes) - 1)):
+                    print("END DAY", time, startOfDayTime)
                     waterlineStation = normalDict[minWaterlineKey]
                     waterlineCoordinates = (float(waterlineStation["latitude"]), float(waterlineStation["longitude"]))
                     waterlineElevation = float(meshDict[minWaterlineKey]["elevation"])
@@ -521,9 +522,10 @@ class GetRunup:
                     averageSlope = math.atan((waterlineElevation - adjacentWaterlineElevation) / waterlineDistance)
                     for averageSlopeIndex in range(numIndexes):
                         averageSlopes.append(averageSlope)
+                        print("APPENDING AVERAGE SLOPE", averageSlope)
                     numIndexes = 0
                     
-            
+            print("AVERAGE SLOPES", averageSlopes)
 #             From this point, iterate through each timestep in the wave file.
             for index, waterValue in enumerate(offshoreWater):
                 waterlineKey = None
