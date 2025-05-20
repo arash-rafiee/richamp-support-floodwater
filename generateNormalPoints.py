@@ -407,7 +407,12 @@ def generate_tangent_points(json_data, resolution=HYPERRESOLUTION, points_count=
         json_data['TANGENT'] = {}
     
     for runup_id, runup_data in json_data['RUNUP'].items():
-        station_id = runup_id.rstrip('d0123456789')
+#         print("runup_id", runup_id)
+        # Extract base station_id (e.g., "40" from "40d0")
+        station_id = runup_id[0:2]
+#         print("station_id", station_id)
+        
+        # Skip if TANGENT section for this station_id already exists
         if station_id in json_data['TANGENT']:
             continue
         
@@ -430,6 +435,7 @@ def generate_tangent_points(json_data, resolution=HYPERRESOLUTION, points_count=
                 "latitude": f"{new_lat:.6f}",
                 "longitude": f"{new_lon:.6f}"
             }
+            # Use station_id prefix for keys, e.g., "40000" for station_id "40"
             new_key = f"{station_id}{point_counter:03d}"
             json_data['TANGENT'][station_id][new_key] = new_point
             point_counter += 1
