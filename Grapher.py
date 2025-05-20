@@ -2279,9 +2279,10 @@ class Grapher:
             ax.set_title(f"{self.titlePrefix}Napatree{transect} Deepline Metrics", fontsize=14)
 
             # Combine legends
-            lines1, labels1 = ax.get_legend_handles_labels()
-            lines2, labels2 = ax2.get_legend_handles_labels()
-            ax.legend(lines1 + lines2, labels1 + labels2, loc="upper left", fontsize=10)
+            if(transect == 1):
+                lines1, labels1 = ax.get_legend_handles_labels()
+                lines2, labels2 = ax2.get_legend_handles_labels()
+                ax.legend(lines1 + lines2, labels1 + labels2, loc="upper right", fontsize=10)
 
         plt.xlabel("Distance (meters)", fontsize=14)
         plt.tight_layout()
