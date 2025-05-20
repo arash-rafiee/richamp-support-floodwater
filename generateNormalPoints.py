@@ -36,7 +36,7 @@ DEEPLINE_DISTANCES_4 = [
     {"distance": 1500, "depth": "20m"}
 ]
 DEEPLINE_DISTANCES_5 = [
-    {"distance": 75, "depth": "7m2"},   # Napatree5 (runup_id: 50)
+    {"distance": 75, "depth": "7m"},   # Napatree5 (runup_id: 50)
     {"distance": 12500, "depth": "35m"},
     {"distance": 1300, "depth": "20m"}
 ]
@@ -207,11 +207,11 @@ def generate_deepline_points(json_data):
                 del json_data[section][key]
     
     for runup_id, runup_data in list(json_data['RUNUP'].items()):
-        station_id = runup_id.rstrip('d0123456789')
+        station_id = runup_id[0:2]
+        print(station_id)
         shoreline_lat, shoreline_lon = float(runup_data['latitude']), float(runup_data['longitude'])
         surf_lat, surf_lon = float(runup_data['surfLatitude']), float(runup_data['surfLongitude'])
         bearing = calculate_bearing(shoreline_lat, shoreline_lon, surf_lat, surf_lon)
-        
         deepline_distances = DEEPLINE_DISTANCES_MAP.get(station_id, DEEPLINE_DISTANCES_1)
         dune_heights = DUNE_HEIGHTS_MAP.get(station_id, DUNE_HEIGHTS_1)
         
@@ -228,7 +228,8 @@ def generate_deepline_points(json_data):
             
             new_runup[new_runup_key] = runup_data.copy()
             new_runup[new_runup_key]['deeplineKey'] = deepline_key
-            new_runup[new_runup_key]['name'] = f"{runup_data['name'].split(' ')[0]} {depth} Depth Waves"
+            # Include distance in the name
+            new_runup[new_runup_key]['name'] = f"{runup_data['name'].split(' ')[0]} {depth} Depth Waves {distance}m"
             new_runup[new_runup_key]['duneHeights'] = dune_heights
             
             new_lat, new_lon = calculate_new_point(shoreline_lat, shoreline_lon, bearing, distance)
@@ -238,7 +239,7 @@ def generate_deepline_points(json_data):
             deepline_point = {
                 "id": "RUNUP",
                 "source": "RUNUP",
-                "name": f"{runup_data['name'].split(' ')[0]} {depth} Depth Waves",
+                "name": f"{runup_data['name'].split(' ')[0]} {depth} Depth Waves {distance}m",
                 "latitude": f"{new_lat:.6f}",
                 "longitude": f"{new_lon:.6f}"
             }
