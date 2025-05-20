@@ -551,8 +551,8 @@ class GetRunup:
 #               1.1 factor. this is a meme level situation.
                 adcircSetup = waterlineWaterValue - waterlineStillwaterValue
                 adcircStormSurge = waterlineStillwaterValue - waterlineTidewaterValue
-#                 adcircRunup = self.calculateAdcircRunup(waterlineWaterValue, stockdonRunupNoSetup)
-                adcircRunup = self.calculateAdcircRunup(waterlineTidewaterValue, stockdonRunupNoSetup)
+                adcircRunup = self.calculateAdcircRunup(waterlineWaterValue, stockdonRunupNoSetup)
+#                 adcircRunup = self.calculateAdcircRunup(waterlineTidewaterValue, stockdonRunupNoSetup)
 
 #                 Hijack some existing variables
                 stockdonSetupLow = adcircSetup
