@@ -519,7 +519,7 @@ class GetRunup:
 
                     waterlineDistance = haversine.haversine(waterlineCoordinates, adjacentWaterlineCoordinates) * 1000
                     averageSlope = math.atan((waterlineElevation - adjacentWaterlineElevation) / waterlineDistance)
-                                        print("END DAY, Slope", time, startOfDayTime, averageSlope)
+                    print("END DAY, Slope", time, startOfDayTime, averageSlope)
                     for averageSlopeIndex in range(numIndexes):
                         averageSlopes.append(averageSlope)
 #                         print("APPENDING AVERAGE SLOPE", averageSlope)
