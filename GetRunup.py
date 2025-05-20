@@ -14,7 +14,10 @@ import numpy as np
 from Encoders import NumpyEncoder
 from geographiclib.geodesic import Geodesic
 from scipy.optimize import fsolve  # For solving the dispersion relation
-        
+       
+       
+DAY_IN_UNIX_TIME = 86400
+ 
 class GetRunup:
 
 # 3/12/25
@@ -425,7 +428,6 @@ class GetRunup:
             runupTangentLatitudes = [] 
             runupTangentLongitudes = []
             
-#             From this point, iterate through each timestep in the wave file.
             for index, waterValue in enumerate(offshoreWater):
                 waterlineKey = None
                 stillwaterLineKey = None
@@ -482,11 +484,93 @@ class GetRunup:
 #                 Now I need to calculate the averageSlope using the waterlineKey point
 
 
-                waterlineDistance = haversine.haversine(waterlineCoordinates, adjacentWaterlineCoordinates) * 1000
-                averageSlope = math.atan((waterlineElevation - adjacentWaterlineElevation) / waterlineDistance)
-                averageSlopes.append(averageSlope)
+#                 waterlineDistance = haversine.haversine(waterlineCoordinates, adjacentWaterlineCoordinates) * 1000
+#                 averageSlope = math.atan((waterlineElevation - adjacentWaterlineElevation) / waterlineDistance)
+#                 averageSlopes.append(averageSlope)
+                
+            startOfDayTime = None
+            maxWaterlineKey = None
+            minWaterlineKey = None
+            numIndexes = 0
+            for index, time in enumerate(runupTimes):
+                numIndexes += 1
+                if(startOfDayTime == None):
+                    startOfDayTime = time
+                waterlineKey = waterlineKeys[index]
+                if(waterlineKey > maxWaterlineKey or maxWaterlineKey == None):
+                    maxWaterlineKey = waterlineKey
+                if(waterlineKey < minWaterlineKey or minWaterlineKey == None):
+                    minWaterlineKey = waterlineKey
+                if((time - startOfDayTime) == DAY_IN_UNIX_TIME or index == (len(runupTimes) - 1)):
+                    waterlineStation = normalDict[minWaterlineKey]
+                    waterlineCoordinates = (float(waterlineStation["latitude"]), float(waterlineStation["longitude"]))
+                    waterlineElevation = float(meshDict[minWaterlineKey]["elevation"])
+                
+                    if(minWaterlineKey != maxWaterlineKey):
+                        adjacentWaterlineKey = str(int(maxWaterlineKey))
+                    else:
+                        adjacentWaterlineKey = str(int(minWaterlineKey) + 1)
+                    adjacentWaterlineStation = normalDict[adjacentWaterlineKey]
+                    adjacentWaterlineCoordinates = (float(adjacentWaterlineStation["latitude"]), float(adjacentWaterlineStation["longitude"]))
+                    adjacentWaterlineElevation = meshDict[adjacentWaterlineKey]["elevation"]
+                
+    #                 Now I need to calculate the averageSlope using the waterlineKey point
+
+
+                    waterlineDistance = haversine.haversine(waterlineCoordinates, adjacentWaterlineCoordinates) * 1000
+                    averageSlope = math.atan((waterlineElevation - adjacentWaterlineElevation) / waterlineDistance)
+                    for averageSlopeIndex in range(numIndexes):
+                        averageSlopes.append(averageSlope)
+                    numIndexes = 0
+                    
+            
+#             From this point, iterate through each timestep in the wave file.
+            for index, waterValue in enumerate(offshoreWater):
+                waterlineKey = None
+                stillwaterLineKey = None
+                tidewaterLineKey = None
+#                Find the waterline key
+                waterlineKey = waterlineKeys[index]
+                    
+#                 Find the stillwater line, so we can pull SWL data without any gaps
+                for normalKey in normalDict:
+                    normalStationStillwaterValue = stillwaterDict[normalKey]["water"][index]
+#                     print("normalStationWaterValue, index", index, normalStationWaterValue)
+                    if(not np.isnan(normalStationStillwaterValue)):
+                        stillwaterLineKey = normalKey
+                        break
+                        
+                for normalKey in normalDict:
+                    normalStationTidewaterValue = tidewaterDict[normalKey]["water"][index]
+#                     print("normalStationWaterValue, index", index, normalStationWaterValue)
+                    if(not np.isnan(normalStationTidewaterValue)):
+                        tidewaterLineKey = normalKey
+                        break
+#                 Now I have the waterline key
+                
+
+
+#                   The corresponding tangent key
+                tangentStation = tangentDict[waterlineKey]
+                tangentCoordinates = (float(tangentStation["latitude"]), float(tangentStation["longitude"]))
+                
+                waterlineStation = normalDict[waterlineKey]
+                waterlineCoordinates = (float(waterlineStation["latitude"]), float(waterlineStation["longitude"]))
+                waterlineElevation = float(meshDict[waterlineKey]["elevation"])
+                
+                adjacentWaterlineKey = str(int(waterlineKey) + 1)
+                adjacentWaterlineStation = normalDict[adjacentWaterlineKey]
+                adjacentWaterlineCoordinates = (float(adjacentWaterlineStation["latitude"]), float(adjacentWaterlineStation["longitude"]))
+                adjacentWaterlineElevation = meshDict[adjacentWaterlineKey]["elevation"]
+                
+#                 Now I need to calculate the averageSlope using the waterlineKey point
+
+
+#                 waterlineDistance = haversine.haversine(waterlineCoordinates, adjacentWaterlineCoordinates) * 1000
+#                 averageSlope = math.atan((waterlineElevation - adjacentWaterlineElevation) / waterlineDistance)
+#                 averageSlopes.append(averageSlope)
 #                 Use first calculate average slope
-                averageSlope = averageSlopes[0]
+                averageSlope = averageSlopes[index]
                 
 #                 slopelineDistance = haversine.haversine(slopelineCoordinates, waterlineCoordinates) * 1000
 #                 slopelineDistance = slopelineDistance
@@ -504,7 +588,7 @@ class GetRunup:
 #           I will always use the same node, which is the first waterline node in the timeseries.
 #           Doing this wont change the generated values that much, as the water elevation is very similar for all nodes along the normal of the beach.
 #                 waterlineKey = waterlineKeys[0]
-                waterlineWaterValue = waterDict[stillwaterLineKey]["water"][index]
+                waterlineWaterValue = waterDict[waterlineKey]["water"][index]
                 waterlineStillwaterValue = stillwaterDict[stillwaterLineKey]["water"][index]
                 waterlineTidewaterValue = tidewaterDict[tidewaterLineKey]["water"][index]
 #                 print("waterlineWaterValue, waterlineStillWaterValue", waterlineWaterValue, waterlineStillwaterValue)
@@ -623,17 +707,17 @@ class GetRunup:
 #             print(offshoreWater, offshoreSwh, offshoreMwd, offshoreMwp, shorelineElevation, offshoreElevation)
 #             print("max time, water, swg, mwd, mwp, and elevation shoreline offshore", max(offshoreWater), max(offshoreSwh), max(offshoreMwd), max(offshoreMwp), shorelineElevation, offshoreElevation)
     #                             distance and threshold in kilometers
-            print("shorelineElevation, surfElevation, offshoreElevation", shorelineElevation, surfElevation, offshoreElevation)
+#             print("shorelineElevation, surfElevation, offshoreElevation", shorelineElevation, surfElevation, offshoreElevation)
             surfDistance = haversine.haversine(surfCoordinates, shorelineCoordinates) * 1000
             offshoreDistance = haversine.haversine(offshoreCoordinates, shorelineCoordinates) * 1000
-            print("surfDistance, offshoreDistance", surfDistance, offshoreDistance)
+#             print("surfDistance, offshoreDistance", surfDistance, offshoreDistance)
 #             print("distance between offshore and shoreline", distance)
 #             Calculate average slope in radians
 #              hardcode the average slope
 #             distance = 50
 #             offshoreElevation = 5
             averageSlope = math.atan((shorelineElevation - surfElevation) / surfDistance)
-            print("shore to surf average slope", averageSlope)
+#             print("shore to surf average slope", averageSlope)
 #             averageSlope = 0.025
 #             averageSlope = 
 
