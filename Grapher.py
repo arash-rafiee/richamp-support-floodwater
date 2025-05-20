@@ -2226,7 +2226,7 @@ class Grapher:
 
             for index in range(numberOfRunupDatapoints):
                 stationName = self.runupLabels[index]
-                if str(transect) in stationName[0:stationName.index(" ")] and stationName[-1] in ['0', '1', '2']:  # Match deepline indices
+                if str(transect) in stationName[0:stationName.index(" ")]:  # Match deepline indices
                     swhIndex = self.buoyLabels.index(stationName)
                     ax.plot(self.runupTimes, self.datapointsSWH[swhIndex], label=stationName)
 
@@ -2265,10 +2265,10 @@ class Grapher:
                     deeplineDistances.append(int(distance_str))
 
             # Plot SWH and deepwater SWH on primary y-axis
-            ax.plot(deeplineDistances, deeplineSWH, label="Max SWH", color='blue')
-            ax.plot(deeplineDistances, deeplineDeepwaterSWH, label="Max Deepwater SWH", color='green')
+            ax.scatter(deeplineDistances, deeplineSWH, label="Max SWH", color='blue')
+            ax.scatter(deeplineDistances, deeplineDeepwaterSWH, label="Max Deepwater SWH", color='green')
             # Plot elevation on secondary y-axis
-            ax2.plot(deeplineDistances, deeplineElevations, label="Elevation", color='red')
+            ax2.scatter(deeplineDistances, deeplineElevations, label="Elevation", color='red')
 
             # Customize axes
             ax.set_ylabel("SWH (meters)", fontsize=12, color='blue')
