@@ -1278,12 +1278,14 @@ class Grapher:
             plt.imshow(img, alpha=0.5, extent=self.backgroundAxis, aspect=aspectRatio, zorder=2)
             contourset = ax.tripcolor(elevationTriangulation, self.mapElevation, shading='gouraud', cmap="jet", vmin=vmin, vmax=vmax, zorder=1)
 #             ax.scatter(self.mapElevationPointsLongitudes, self.mapElevationPointsLatitudes, label="Nodes", alpha=0.1, marker=".", s=1, zorder=4, color="purple")
-            if(self.assetExists):
-                    ax.scatter(self.assetLongitudes, self.assetLatitudes, label="Assets", zorder=3, alpha=0.7, marker=".", s=40, color="black")
+#             if(self.assetExists):
+#                 ax.scatter(self.assetLongitudes, self.assetLatitudes, label="Assets", zorder=3, alpha=0.7, marker=".", s=40, color="black")
+            ax.scatter(self.assetLongitudes, self.assetLatitudes, label="Assets", zorder=3, alpha=0.7, marker=".", s=40, color="black")
+
 #             Below line graphs mesh points
 #             ax.scatter(self.mapElevationPointsLongitudes, self.mapElevationPointsLatitudes, label="Nodes", zorder=3, alpha=0.7, marker=".", s=1, color="black")
 #           Below line graphs ASSET points without the need for observational asset data to have been generated
-            ax.scatter(self.elevationLongitudes, self.elevationLatitudes, label="Data Locations", zorder=3, alpha=0.7, marker=".", s=40, color="black")
+#             ax.scatter(self.elevationLongitudes, self.elevationLatitudes, label="Data Locations", zorder=3, alpha=0.7, marker=".", s=40, color="black")
 #             for index in range(len(self.datapointsElevation)):
 #                 ax.annotate(str(round(self.datapointsElevation[index], 2)), (self.elevationLongitudes[index], self.elevationLatitudes[index]))
             plt.axis(plotAxis)
