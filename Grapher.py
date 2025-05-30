@@ -2191,7 +2191,10 @@ class Grapher:
 
             # Plot horizontal lines for each unique dune height
             for height in unique_heights:
-                ax.axhline(y=height, linestyle='--', color='gray', label=f'Dune Height {height:.2f}m' if height == list(unique_heights)[0] else None)
+                if(transect >= 3):
+                    ax.axhline(y=height, linestyle='--', color='red', label=f'Dune Height {height:.2f}m' if height == list(unique_heights)[0] else None)
+                else:
+                    ax.axhline(y=height, linestyle='--', color='grey', label=f'Dune Height {height:.2f}m' if height == list(unique_heights)[0] else None)
 
             ax.legend(loc="upper left", fontsize=10)
             ax.xaxis.set_major_formatter(mdates.DateFormatter('%d'))
