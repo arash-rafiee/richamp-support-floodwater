@@ -655,7 +655,7 @@ class GetRunup:
                 runupHolmanLow = offshoreSwh[index]
                 
 #                 Define runupHolmanMid as 1.1(S/2) + eta
-#                 runupHolmanMid = adcircRunup
+                runupHolmanMid = adcircRunup
 #                 runupHolmanMid = stockdonRunup
                 
 #                 runupValues.append(stockdonRunup)
