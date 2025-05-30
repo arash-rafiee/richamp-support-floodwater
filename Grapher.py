@@ -2184,8 +2184,8 @@ class Grapher:
             for index in range(numberOfRunupDatapoints):
                 stationName = self.runupLabels[index]
                 if str(transect) in stationName[0:stationName.index(" ")]:
-                    print("found label", self.runupLabels[index])
-                    print("runup values", self.datapointsRunupHolmanMid[index])
+#                     print("found label", self.runupLabels[index])
+#                     print("runup values", self.datapointsRunupHolmanMid[index])
                     dune_heights = self.datapointsDuneHeights[index]
                     ax.plot(self.runupTimes, self.datapointsRunupHolmanMid[index], label=stationName)
                     unique_heights.update(dune_heights)
