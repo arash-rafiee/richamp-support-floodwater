@@ -1651,9 +1651,9 @@ class Grapher:
                     ax.plot(self.stillwaterTimes, self.datapointsStillwaters[index], label=r"$\eta_{still}$", linestyle="--")
                 if(self.tidewaterExists):
                     ax.plot(self.tidewaterTimes, self.datapointsTidewaters[index], label=r"$\eta_{tide}$", linestyle="--")
+                ax.plot(self.waterTimes, self.datapointsWaters[index], label=r"$\eta$")
                 if(self.tideExists):
                     ax.plot(self.tideDatapointsTimes[index], self.tideDatapointsWaters[index], label="Obs")
-                ax.plot(self.waterTimes, self.datapointsWaters[index], label=r"$\eta$")
 #                     ax.plot(self.tideDatapointsPredictionTimes[index], self.tideDatapointsPredictionWaters[index], label="Tides")
                 ax.legend(loc="upper left")
                 ax.format_xdata = mdates.DateFormatter('%d')
@@ -2099,7 +2099,7 @@ class Grapher:
                         ax.format_xdata = mdates.DateFormatter('%d')
                         stationName = self.tideLabels[datapointsWaterRunupIndex]
 #                         print("stationName of corresponding water station: ", stationName)
-                        plt.title(self.titlePrefix + stationName + " station elevation max (water, swash): " + maxElevation)
+                        plt.title(self.titlePrefix + stationName + " station elevation max (water, swash): " + maxElevation, fontsize=18)
                         plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT))
                         plt.ylabel("elevation (meters)")
                         
