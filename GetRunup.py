@@ -648,7 +648,7 @@ class GetRunup:
 #                 Hijack some existing variables
                 stockdonSetupLow = adcircSetup
                 runupHolmanHigh = adcircStormSurge
-                adcircSetup = adcircSetup + adcircStormSurge
+#                 adcircSetup = adcircSetup + adcircStormSurge
                 adcircSetup = adcircSetup
                 runupHolmanMid = self.calculateAdcircRunupUsingSetup(adcircSetup, stockdonRunupNoSetup, waterlineStillwaterValue)
 #                 runupHolmanMid = self.calculateAdcircRunupUsingSetup(adcircSetup, stockdonRunupNoSetup, waterlineTidewaterValue)
