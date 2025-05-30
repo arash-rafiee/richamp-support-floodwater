@@ -1647,13 +1647,13 @@ class Grapher:
         for index in range(numberOfWaterDatapoints):
             if(len(self.datapointsWaters) > 0):
                 fig, ax = plt.subplots(figsize=(16,9))
-                ax.plot(self.waterTimes, self.datapointsWaters[index], label=r"$\eta$")
                 if(self.stillwaterExists):
                     ax.plot(self.stillwaterTimes, self.datapointsStillwaters[index], label=r"$\eta_{still}$", linestyle="--")
                 if(self.tidewaterExists):
                     ax.plot(self.tidewaterTimes, self.datapointsTidewaters[index], label=r"$\eta_{tide}$", linestyle="--")
                 if(self.tideExists):
                     ax.plot(self.tideDatapointsTimes[index], self.tideDatapointsWaters[index], label="Obs")
+                ax.plot(self.waterTimes, self.datapointsWaters[index], label=r"$\eta$")
 #                     ax.plot(self.tideDatapointsPredictionTimes[index], self.tideDatapointsPredictionWaters[index], label="Tides")
                 ax.legend(loc="upper left")
                 ax.format_xdata = mdates.DateFormatter('%d')
@@ -2185,6 +2185,7 @@ class Grapher:
                 stationName = self.runupLabels[index]
                 if str(transect) in stationName[0:stationName.index(" ")]:
                     print("found label", self.runupLabels[index])
+                    print("runup values", self.datapointsRunupHolmanMid[index])
                     dune_heights = self.datapointsDuneHeights[index]
                     ax.plot(self.runupTimes, self.datapointsRunupHolmanMid[index], label=stationName)
                     unique_heights.update(dune_heights)
