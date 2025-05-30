@@ -2274,10 +2274,10 @@ class Grapher:
                         deeplineDistances.append(int(distance_str))
     
                 # Plot SWH and deepwater SWH on primary y-axis
-                ax.scatter(deeplineDistances, deeplineSWH, label="Max SWH", color='blue')
-                ax.scatter(deeplineDistances, deeplineDeepwaterSWH, label="Max Deepwater SWH", color='green')
+                ax.plot(deeplineDistances, deeplineSWH, label="Max SWH", color='blue')
+                ax.plot(deeplineDistances, deeplineDeepwaterSWH, label="Max Deepwater SWH", color='green')
                 # Plot elevation on secondary y-axis
-                ax2.scatter(deeplineDistances, deeplineElevations, label="Elevation", color='red')
+                ax2.plot(deeplineDistances, deeplineElevations, label="Elevation", color='red', linestyle="--")
     
                 # Customize axes
                 ax.set_ylabel("SWH (meters)", fontsize=12, color='blue')
