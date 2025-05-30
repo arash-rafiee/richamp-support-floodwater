@@ -1581,7 +1581,7 @@ class Grapher:
                 ax.legend(loc="lower right")
 #                 ax.set_ylim([0, 50])
                 stationName = self.obsLabels[index]
-                plt.title(stationName + " station wind speed")
+                plt.title(stationName + " station wind speed", fontsize=24)
 #                 plt.xlabel("Hours since " + self.windStartDate.strftime(self.DATE_FORMAT))
                 plt.ylabel("wind speed (m/s)")
                 plt.savefig(graph_directory + stationName + '_wind_speed.png')
@@ -1594,8 +1594,7 @@ class Grapher:
                 ax.legend(loc="lower right")
 #                 ax.set_ylim([0, 50])
                 stationName = self.obsLabels[index]
-                plt.title(stationName + " station wind directions")
-                plt.xlabel("Hours since " + self.windStartDate.strftime(self.DATE_FORMAT))
+                plt.title(stationName + " station wind directions", fontsize=24)
                 plt.ylabel("wind direction (degrees)")
                 plt.savefig(graph_directory + stationName + '_wind_direction.png')
                 plt.close()
@@ -1660,8 +1659,8 @@ class Grapher:
                 ax.format_xdata = mdates.DateFormatter('%d')
                 stationName = self.tideLabels[index]
                 maxElevation = str(round(max(self.datapointsWaters[index]), 2))
-                plt.title(self.titlePrefix + stationName + " station water elevation")
-                plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT))
+                plt.title(self.titlePrefix + stationName + " station water elevation", fontsize=24)
+#                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT))
                 plt.ylabel("elevation (meters)")
                 plt.savefig(graph_directory + stationName + '_water.png')
                 plt.close()
@@ -1674,7 +1673,7 @@ class Grapher:
                     ax.format_xdata = mdates.DateFormatter('%d')
                     stationName = self.tideLabels[index]
                     plt.title(self.titlePrefix + stationName + " station water depth")
-                    plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT))
+#                     plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT))
                     plt.ylabel("depth (meters)")
                     plt.savefig(graph_directory + stationName + '_station_water.png')
                     plt.close()
@@ -1717,7 +1716,7 @@ class Grapher:
                         ax.scatter(self.buoyDatapointsTimes[index], self.buoyDatapointsSWH[index], label="Obs")
                     ax.legend(loc="lower right")
                     stationName = self.buoyLabels[index]
-                    plt.title(stationName + " significant wave height")
+                    plt.title(stationName + " significant wave height", fontsize=24)
 #                     plt.xlabel("Hours since " + self.waveStartDate.strftime(self.DATE_FORMAT))
                     ax.format_xdata = mdates.DateFormatter('%d')
                     plt.ylabel("SWH (meters)")
@@ -1730,7 +1729,7 @@ class Grapher:
                         ax.scatter(self.buoyDatapointsTimes[index], self.buoyDatapointsMWD[index], label="Buoy")
                     ax.legend(loc="lower right")
                     stationName = self.buoyLabels[index]
-                    plt.title(stationName + " station mean wave direction")
+                    plt.title(stationName + " station mean wave direction", fontsize=24)
 #                     plt.xlabel("Hours since " + self.waveStartDate.strftime(self.DATE_FORMAT))
                     ax.format_xdata = mdates.DateFormatter('%d')
                     plt.ylabel("MWD (degrees)")
@@ -1743,7 +1742,7 @@ class Grapher:
                         ax.scatter(self.buoyDatapointsTimes[index], self.buoyDatapointsMWP[index], label="Buoy")
                     ax.legend(loc="lower right")
                     stationName = self.buoyLabels[index]
-                    plt.title(stationName + " station mean wave period")
+                    plt.title(stationName + " station mean wave period", fontsize=24)
 #                     plt.xlabel("Hours since " + self.waveStartDate.strftime(self.DATE_FORMAT))
                     ax.format_xdata = mdates.DateFormatter('%d')
                     plt.ylabel("MWP (seconds)")
@@ -1756,7 +1755,7 @@ class Grapher:
                         ax.scatter(self.buoyDatapointsTimes[index], self.buoyDatapointsPWP[index], label="Obs")
                     ax.legend(loc="lower right")
                     stationName = self.buoyLabels[index]
-                    plt.title(stationName + " peak wave period")
+                    plt.title(stationName + " peak wave period", fontsize=24)
 #                     plt.xlabel("Hours since " + self.waveStartDate.strftime(self.DATE_FORMAT))
                     ax.format_xdata = mdates.DateFormatter('%d')
                     plt.ylabel("PWP (seconds)")
@@ -1767,7 +1766,7 @@ class Grapher:
                     ax.scatter(self.waveTimes, self.datapointsRADMag[index], marker=".", label="Forecast")
                     ax.legend(loc="lower right")
                     stationName = self.buoyLabels[index]
-                    plt.title(stationName + " station radiation stress magnitude")
+                    plt.title(stationName + " station radiation stress magnitude", fontsize=24)
                     plt.xlabel("Hours since " + self.waveStartDate.strftime(self.DATE_FORMAT))
                     plt.ylabel("Rad Stress Magitude (1/m^2s^2)")
                     plt.savefig(graph_directory + stationName + '_wave_radstress_mag.png')
@@ -1777,7 +1776,7 @@ class Grapher:
                     ax.scatter(self.waveTimes, self.datapointsRADDir[index], marker=".", label="Forecast")
                     ax.legend(loc="lower right")
                     stationName = self.buoyLabels[index]
-                    plt.title(stationName + " station radiation stress direction")
+                    plt.title(stationName + " station radiation stress direction", fontsize=24)
                     plt.xlabel("Hours since " + self.waveStartDate.strftime(self.DATE_FORMAT))
                     plt.ylabel("Rad stress direction (degrees)")
                     plt.savefig(graph_directory + stationName + '_wave_radstress_dir.png')
@@ -1998,7 +1997,7 @@ class Grapher:
                 ax.format_xdata = mdates.DateFormatter('%d')
                 stationName = self.runupLabels[index]
                 maxSetup = str(round(max(self.datapointsSetupStockdonLow[index]), 2)) + ", " + str(round(max(self.datapointsSetupStockdon[index]), 2))
-                plt.title(self.titlePrefix + stationName + " station setup max (SWAN, Stockdon): " + maxSetup)
+                plt.title(self.titlePrefix + stationName + " station setup max (SWAN, Stockdon): " + maxSetup, fontsize=24)
 #                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
                 plt.ylabel("setup (meters)")
                 plt.savefig(graph_directory + stationName + '_setup.png')
@@ -2197,12 +2196,11 @@ class Grapher:
                     ax.axhline(y=height, linestyle='--', color='grey', label=f'Dune Height {height:.2f}m' if height == list(unique_heights)[0] else None)
 
             ax.legend(loc="upper left", fontsize=10)
-            ax.xaxis.set_major_formatter(mdates.DateFormatter('%d'))
+            ax.format_xdata = mdates.DateFormatter('%d')
             ax.tick_params(axis='both', labelsize=12)
             ax.set_ylabel("Runup (meters)", fontsize=12)
             ax.set_title(f"{self.titlePrefix}Napatree{transect} Runup", fontsize=14)
 
-        plt.xlabel("Day", fontsize=14)
         plt.tight_layout()
         plt.savefig(graph_directory + 'Napatree_all_runup.png')
         plt.close()
@@ -2223,7 +2221,7 @@ class Grapher:
             ax.set_ylabel(r"$H_0$ (meters)", fontsize=12)
             ax.set_title(f"{self.titlePrefix}Napatree{transect} Deepwater SWH", fontsize=14)
 
-        plt.xlabel("Day", fontsize=14)
+#         plt.xlabel("Day", fontsize=14)
         plt.tight_layout()
         plt.savefig(graph_directory + 'Napatree_all_deepwater_swh.png')
         plt.close()
@@ -2240,12 +2238,12 @@ class Grapher:
                     ax.plot(self.runupTimes, self.datapointsSWH[swhIndex], label=stationName)
 
             ax.legend(loc="upper left", fontsize=10)
-            ax.xaxis.set_major_formatter(mdates.DateFormatter('%d'))
+            ax.format_xdata = mdates.DateFormatter('%d')
             ax.tick_params(axis='both', labelsize=12)
             ax.set_ylabel(r"$H_s$ (meters)", fontsize=12)
             ax.set_title(f"{self.titlePrefix}Napatree{transect} SWH", fontsize=14)
 
-        plt.xlabel("Day", fontsize=14)
+#         plt.xlabel("Day", fontsize=14)
         plt.tight_layout()
         plt.savefig(graph_directory + 'Napatree_all_swh.png')
         plt.close()
