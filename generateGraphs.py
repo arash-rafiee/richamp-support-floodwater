@@ -468,9 +468,9 @@ def main():
 
         ADCIRC_WATER_DATA_FILE = water_temp_directory + "adcirc_water_data_file" + ".json"
 
-        (waterStartDateObject, waterEndDateObject) = Fort63Reader(ADCIRC_WATER_FILE=ADCIRC_WATER_FILE, STATIONS_FILE=STATIONS_FILE, ADCIRC_WATER_DATA_FILE=ADCIRC_WATER_DATA_FILE, BACKGROUND_AXIS=backgroundAxis).generateWindDataForStations()
-#         waterStartDateObject = datetime.datetime(year=2025, month=2, day=20, hour=0, tzinfo=datetime.timezone.utc)
-#         waterEndDateObject = datetime.datetime(year=2025, month=2, day=25, hour=0, tzinfo=datetime.timezone.utc)
+#         (waterStartDateObject, waterEndDateObject) = Fort63Reader(ADCIRC_WATER_FILE=ADCIRC_WATER_FILE, STATIONS_FILE=STATIONS_FILE, ADCIRC_WATER_DATA_FILE=ADCIRC_WATER_DATA_FILE, BACKGROUND_AXIS=backgroundAxis).generateWindDataForStations()
+        waterStartDateObject = datetime.datetime(year=2023, month=12, day=15, hour=0, tzinfo=datetime.timezone.utc)
+        waterEndDateObject = datetime.datetime(year=2023, month=12, day=20, hour=0, tzinfo=datetime.timezone.utc)
         dataToGraph["WATER"] = ADCIRC_WATER_DATA_FILE
 #         dataToGraph["DIFF"] = ADCIRC_DIFF_WATER_DATA_FILE
 
@@ -478,14 +478,14 @@ def main():
     if(args.stillwaterExists):
         ADCIRC_STILLWATER_FILE = args.stillwater
         ADCIRC_STILLWATER_DATA_FILE = water_temp_directory + "adcirc_stillwater_data_file" + ".json"
-        (stillwaterStartDateObject, stillwaterEndDateObject) = Fort63Reader(ADCIRC_WATER_FILE=ADCIRC_STILLWATER_FILE, STATIONS_FILE=STATIONS_FILE, ADCIRC_WATER_DATA_FILE=ADCIRC_STILLWATER_DATA_FILE, BACKGROUND_AXIS=backgroundAxis).generateWindDataForStations()
+#         (stillwaterStartDateObject, stillwaterEndDateObject) = Fort63Reader(ADCIRC_WATER_FILE=ADCIRC_STILLWATER_FILE, STATIONS_FILE=STATIONS_FILE, ADCIRC_WATER_DATA_FILE=ADCIRC_STILLWATER_DATA_FILE, BACKGROUND_AXIS=backgroundAxis).generateWindDataForStations()
         dataToGraph["STILLWATER"] = ADCIRC_STILLWATER_DATA_FILE
 
     print("args.tidewaterExists", args.tidewaterExists, flush=True)
     if(args.tidewaterExists):
         ADCIRC_TIDEWATER_FILE = args.tidewater
         ADCIRC_TIDEWATER_DATA_FILE = water_temp_directory + "adcirc_tidewater_data_file" + ".json"
-        (tidewaterStartDateObject, tidewaterEndDateObject) = Fort63Reader(ADCIRC_WATER_FILE=ADCIRC_TIDEWATER_FILE, STATIONS_FILE=STATIONS_FILE, ADCIRC_WATER_DATA_FILE=ADCIRC_TIDEWATER_DATA_FILE, BACKGROUND_AXIS=backgroundAxis).generateWindDataForStations()
+#         (tidewaterStartDateObject, tidewaterEndDateObject) = Fort63Reader(ADCIRC_WATER_FILE=ADCIRC_TIDEWATER_FILE, STATIONS_FILE=STATIONS_FILE, ADCIRC_WATER_DATA_FILE=ADCIRC_TIDEWATER_DATA_FILE, BACKGROUND_AXIS=backgroundAxis).generateWindDataForStations()
         dataToGraph["TIDEWATER"] = ADCIRC_TIDEWATER_DATA_FILE
 
 
@@ -524,22 +524,22 @@ def main():
         WAVE_PWP_DATA_FILE = wave_temp_directory + "wave_pwp_data_file" + ".json"
         WAVE_RAD_DATA_FILE = wave_temp_directory + "wave_rad_data_file" + ".json"
         STATIONS_FILE = args.stations
-        (waveStartDateObject, waveEndDateObject) = WaveReader(
-            WAVE_SWH_FILE=WAVE_SWH_FILE,
-            WAVE_MWD_FILE=WAVE_MWD_FILE,
-            WAVE_MWP_FILE=WAVE_MWP_FILE,
-            WAVE_PWP_FILE=WAVE_PWP_FILE,
-            WAVE_RAD_FILE=WAVE_RAD_FILE,
-            STATIONS_FILE=STATIONS_FILE, 
-            WAVE_SWH_DATA_FILE=WAVE_SWH_DATA_FILE,
-            WAVE_MWD_DATA_FILE=WAVE_MWD_DATA_FILE,
-            WAVE_MWP_DATA_FILE=WAVE_MWP_DATA_FILE,
-            WAVE_PWP_DATA_FILE=WAVE_PWP_DATA_FILE,
-            WAVE_RAD_DATA_FILE=WAVE_RAD_DATA_FILE,
-            BACKGROUND_AXIS=backgroundAxis).generateWaveDataForStations()
+#         (waveStartDateObject, waveEndDateObject) = WaveReader(
+#             WAVE_SWH_FILE=WAVE_SWH_FILE,
+#             WAVE_MWD_FILE=WAVE_MWD_FILE,
+#             WAVE_MWP_FILE=WAVE_MWP_FILE,
+#             WAVE_PWP_FILE=WAVE_PWP_FILE,
+#             WAVE_RAD_FILE=WAVE_RAD_FILE,
+#             STATIONS_FILE=STATIONS_FILE, 
+#             WAVE_SWH_DATA_FILE=WAVE_SWH_DATA_FILE,
+#             WAVE_MWD_DATA_FILE=WAVE_MWD_DATA_FILE,
+#             WAVE_MWP_DATA_FILE=WAVE_MWP_DATA_FILE,
+#             WAVE_PWP_DATA_FILE=WAVE_PWP_DATA_FILE,
+#             WAVE_RAD_DATA_FILE=WAVE_RAD_DATA_FILE,
+#             BACKGROUND_AXIS=backgroundAxis).generateWaveDataForStations()
         
-#         waveStartDateObject = datetime.datetime(year=2024, month=8, day=28, hour=5, tzinfo=datetime.timezone.utc)
-#         waveEndDateObject = datetime.datetime(year=2024, month=12, day=4, hour=5, tzinfo=datetime.timezone.utc)
+        waveStartDateObject = datetime.datetime(year=2023, month=12, day=15, hour=0, tzinfo=datetime.timezone.utc)
+        waveEndDateObject = datetime.datetime(year=2023, month=12, day=20, hour=0, tzinfo=datetime.timezone.utc)
         dataToGraph["SWH"] = WAVE_SWH_DATA_FILE
         dataToGraph["MWD"] = WAVE_MWD_DATA_FILE
         dataToGraph["MWP"] = WAVE_MWP_DATA_FILE

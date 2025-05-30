@@ -13,6 +13,18 @@ import gc
 from geographiclib.geodesic import Geodesic
 
 
+SMALL_SIZE = 14
+MEDIUM_SIZE = 18
+BIGGER_SIZE = 22
+
+plt.rc('font', size=SMALL_SIZE)          # controls default text sizes
+plt.rc('axes', titlesize=SMALL_SIZE)     # fontsize of the axes title
+plt.rc('axes', labelsize=MEDIUM_SIZE)    # fontsize of the x and y labels
+plt.rc('xtick', labelsize=SMALL_SIZE)    # fontsize of the tick labels
+plt.rc('ytick', labelsize=SMALL_SIZE)    # fontsize of the tick labels
+plt.rc('legend', fontsize=SMALL_SIZE)    # legend fontsize
+plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
+
 class Grapher:
     DATE_FORMAT = "%m/%d/%y-%HZ"    
     CONVERT_TO_WATER_DEPTH = False
@@ -1567,10 +1579,10 @@ class Grapher:
                 if(self.obsExists):
                     ax.scatter(self.obsDatapointsTimes[index], self.obsDatapointsSpeeds[index], marker=".", label="Obs")
                 ax.legend(loc="lower right")
-                ax.set_ylim([0, 50])
+#                 ax.set_ylim([0, 50])
                 stationName = self.obsLabels[index]
                 plt.title(stationName + " station wind speed")
-                plt.xlabel("Hours since " + self.windStartDate.strftime(self.DATE_FORMAT))
+#                 plt.xlabel("Hours since " + self.windStartDate.strftime(self.DATE_FORMAT))
                 plt.ylabel("wind speed (m/s)")
                 plt.savefig(graph_directory + stationName + '_wind_speed.png')
                 plt.close()
@@ -1638,21 +1650,19 @@ class Grapher:
                 fig, ax = plt.subplots(figsize=(16,9))
                 ax.plot(self.waterTimes, self.datapointsWaters[index], label=r"$\eta$")
                 if(self.stillwaterExists):
-                    ax.plot(self.stillwaterTimes, self.datapointsStillwaters[index], label=r"$\eta_{still}$")
+                    ax.plot(self.stillwaterTimes, self.datapointsStillwaters[index], label=r"$\eta_{still}$", linestyle="--")
                 if(self.tidewaterExists):
-                    ax.plot(self.tidewaterTimes, self.datapointsTidewaters[index], label=r"$\eta_{tide}$")
+                    ax.plot(self.tidewaterTimes, self.datapointsTidewaters[index], label=r"$\eta_{tide}$", linestyle="--")
                 if(self.tideExists):
                     ax.plot(self.tideDatapointsTimes[index], self.tideDatapointsWaters[index], label="Obs")
-                    ax.plot(self.tideDatapointsPredictionTimes[index], self.tideDatapointsPredictionWaters[index], label="Tides")
+#                     ax.plot(self.tideDatapointsPredictionTimes[index], self.tideDatapointsPredictionWaters[index], label="Tides")
                 ax.legend(loc="upper left")
                 ax.format_xdata = mdates.DateFormatter('%d')
-                plt.xticks(fontsize=12)
-                plt.yticks(fontsize=12)
                 stationName = self.tideLabels[index]
                 maxElevation = str(round(max(self.datapointsWaters[index]), 2))
-                plt.title(self.titlePrefix + stationName + " station water elevation", fontsize=18)
-                plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
-                plt.ylabel("elevation (meters)", fontsize=14)
+                plt.title(self.titlePrefix + stationName + " station water elevation")
+                plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT))
+                plt.ylabel("elevation (meters)")
                 plt.savefig(graph_directory + stationName + '_water.png')
                 plt.close()
                 
@@ -1662,12 +1672,10 @@ class Grapher:
                     ax.plot(self.tideDatapointsTimes[index], self.tideDatapointsWaters[index], label="Station")
                     ax.legend(loc="upper left")
                     ax.format_xdata = mdates.DateFormatter('%d')
-                    plt.xticks(fontsize=12)
-                    plt.yticks(fontsize=12)
                     stationName = self.tideLabels[index]
-                    plt.title(self.titlePrefix + stationName + " station water depth", fontsize=18)
-                    plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
-                    plt.ylabel("depth (meters)", fontsize=14)
+                    plt.title(self.titlePrefix + stationName + " station water depth")
+                    plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT))
+                    plt.ylabel("depth (meters)")
                     plt.savefig(graph_directory + stationName + '_station_water.png')
                     plt.close()
 #         No loop because no timeseries
@@ -1980,21 +1988,19 @@ class Grapher:
 #                 ax.plot(self.runupTimes, self.datapointsSetupHolmanHigh[index], label="Holman High Tide ξ")
 #                 ax.plot(self.runupTimes, self.datapointsSetupHolmanMid[index], label="Holman Mid Tide ξ")
 #                 ax.plot(self.runupTimes, self.datapointsSetupHolmanLow[index], label="Holman Low Tide ξ")
-                ax.plot(self.runupTimes, self.datapointsSetupStockdon[index], label="Stockdon βf√(HₒLₒ)")
-                ax.plot(self.runupTimes, self.datapointsSetupAdcirc[index], label="ADCIRC+SWAN setup+storm surge")
-                ax.plot(self.runupTimes, self.datapointsSetupStockdonLow[index], label="ADCIRC+SWAN setup")
-                ax.plot(self.runupTimes, self.datapointsRunupHolmanHigh[index], label="ADCIRC+SWAN storm surge")
+                ax.plot(self.runupTimes, self.datapointsSetupStockdon[index], label=r"Stockdon $\langle\eta\rangle$")
+#                 ax.plot(self.runupTimes, self.datapointsSetupAdcirc[index], label="ADCIRC+SWAN setup+storm surge")
+                ax.plot(self.runupTimes, self.datapointsSetupStockdonLow[index], label=r"SWAN $\eta_{setup}$")
+#                 ax.plot(self.runupTimes, self.datapointsRunupHolmanHigh[index], label="ADCIRC+SWAN storm surge")
 
 
                 ax.legend(loc="upper left")
                 ax.format_xdata = mdates.DateFormatter('%d')
-                plt.xticks(fontsize=12)
-                plt.yticks(fontsize=12)
                 stationName = self.runupLabels[index]
-                maxSetup = str(round(max(self.datapointsSetupAdcirc[index]), 2)) + ", " + str(round(max(self.datapointsSetupStockdon[index]), 2))
-                plt.title(self.titlePrefix + stationName + " station setup max (adcirc, stockdon): " + maxSetup, fontsize=18)
+                maxSetup = str(round(max(self.datapointsSetupStockdonLow[index]), 2)) + ", " + str(round(max(self.datapointsSetupStockdon[index]), 2))
+                plt.title(self.titlePrefix + stationName + " station setup max (SWAN, Stockdon): " + maxSetup)
 #                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
-                plt.ylabel("setup (meters)", fontsize=14)
+                plt.ylabel("setup (meters)")
                 plt.savefig(graph_directory + stationName + '_setup.png')
                 plt.close()
                 
@@ -2056,56 +2062,54 @@ class Grapher:
             
                 
 #                 Graph water_swash
-#                 if(len(self.datapointsWaters) > 0):
-#                     # Assuming self.findMatchingIndices is defined as per your earlier request
-#                     datapointsWaterRunupIndices = self.findMatchingIndices(self.tideLabels, self.runupLabels[index][0:9])
-# #                     print("Finding Water stations corresponding to runup station")
-# #                     print("Searching for water labels with string: ", self.runupLabels[index][0:9])
-# #                     print("Found indices count:", len(datapointsWaterRunupIndices))
-#                     for datapointsWaterRunupIndex in datapointsWaterRunupIndices:
-#                         
-#                         fig, ax = plt.subplots(figsize=(16, 9))
-#                         
-#                         # Plot the water elevation time series
-#                         ax.plot(self.waterTimes, self.datapointsWaters[datapointsWaterRunupIndex], label="SWL + setup", color='blue', linewidth=2)
-#                         
-#                         # Calculate total swash: sqrt(S_incident^2 + S_infragravity^2)
-#                         total_swash = np.sqrt(np.array(self.datapointsSwashStockdonIncident[index])**2 + 
-#                                               np.array(self.datapointsSwashStockdonInfragravity[index])**2)
-#                         
-#                         # Define the upper and lower bounds for the swash area
-#                         lower_bound = self.datapointsWaters[datapointsWaterRunupIndex] - 0.5 * total_swash
-#                         upper_bound = self.datapointsWaters[datapointsWaterRunupIndex] + 0.5 * total_swash
-#                         
-#                         # Fill the area between upper and lower bounds to highlight swash extent
-#                         ax.fill_between(self.waterTimes, lower_bound, upper_bound, color='lightblue', alpha=0.4, label="Swash Extent")
-#                         
-#                         # Add dotted lines for maximum and minimum extents
-#                         ax.plot(self.waterTimes, upper_bound, '--', color='red', label="+S/2", linewidth=1.5)
-#                         ax.plot(self.waterTimes, lower_bound, '--', color='green', label="-S/2", linewidth=1.5)
-#                         
-#                         # Calculate the maximum elevation including the swash
-#                         max_water_elevation = max(self.datapointsWaters[datapointsWaterRunupIndex])
-#                         max_swash_upper = max(upper_bound)
-#                         maxElevation = str(round(max_water_elevation, 2)) + ", " + str(round(max_swash_upper, 2))
-#                         
-#                         # Customize the plot
-#                         ax.legend(loc="upper left")
-#                         ax.format_xdata = mdates.DateFormatter('%d')
-#                         plt.xticks(fontsize=12)
-#                         plt.yticks(fontsize=12)
-#                         stationName = self.tideLabels[datapointsWaterRunupIndex]
-# #                         print("stationName of corresponding water station: ", stationName)
-#                         plt.title(self.titlePrefix + stationName + " station elevation max (water, swash): " + maxElevation, fontsize=18)
-#                         plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
-#                         plt.ylabel("elevation (meters)", fontsize=14)
-#                         
-#                         # Adjust layout to prevent label cutoff
-#                         plt.tight_layout()
-#                         
-#                         # Save and close the plot
-#                         plt.savefig(graph_directory + stationName + '_water_swash.png', dpi=300)
-#                         plt.close()
+                if(len(self.datapointsWaters) > 0):
+                    # Assuming self.findMatchingIndices is defined as per your earlier request
+                    datapointsWaterRunupIndices = self.findMatchingIndices(self.tideLabels, self.runupLabels[index][0:9])
+#                     print("Finding Water stations corresponding to runup station")
+#                     print("Searching for water labels with string: ", self.runupLabels[index][0:9])
+#                     print("Found indices count:", len(datapointsWaterRunupIndices))
+                    for datapointsWaterRunupIndex in datapointsWaterRunupIndices:
+                        
+                        fig, ax = plt.subplots(figsize=(16, 9))
+                        
+                        # Plot the water elevation time series
+                        ax.plot(self.waterTimes, self.datapointsWaters[datapointsWaterRunupIndex], label=r"$\eta$", color='blue', linewidth=2)
+                        
+                        # Calculate total swash: sqrt(S_incident^2 + S_infragravity^2)
+                        total_swash = np.sqrt(np.array(self.datapointsSwashStockdonIncident[index])**2 + 
+                                              np.array(self.datapointsSwashStockdonInfragravity[index])**2)
+                        
+                        # Define the upper and lower bounds for the swash area
+                        lower_bound = self.datapointsWaters[datapointsWaterRunupIndex] - 0.5 * total_swash
+                        upper_bound = self.datapointsWaters[datapointsWaterRunupIndex] + 0.5 * total_swash
+                        
+                        # Fill the area between upper and lower bounds to highlight swash extent
+                        ax.fill_between(self.waterTimes, lower_bound, upper_bound, color='lightblue', alpha=0.4, label="Swash Extent")
+                        
+                        # Add dotted lines for maximum and minimum extents
+                        ax.plot(self.waterTimes, upper_bound, '--', color='red', label="+S/2", linewidth=1.5)
+                        ax.plot(self.waterTimes, lower_bound, '--', color='green', label="-S/2", linewidth=1.5)
+                        
+                        # Calculate the maximum elevation including the swash
+                        max_water_elevation = max(self.datapointsWaters[datapointsWaterRunupIndex])
+                        max_swash_upper = max(upper_bound)
+                        maxElevation = str(round(max_water_elevation, 2)) + ", " + str(round(max_swash_upper, 2))
+                        
+                        # Customize the plot
+                        ax.legend(loc="upper left")
+                        ax.format_xdata = mdates.DateFormatter('%d')
+                        stationName = self.tideLabels[datapointsWaterRunupIndex]
+#                         print("stationName of corresponding water station: ", stationName)
+                        plt.title(self.titlePrefix + stationName + " station elevation max (water, swash): " + maxElevation)
+                        plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT))
+                        plt.ylabel("elevation (meters)")
+                        
+                        # Adjust layout to prevent label cutoff
+                        plt.tight_layout()
+                        
+                        # Save and close the plot
+                        plt.savefig(graph_directory + stationName + '_water_swash.png', dpi=300)
+                        plt.close()
            
        
 #               Graph wavelength
@@ -2211,7 +2215,7 @@ class Grapher:
                     ax.plot(self.runupTimes, self.datapointsRunupHolmanLow[index], label=stationName)
 
             ax.legend(loc="upper left", fontsize=10)
-            ax.xaxis.set_major_formatter(mdates.DateFormatter('%d'))
+            ax.format_xdata = mdates.DateFormatter('%d')
             ax.tick_params(axis='both', labelsize=12)
             ax.set_ylabel(r"$H_0$ (meters)", fontsize=12)
             ax.set_title(f"{self.titlePrefix}Napatree{transect} Deepwater SWH", fontsize=14)
