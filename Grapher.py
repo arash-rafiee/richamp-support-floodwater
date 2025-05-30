@@ -2061,7 +2061,7 @@ class Grapher:
             
                 
 #                 Graph water_swash
-                if(len(self.datapointsWaters) > 0):
+                if(len(self.datapointsWaters) > 0 and False):
                     # Assuming self.findMatchingIndices is defined as per your earlier request
                     datapointsWaterRunupIndices = self.findMatchingIndices(self.tideLabels, self.runupLabels[index][0:9])
 #                     print("Finding Water stations corresponding to runup station")
@@ -2184,6 +2184,7 @@ class Grapher:
             for index in range(numberOfRunupDatapoints):
                 stationName = self.runupLabels[index]
                 if str(transect) in stationName[0:stationName.index(" ")]:
+                    print("found label", self.runupLabels[index])
                     dune_heights = self.datapointsDuneHeights[index]
                     ax.plot(self.runupTimes, self.datapointsRunupHolmanMid[index], label=stationName)
                     unique_heights.update(dune_heights)
