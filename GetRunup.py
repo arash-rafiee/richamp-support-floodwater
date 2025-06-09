@@ -656,7 +656,7 @@ class GetRunup:
                 
 #                 Define runupHolmanMid as 1.1(S/2) + eta
 #                 runupHolmanMid = adcircRunup
-                runupHolmanMid = stockdonRunup
+#                 runupHolmanMid = stockdonRunup
                 
 #                 runupValues.append(stockdonRunup)
                 runupValuesHolmanHigh.append(runupHolmanHigh)
