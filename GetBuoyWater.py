@@ -191,7 +191,9 @@ class GetBuoyWater:
                 waterDict[key] = {}
                 waterDict[key]["times"] = unixTimes
                 waterDict[key]["water"] = waters
-#                 waterDict[key]["prediction_times"] = unixTimes  # Same timestamps for predictions
+                waterDict[key]["prediction_times"] = []  # Same timestamps for predictions
+                waterDict[key]["prediction_water"] = []
+
             elif "USGS" in stationSource:
                 print("Pulling Data from USGS Station")
             
@@ -253,8 +255,8 @@ class GetBuoyWater:
                     waterDict[key] = {}
                     waterDict[key]["times"] = unixTimes
                     waterDict[key]["water"] = waters
-#                     waterDict[key]["prediction_times"] = []  # USGS does not provide predictions in this data
-#                     waterDict[key]["prediction_water"] = []
+                    waterDict[key]["prediction_times"] = []  # USGS does not provide predictions in this data
+                    waterDict[key]["prediction_water"] = []
             
                 except (HTTPError, FileNotFoundError, pd.errors.EmptyDataError, ValueError) as e:
                     print(f"Error processing USGS data for URL {url}: {str(e)}")
