@@ -253,8 +253,8 @@ class GetBuoyWater:
                     waterDict[key] = {}
                     waterDict[key]["times"] = unixTimes
                     waterDict[key]["water"] = waters
-                    waterDict[key]["prediction_times"] = []  # USGS does not provide predictions in this data
-                    waterDict[key]["prediction_water"] = []
+#                     waterDict[key]["prediction_times"] = []  # USGS does not provide predictions in this data
+#                     waterDict[key]["prediction_water"] = []
             
                 except (HTTPError, FileNotFoundError, pd.errors.EmptyDataError, ValueError) as e:
                     print(f"Error processing USGS data for URL {url}: {str(e)}")
