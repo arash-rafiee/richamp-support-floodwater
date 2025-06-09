@@ -192,8 +192,53 @@ class GetBuoyWater:
                 waterDict[key]["times"] = unixTimes
                 waterDict[key]["water"] = waters
                 waterDict[key]["prediction_times"] = unixTimes  # Same timestamps for predictions
-                waterDict[key]["prediction_water"] = prediction_waters
-                
+            elif "USGS" in stationSource:
+                print("Pulling Data from USGS Station")
+            
+                # Step 1: Construct the USGS URL dynamically
+                usgs_start_date = startDateObject.strftime("%Y-%m-%dT%H:%M:%S.000-05:00")
+                usgs_end_date = endDateObject.strftime("%Y-%m-%dT%H:%M:%S.999-05:00")
+                url = f"https://nwis.waterservices.usgs.gov/nwis/iv/?sites={stationId}&agencyCd=USGS&startDT={usgs_start_date}&endDT={usgs_end_date}&parameterCd=00065&format=rdb"
+            
+                # Step 2: Download and load the data
+                filename = temp_directory + stationDict["id"] + "_usgs.txt"
+                try:
+                    safe_urlretrieve(url, filename)
+                    # Read the tab-delimited USGS data, skipping header lines (data starts after lines beginning with '#')
+                    data = pd.read_csv(filename, sep="\t", comment="#", parse_dates=["datetime"])
+            
+                    # Step 3: Convert datetime from EST to GMT
+                    data["datetime"] = data["datetime"].dt.tz_localize("EST").dt.tz_convert("GMT")
+            
+                    # Step 4: Filter data based on the time range
+                    filtered_data = data[(data["datetime"] >= startDateObject) & (data["datetime"] <= endDateObject)]
+            
+                    # Step 5: Process water levels (convert to NAVD88 and meters)
+                    if not filtered_data.empty:
+                        # Extract the gage height column (e.g., 67433_00065)
+                        water_column = [col for col in filtered_data.columns if col.endswith("_00065")][0]
+                        # Convert to NAVD88 by subtracting 0.15 ft
+                        waters_ft_navd88 = filtered_data[water_column].astype(float) - 0.15
+                        # Convert feet to meters (1 ft = 0.3048 meters)
+                        waters_m = waters_ft_navd88 * 0.3048
+                        # Convert datetime to Unix timestamps
+                        unixTimes = (filtered_data["datetime"].astype("int64") // 10**9).to_numpy()
+                        waters = waters_m.to_numpy()
+                    else:
+                        # Handle empty filtered data
+                        unixTimes = np.array([], dtype=np.int64)
+                        waters = np.array([], dtype=np.float64)
+            
+                    # Step 6: Populate waterDict
+                    waterDict[key] = {}
+                    waterDict[key]["times"] = unixTimes
+                    waterDict[key]["water"] = waters
+                    waterDict[key]["prediction_times"] = []  # USGS does not provide predictions in this data
+                    waterDict[key]["prediction_water"] = []
+            
+                except (HTTPError, FileNotFoundError, pd.errors.EmptyDataError):
+                    print(f"Bad USGS URL or no data: {url}")
+                    badStations.append(stationDict)
             else:
     # https://opendap.co-ops.nos.noaa.gov/erddap/tabledap/IOOS_Hourly_Height_Verified_Water_Level.htmlTable?STATION_ID%2CDATUM%2CBEGIN_DATE%2CEND_DATE%2Ctime%2CWL_VALUE%2CSIGMA&STATION_ID=%228452660%22&DATUM%3E=%22MSL%22&BEGIN_DATE%3E=%222024-07-29%22&END_DATE%3E=%222024-08-10%22
                 url = "https://opendap.co-ops.nos.noaa.gov/erddap/tabledap/IOOS_Hourly_Height_Verified_Water_Level.mat?STATION_ID%2CDATUM%2CBEGIN_DATE%2CEND_DATE%2Ctime%2CWL_VALUE%2CSIGMA&STATION_ID=%22"  + stationId + "%22&DATUM%3E=%22MSL%22&BEGIN_DATE%3E=%22" + startDateFormat + "%22&END_DATE%3E=%22" + endDateFormat + "%22"

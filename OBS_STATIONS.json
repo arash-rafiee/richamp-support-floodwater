@@ -304,6 +304,14 @@
       "longitude": "-72.095000",
       "altitude": "2\n"
     },
+    "104": {
+     "id": "411838071513000",
+      "source": "USGS",
+      "name": "Watch Hill Cove, Westerly, RI",
+      "latitude": "41.31055556",
+      "longitude": "-71.8583333",
+      "altitude": "0.15\n"
+    },
     "57": {
       "id": "0",
       "source": "NOS",
