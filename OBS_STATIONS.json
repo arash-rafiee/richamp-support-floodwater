@@ -254,6 +254,13 @@
       "name": "New London, CT",
       "latitude": "41.372",
       "longitude": "-72.096"
+    },
+    "14": {
+      "id": "NTKM3",
+      "source": "NDBC",
+      "name": "Nantucket Island, MA",
+      "latitude": "41.285",
+      "longitude": "-70.096"
     }
   },
   "NOS": {
@@ -291,7 +298,7 @@
     },
     "103": {
      "id": "8461490",
-      "source": "NOS",
+      "source": "CO-OPS_8461490_met.csv",
       "name": "New London, CT",
       "latitude": "41.371667",
       "longitude": "-72.095000",
