@@ -60,6 +60,10 @@ function subset_fort63_richamp(indir, outdir)
     end
     %if ~exist(strcat(outdir,outfile),'file')
     %    % create output file if it doesn't exist 
+    
+    if exist(outfile, 'file')
+        delete(outfile);
+    end
     ncwriteschema(strcat(outdir,outfile),finfo);
     %end   
     ncwrite(strcat(outdir,outfile),'time',time);
@@ -70,3 +74,5 @@ function subset_fort63_richamp(indir, outdir)
     ncwrite(strcat(outdir,outfile),'zeta',zeta);
     ncwrite(strcat(outdir,outfile),'time_unix',time_unix);
 end
+
+

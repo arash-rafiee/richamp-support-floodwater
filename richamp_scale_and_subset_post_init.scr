@@ -188,6 +188,7 @@ if [[ "$SCENARIO_WIND" != "" ]]; then
     cp $RICHAMP_INDIR/fort.63.nc $POSTHOME/RICHAMP_fort63.nc
     matlab -nodesktop -nodisplay -nosplash -r "addpath $postprocessdir, try, plot_max_inundation $indir $outdir $nc_rough $track $forcing, catch me, fprintf('%s / %s\n',me.identifier,me.message), end, exit"
 else
+    echo matlab -nodesktop -nodisplay -nosplash -r "addpath $postprocessdir, try, subset_fort63_richamp $indir $outdir, plot_max_inundation $indir $outdir $nc_rough $track $forcing, catch me, fprintf('%s / %s\n',me.identifier,me.message), end, exit"
     matlab -nodesktop -nodisplay -nosplash -r "addpath $postprocessdir, try, subset_fort63_richamp $indir $outdir, plot_max_inundation $indir $outdir $nc_rough $track $forcing, catch me, fprintf('%s / %s\n',me.identifier,me.message), end, exit"
 fi
 module purge
