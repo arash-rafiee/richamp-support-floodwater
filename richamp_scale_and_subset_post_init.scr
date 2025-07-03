@@ -10,7 +10,7 @@
 #SBATCH -t 08:00:00
 ##SBATCH --reservation=richamp
 ##SBATCH --partition=uri-richamp
-#SBATCH --mail-user=pranav.sai@uri.edu
+#SBATCH --mail-user=arash_rafiee@uri.edu
 #SBATCH --mail-type=END
 
 # METGET_API_KEY and METGET_ENDPOINT environment variables must be set in order for
