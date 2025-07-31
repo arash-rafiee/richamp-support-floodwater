@@ -1,3 +1,9 @@
 #python generateGraphs.py --stations OBS_STATIONS.json --obsExists true --waterExists true --water /work/pi_reza_hashemi_uri_edu/01_RI_CHAMP_Model/01_RICHAMP_Backup/ricv1_ofcl_without/archive/advisory_017/adcirc/forecast/forecast_ofcl/fort.63.nc --tempDir /scratch3/workspace/arash_rafiee_uri_edu-richamp/post_temp/ --backgroundChoice RHODE_ISLAND_CHAMP
-python generateGraphs.py --stations OBS_STATIONS.json --meshExists true --mesh /work/pi_reza_hashemi_uri_edu/01_RI_CHAMP_Model/01_RICHAMP_Backup/ricv1_ofcl_without/archive/advisory_017/adcirc/forecast/forecast_ofcl/fort.14 --tempDir /scratch3/workspace/arash_rafiee_uri_edu-richamp/post_temp/ --backgroundChoice NORTH_PROVIDENCE
- 
+#python generateGraphs.py --stations OBS_STATIONS.json --meshExists true --mesh /scratch3/workspace/arash_rafiee_uri_edu-richamp/ecflow_output/ricv1_ofcl_veer_Henri_openBarrier/archive/advisory_017/adcirc/forecast/forecast_ofcl/fort.14 --tempDir /scratch3/workspace/arash_rafiee_uri_edu-richamp/post_temp/ --backgroundChoice NORTH_PROVIDENCE
+python generateGraphs.py \
+  --stations OBS_STATIONS.json \
+  --meshExists true \
+  --mesh /scratch3/workspace/arash_rafiee_uri_edu-richamp/ecflow_output/ricv1_ofcl_veer_Henri_openBarrier/archive/advisory_017/adcirc/forecast/forecast_ofcl/fort.14 \
+  --tempDir /scratch3/workspace/arash_rafiee_uri_edu-richamp/post_temp/ \
+  --backgroundChoice NORTH_PROVIDENCE
+
