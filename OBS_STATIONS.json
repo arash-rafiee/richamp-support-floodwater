@@ -282,7 +282,7 @@
     },
     "101": {
       "id": "8454049",
-      "source": "NOS",
+      "source": "CO-OPS_8454049_met.csv",
       "name": "Quonset Pt, RI",
       "latitude": "41.58667",
       "longitude": "-71.40500",
@@ -298,19 +298,11 @@
     },
     "103": {
      "id": "8461490",
-      "source": "CO-OPS_8461490_met.csv",
+      "source": "NOS",
       "name": "New London, CT",
       "latitude": "41.371667",
       "longitude": "-72.095000",
       "altitude": "2\n"
-    },
-    "104": {
-     "id": "411838071513000",
-      "source": "USGS",
-      "name": "Watch Hill Cove, Westerly, RI",
-      "latitude": "41.31055556",
-      "longitude": "-71.8583333",
-      "altitude": "0.15\n"
     },
     "57": {
       "id": "0",
