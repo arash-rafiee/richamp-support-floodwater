@@ -1191,6 +1191,52 @@ class GFSWindReader:
         return (datetime.fromtimestamp(timesWind[0], timezone.utc), datetime.fromtimestamp(timesWind[-1], timezone.utc))
             
 class Fort74Reader:
+    """
+    Fort74Reader is a class for processing ADCIRC wind data from 'fort.74.nc'
+    and generating interpolated wind time series at observation stations.
+
+    It performs the following:
+    - Loads wind vector components (u and v) from the ADCIRC NetCDF file
+    - Identifies the closest ADCIRC mesh node to each observation station
+    - Interpolates wind data at station locations using nearby mesh values
+    - Saves the interpolated station wind time series as a JSON file
+
+    Parameters
+    ----------
+    ADCIRC_WIND_FILE : str
+        Path to the ADCIRC wind NetCDF file ('fort.74.nc').
+
+    STATIONS_FILE : str
+        JSON file containing the list and coordinates of observation stations.
+
+    ADCIRC_WIND_DATA_FILE : str
+        Path to the output JSON file where the interpolated wind data at stations will be saved.
+
+    BACKGROUND_AXIS : list
+        Optional. A list specifying background map extent (e.g., [xmin, xmax, ymin, ymax]).
+        Used for spatial plotting or visualization.
+
+    Attributes
+    ----------
+    reader : Reader
+        An internal Reader object used to load data and handle interpolation.
+
+    STATION_TO_NODE_DISTANCES_FILE : str
+        Path to a file storing station-to-mesh node mappings and distances.
+
+    ADCIRC_NODES_FILE : str
+        Path to a file storing ADCIRC mesh node coordinates.
+
+    ADCIRC_NODES_WIND_DATA_FILE : str
+        Output file for saving wind data at mesh nodes (intermediate file).
+
+    Methods
+    -------
+    generateWindDataForStations()
+        Reads and interpolates wind data at station locations,
+        then saves the output as a JSON file and returns the time range.
+    """
+    
     def __init__(self, ADCIRC_WIND_FILE="", STATIONS_FILE="", ADCIRC_WIND_DATA_FILE="", BACKGROUND_AXIS=[]):
         temp_directory = ADCIRC_WIND_DATA_FILE[0:ADCIRC_WIND_DATA_FILE.rfind("/") + 1]
         self.ADCIRC_WIND_FILE = ADCIRC_WIND_FILE
