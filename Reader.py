@@ -963,7 +963,7 @@ class Reader:
         data = {}
 #         if(dataType == "water" or dataType == "swh" or dataType == "gfs" or dataType == "rain"):
         if(True):
-            if(dataType == "water" or dataType == "swh" or dataType == "gfs" or dataType == "rain"):
+            if dataType in ["swh"]:
 
                 data = self.getMap(dataset, dataType, times, spaceSparseness, timeSparseness, data)
                 
