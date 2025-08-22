@@ -11,6 +11,9 @@ import datetime
 import argparse
 import os
 
+NARRAGANSETT_MOUTH_MAP = "NarragansettMouth.png"
+NARRAGANSETT_MOUTH_OUTLINE_MAP = "NarragansettMouthOutline.png"
+NARRAGANSETT_MOUTH_AXIS = [-71.52799682617189, -71.32200317382814, 41.50218339933836, 41.34772474532908]
 SOUTH_NEW_ENGLAND_MAP = "subsetFlipped.png"
 SOUTH_NEW_ENGLAND_AXIS = [-71.905117442267496, -71.0339945492675, 42.200717972845119, 41.028319358056874]
 NORTH_ATLANTIC_MAP = "NorthAtlanticBasin3.png"
@@ -431,6 +434,12 @@ def main():
     elif(backgroundChoice == "WINNAPAUG_OUTLINE"):
         backgroundMap = WINNAPAUG_OUTLINE_MAP
         backgroundAxis = WINNAPAUG_AXIS
+    elif(backgroundChoice == "NARRAGANSETT_MOUTH"):
+        backgroundMap = NARRAGANSETT_MOUTH_MAP
+        backgroundAxis = NARRAGANSETT_MOUTH_AXIS
+    elif(backgroundChoice == "NARRAGANSETT_MOUTH_OUTLINE"):
+        backgroundMap = NARRAGANSETT_MOUTH_OUTLINE_MAP
+        backgroundAxis = NARRAGANSETT_MOUTH_AXIS
         
     print("args.adcircExists", args.adcircExists, flush=True)
     if(args.adcircExists):
