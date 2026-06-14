@@ -949,24 +949,24 @@ class Reader:
                 data[stationKey]["directions"] = valuesY
             else:
                 data[stationKey][dataType] = values
-    
+
         with open(DATA_FILE, "w") as outfile:
             json.dump(data, outfile)
-        
+
     def generateDataFilesWithInterpolation(self, dataset, dataType, times, spaceSparseness, timeSparseness, DATA_FILE):
-        
+
         with open(self.NODES_FILE) as outfile:
             nodes = json.load(outfile)
         with open(self.STATIONS_FILE) as stations_file:
             stationsDict = json.load(stations_file)
-            
+
         data = {}
 #         if(dataType == "water" or dataType == "swh" or dataType == "gfs" or dataType == "rain"):
-        if(True):
-            if dataType in ["swh"]:
+        if(False):
+#            if(dataType == "water" or dataType == "swh" or dataType == "gfs" or dataType == "rain"):
 
-                data = self.getMap(dataset, dataType, times, spaceSparseness, timeSparseness, data)
-                
+            data = self.getMap(dataset, dataType, times, spaceSparseness, timeSparseness, data)
+
         print("Interpolating", dataType, flush=True)
         nodesIndex = []
         points = []
