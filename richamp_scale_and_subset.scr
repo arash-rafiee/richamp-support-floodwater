@@ -57,20 +57,7 @@ output_dir=$RICHAMP_OUTDIR
 cp $water_output $max_inund_plot $output_dir
 cp -r graphs $output_dir
 
-track="center"
-RECIPIENTS="rafiee.ad@gmail.com"  # replace with actual email addresses
-
-sendmail $RECIPIENTS << EOF
-Subject: RICHAMP files ready: ${track} track
-To: $RECIPIENTS
-From: arash_rafiee@uri.edu
-
-RICHAMP post-processing is complete and files are ready for download.
-
-Track:      ${track}
-Directory:  $RICHAMP_OUTDIR
-EOF
-
+scontrol update JobId=$SLURM_JOBID Comment="Track: ${track} | Files ready at: ${RICHAMP_OUTDIR}"
 
 # wait for the post_init script to finish; this allows that job to safely run alongside the forecast
 job_string=$(cat $postinitScript.start)
