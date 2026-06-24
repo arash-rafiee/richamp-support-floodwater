@@ -57,6 +57,22 @@ output_dir=$RICHAMP_OUTDIR
 cp $water_output $max_inund_plot $output_dir
 cp -r graphs $output_dir
 
+mail -s "RICHAMP run complete: ${forcing} / ${ENSTORM}" arash_rafiee@uri.edu << EOF
+The RICHAMP post-processing run has completed and output has been copied to:
+  $RICHAMP_OUTDIR
+
+Details:
+  Forcing:    $forcing
+  Storm:      $ENSTORM
+  Job ID:     $SLURM_JOBID
+  Finished:   $(date)
+
+Files copied:
+  $RICHAMP_OUTDIR/$water_output
+  $RICHAMP_OUTDIR/$max_inund_plot
+  $RICHAMP_OUTDIR/graphs/
+EOF
+
 # wait for the post_init script to finish; this allows that job to safely run alongside the forecast
 job_string=$(cat $postinitScript.start)
 search=jobid
