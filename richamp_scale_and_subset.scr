@@ -10,7 +10,7 @@
 #SBATCH -t 08:00:00
 ##SBATCH --reservation=richamp
 ##SBATCH --partition=uri-richamp
-#SBATCH --mail-user=pranav.sai@uri.edu
+#SBATCH --mail-user=arash_rafiee@uri.edu
 #SBATCH --mail-type=END
 
 targetScript="richamp_scale_and_subset.scr"
@@ -57,6 +57,7 @@ output_dir=$RICHAMP_OUTDIR
 cp $water_output $max_inund_plot $output_dir
 cp -r graphs $output_dir
 
+track="center"
 scontrol update JobId=$SLURM_JOBID Comment="Track: ${track} | Files ready at: ${RICHAMP_OUTDIR}"
 
 # wait for the post_init script to finish; this allows that job to safely run alongside the forecast
