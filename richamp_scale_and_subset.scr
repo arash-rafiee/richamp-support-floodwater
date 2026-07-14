@@ -58,7 +58,7 @@ cp $water_output $max_inund_plot $output_dir
 cp -r graphs $output_dir
 
 track="center"
-scontrol update JobId=$SLURM_JOBID Comment="Track: ${track} | Files ready at: ${RICHAMP_OUTDIR}"
+scontrol update JobId=$SLURM_JOBID Comment="Track: ${track}; Files ready at: ${RICHAMP_OUTDIR}"
 
 # wait for the post_init script to finish; this allows that job to safely run alongside the forecast
 job_string=$(cat $postinitScript.start)

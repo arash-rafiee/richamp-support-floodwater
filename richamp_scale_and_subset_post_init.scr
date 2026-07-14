@@ -214,7 +214,7 @@ cp -r properties $output_dir
 cp -r graphs $output_dir
 #cp $indir/*.trk $output_dir
 
-track="center"
+#track="center"
 scontrol update JobId=$SLURM_JOBID Comment="Track: ${track}, Files ready at: ${RICHAMP_OUTDIR}"
 
 echo "\"finish\" : \"[$(date +'%Y-%h-%d-T%H:%M:%S%z')]\", \"jobid\" : \"${SLURM_JOBID}\"" > $targetScript.finish # <-OVERWRITE

@@ -1,0 +1,29 @@
+#!/bin/bash
+#SBATCH --job-name=test_email_after_upgrade
+#SBATCH --output=test_email_after_upgrade_%j.out
+#SBATCH --error=test_email_after_upgrade_%j.err
+#SBATCH -p uri-cpu
+#SBATCH -c 1
+#SBATCH --mem=1G
+#SBATCH -t 00:01:00
+#SBATCH --mail-user=arash_rafiee@uri.edu
+#SBATCH --mail-type=BEGIN,END,FAIL
+
+set -euo pipefail
+
+track="center"
+RICHAMP_OUTDIR="/scratch4/workspace/arash_rafiee_uri_edu-richamp/RICHAMP/center"
+
+echo "Job ID: ${SLURM_JOB_ID}"
+echo "Started at: $(date)"
+echo "Running on: $(hostname)"
+
+scontrol update JobId="${SLURM_JOB_ID}" Comment="Track: ${track}; Files ready at: ${RICHAMP_OUTDIR}"
+
+echo "SLURM comment added:"
+echo "Track: ${track} | Files ready at: ${RICHAMP_OUTDIR}"
+
+sleep 30
+
+echo "Finished at: $(date)"
+
