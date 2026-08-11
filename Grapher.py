@@ -1656,6 +1656,7 @@ class Grapher:
                     ax.plot(self.tideDatapointsTimes[index], self.tideDatapointsWaters[index], label="Obs")
 #                     ax.plot(self.tideDatapointsPredictionTimes[index], self.tideDatapointsPredictionWaters[index], label="Tides")
                 ax.legend(loc="upper left")
+                ax.grid(True, alpha=0.3)
                 ax.format_xdata = mdates.DateFormatter('%d')
                 stationName = self.tideLabels[index]
                 maxElevation = str(round(max(self.datapointsWaters[index]), 2))
