@@ -1651,30 +1651,18 @@ class Grapher:
                     ax.plot(self.stillwaterTimes, self.datapointsStillwaters[index], label=r"$\eta_{still}$", linestyle="--")
                 if(self.tidewaterExists):
                     ax.plot(self.tidewaterTimes, self.datapointsTidewaters[index], label=r"$\eta_{tide}$", linestyle="--")
-                ax.axhline(0, color="gray", linestyle=":", linewidth=1, label="MSL", zorder=1)
-                ax.plot(self.waterTimes, self.datapointsWaters[index], label=r"$\eta$", linewidth=2, color="tab:blue", zorder=2)
+                ax.plot(self.waterTimes, self.datapointsWaters[index], label=r"$\eta$")
                 if(self.tideExists):
                     ax.plot(self.tideDatapointsTimes[index], self.tideDatapointsWaters[index], label="Obs")
 #                     ax.plot(self.tideDatapointsPredictionTimes[index], self.tideDatapointsPredictionWaters[index], label="Tides")
-                ax.grid(True, alpha=0.3)
-                stationName = self.tideLabels[index]
-                maxElevationIndex = np.argmax(self.datapointsWaters[index])
-                maxElevationValue = self.datapointsWaters[index][maxElevationIndex]
-                maxElevationTime = self.waterTimes[maxElevationIndex]
-                maxElevation = str(round(maxElevationValue, 2))
-                ax.annotate(
-                    "Max: " + maxElevation + " m",
-                    xy=(maxElevationTime, maxElevationValue),
-                    xytext=(10, 10),
-                    textcoords="offset points",
-                    arrowprops=dict(arrowstyle="->", color="black"),
-                )
                 ax.legend(loc="upper left")
                 ax.format_xdata = mdates.DateFormatter('%d')
+                stationName = self.tideLabels[index]
+                maxElevation = str(round(max(self.datapointsWaters[index]), 2))
                 plt.title(self.titlePrefix + stationName + " station water elevation", fontsize=24)
-                plt.xlabel("Date (UTC)")
+#                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT))
                 plt.ylabel("elevation (meters)")
-                plt.savefig(graph_directory + stationName + '_water.png', bbox_inches='tight')
+                plt.savefig(graph_directory + stationName + '_water.png')
                 plt.close()
                 
 
