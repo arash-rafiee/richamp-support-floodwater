@@ -1662,7 +1662,7 @@ class Grapher:
                 plt.title(self.titlePrefix + stationName + " station water elevation", fontsize=24)
 #                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT))
                 plt.ylabel("elevation (meters)")
-                plt.savefig(graph_directory + stationName + '_water.png')
+                plt.savefig(graph_directory + stationName + '_water.png', bbox_inches='tight')
                 plt.close()
                 
 
