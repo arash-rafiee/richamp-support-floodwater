@@ -44,7 +44,66 @@ def safe_urlretrieve(url, filename, timeout=10, max_retries=3):
             signal.alarm(0)  # Cancel the alarm in case it wasn't cancelled yet
 
     return False  # If all retries fail
-        
+
+
+def download_coops_water_level_csv(stationId, startDateObject, endDateObject, file_path, chunk_days=30):
+    """Downloads observed + predicted water levels from the NOAA CO-OPS Data API
+    and writes them to file_path using the Date,Time (GMT),Predicted (m),Preliminary (m),Verified (m)
+    format that the .csv parsing branch below expects."""
+    base_url = "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter"
+
+    chunkStart = startDateObject
+    predictionFrames = []
+    waterLevelFrames = []
+    while chunkStart <= endDateObject:
+        chunkEnd = min(chunkStart + timedelta(days=chunk_days), endDateObject)
+        begin = chunkStart.strftime("%Y%m%d")
+        end = chunkEnd.strftime("%Y%m%d")
+        common = f"station={stationId}&begin_date={begin}&end_date={end}&datum=NAVD&time_zone=gmt&units=metric&format=csv&application=RICHAMP"
+
+        try:
+            predictions = pd.read_csv(f"{base_url}?{common}&product=predictions")
+            predictions.columns = [c.strip() for c in predictions.columns]
+            if "Date Time" in predictions.columns and "Prediction" in predictions.columns:
+                predictionFrames.append(predictions[["Date Time", "Prediction"]])
+        except Exception as e:
+            print(f"Failed to download predictions for station {stationId} ({begin}-{end}): {e}")
+
+        try:
+            waterLevel = pd.read_csv(f"{base_url}?{common}&product=water_level")
+            waterLevel.columns = [c.strip() for c in waterLevel.columns]
+            if "Date Time" in waterLevel.columns and "Water Level" in waterLevel.columns:
+                waterLevelFrames.append(waterLevel[["Date Time", "Water Level"]])
+        except Exception as e:
+            print(f"Failed to download water levels for station {stationId} ({begin}-{end}): {e}")
+
+        chunkStart = chunkEnd + timedelta(days=1)
+
+    if not predictionFrames and not waterLevelFrames:
+        raise ValueError(f"No CO-OPS data downloaded for station {stationId}")
+
+    predictionsDf = pd.concat(predictionFrames, ignore_index=True) if predictionFrames else pd.DataFrame(columns=["Date Time", "Prediction"])
+    waterLevelDf = pd.concat(waterLevelFrames, ignore_index=True) if waterLevelFrames else pd.DataFrame(columns=["Date Time", "Water Level"])
+
+    predictionsDf["Date Time"] = pd.to_datetime(predictionsDf["Date Time"])
+    waterLevelDf["Date Time"] = pd.to_datetime(waterLevelDf["Date Time"])
+
+    merged = pd.merge(predictionsDf, waterLevelDf, on="Date Time", how="outer").sort_values("Date Time")
+
+    out = pd.DataFrame()
+    out["Date"] = merged["Date Time"].dt.strftime("%Y/%m/%d")
+    out["Time (GMT)"] = merged["Date Time"].dt.strftime("%H:%M")
+    out["Predicted (m)"] = merged["Prediction"]
+    out["Preliminary (m)"] = "-"
+    # NOAA's water_level product returns verified data once available and preliminary
+    # data for recent dates but doesn't label which is which in the response, so
+    # everything observed goes to Verified (m); the parser below only falls back to
+    # Preliminary (m) when Verified (m) is missing, so this is harmless either way.
+    out["Verified (m)"] = merged["Water Level"]
+
+    out.to_csv(file_path, index=False)
+
+
 class GetBuoyWater:
     def __init__(self, STATIONS_FILE="", OBS_WATER_DATA_FILE="", startDateObject="", endDateObject=""):
         temp_directory = OBS_WATER_DATA_FILE[0:OBS_WATER_DATA_FILE.rfind("/") + 1]
@@ -144,10 +203,17 @@ class GetBuoyWater:
                 
             if ".csv" in stationSource:
                 print("Pulling Data from Tides and Currents Station File")
-    
+
                 # Path to the CSV file
                 file_path = stationSource
-    
+
+                # Download fresh observed + predicted water levels from NOAA CO-OPS
+                # for the period covered by the ADCIRC run (startDateObject/endDateObject)
+                try:
+                    download_coops_water_level_csv(stationId, startDateObject, endDateObject, file_path)
+                except Exception as e:
+                    print(f"Failed to download CO-OPS data for station {stationId}, falling back to existing file if present: {e}")
+
                 # Step 1: Load the data
                 # The file is comma-separated with headers
                 column_names = ["Date", "Time (GMT)", "Predicted (m)", "Preliminary (m)", "Verified (m)"]
