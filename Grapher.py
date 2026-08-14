@@ -149,13 +149,15 @@ class Grapher:
         self.etaExists = False
         self.meshExists = False
         self.runupExists = False
-        
+        self.velocityExists = False
+
         self.windStartDate = None
         self.waveStartDate = None
         self.rainStartDate = None
         self.waterStartDate = None
         self.etaStartDate = None
         self.runupStartDate = None
+        self.velocityStartDate = None
         
         self.windType = ""
         
@@ -192,6 +194,8 @@ class Grapher:
             self.assetExists = True
         if("RUNUP" in dataToGraph):
             self.runupExists = True
+        if("VELOCITY" in dataToGraph):
+            self.velocityExists = True
         with open(STATIONS_FILE) as outfile:
             self.obsMetadata = json.load(outfile)
             
@@ -278,10 +282,29 @@ class Grapher:
         
         self.stillwaterTimes = []
         self.datapointsStillwaters = []
-        
+
         self.tidewaterTimes = []
         self.datapointsTidewaters = []
-        
+
+        self.velocityLongitudes = []
+        self.velocityLatitudes = []
+        self.velocityLabels = []
+        self.velocityStationNames = []
+        self.velocityTimes = []
+
+        self.maxVelocity = 2
+        self.mapVelocityPoints = []
+        self.mapVelocityTimes = []
+        self.mapVelocityPointsLatitudes = []
+        self.mapVelocityPointsLongitudes = []
+        self.mapVelocityTriangles = []
+        self.mapVelocityMaskedTriangles = []
+        self.mapVelocitySpeeds = []
+        self.mapVelocityDirections = []
+
+        self.datapointsVelocitySpeeds = []
+        self.datapointsVelocityDirections = []
+
         self.etaLongitudes = []
         self.etaLatitudes = []
         self.etaLabels = []
@@ -548,7 +571,55 @@ class Grapher:
                             self.obsDatapointsDirections.append(obsDataset[stationKey]["directions"])
                             self.obsDatapointsHeights.append(obsHeights)
             obsLabelsInitialized = True
-                        
+
+        if(self.velocityExists):
+            with open(dataToGraph["VELOCITY"]) as outfile:
+                velocityDataset = json.load(outfile)
+
+            velocityTimestampsInitialized = False
+            for stationKey in velocityDataset.keys():
+                if(stationKey == "map_data"):
+                    self.mapVelocityPoints = velocityDataset["map_data"]["map_points"]
+                    self.mapVelocityPointsLatitudes = velocityDataset["map_data"]["map_pointsLatitudes"]
+                    self.mapVelocityPointsLongitudes = velocityDataset["map_data"]["map_pointsLongitude"]
+                    self.mapVelocityTimes = velocityDataset["map_data"]["map_times"]
+                    self.mapVelocityTriangles = velocityDataset["map_data"]["map_triangles"]
+                    self.mapVelocityMaskedTriangles = velocityDataset["map_data"]["map_maskedTriangles"]
+                    mapVelocitiesX = velocityDataset["map_data"]["map_velocitiesX"]
+                    mapVelocitiesY = velocityDataset["map_data"]["map_velocitiesY"]
+                    for index in range(len(self.mapVelocityTimes)):
+                        lineSpeed = []
+                        lineDirection = []
+                        for nodeIndex in range(len(mapVelocitiesX[index])):
+                            pointSpeed = self.vectorSpeed(mapVelocitiesX[index][nodeIndex], mapVelocitiesY[index][nodeIndex])
+                            if(pointSpeed > self.maxVelocity):
+                                self.maxVelocity = pointSpeed
+                            lineSpeed.append(pointSpeed)
+                            lineDirection.append(self.vectorDirection(mapVelocitiesX[index][nodeIndex], mapVelocitiesY[index][nodeIndex]))
+                        self.mapVelocitySpeeds.append(lineSpeed)
+                        self.mapVelocityDirections.append(lineDirection)
+                else:
+                    nodeIndex = velocityDataset[stationKey]["nodeIndex"]
+                    self.velocityLabels.append(nodeIndex)
+                    self.velocityLatitudes.append(velocityDataset[stationKey]["latitude"])
+                    self.velocityLongitudes.append(velocityDataset[stationKey]["longitude"])
+                    self.velocityStationNames.append(self.obsMetadata["NOS"][stationKey]["name"])
+
+                    datapointSpeeds = []
+                    datapointDirections = []
+                    for index in range(len(velocityDataset[stationKey]["times"])):
+                        if(self.velocityStartDate == None):
+                            self.velocityStartDate = datetime.fromtimestamp(int(velocityDataset[stationKey]["times"][index]), timezone.utc)
+                        if(not velocityTimestampsInitialized):
+                            self.velocityTimes.append(self.unixTimeToDeltaHours(velocityDataset[stationKey]["times"][index], self.velocityStartDate))
+                        velocityX = velocityDataset[stationKey]["velocitiesX"][index]
+                        velocityY = velocityDataset[stationKey]["velocitiesY"][index]
+                        datapointSpeeds.append(self.vectorSpeed(velocityX, velocityY))
+                        datapointDirections.append(self.vectorDirection(velocityX, velocityY))
+                    velocityTimestampsInitialized = True
+                    self.datapointsVelocitySpeeds.append(datapointSpeeds)
+                    self.datapointsVelocityDirections.append(datapointDirections)
+
         if(self.rainExists):
             with open(dataToGraph["RAIN"]) as outfile:
                 rainDataset = json.load(outfile)
@@ -1051,7 +1122,8 @@ class Grapher:
         numberOfWaveDatapoints = 0
         numberOfElevationDatapoints = 0
         numberOfRunupDatapoints = 0
-#         TODO: Currently, when graphing multiple products with obs on, OBS_STATIONS must contain the same number of station 
+        numberOfVelocityDatapoints = 0
+#         TODO: Currently, when graphing multiple products with obs on, OBS_STATIONS must contain the same number of station
 #           entries for each type of product
         if(self.windExists):
             numberOfWindDatapoints = len(self.windLabels)
@@ -1077,9 +1149,11 @@ class Grapher:
             numberOfWindDatapoints = len(self.obsDatapointsTimes)
         if(self.runupExists):
             numberOfRunupDatapoints = len(self.runupLabels)
-        print("numberOfDatapoints Wind, Rain, Water, Wave, Eta, Elevation, Runup", numberOfWindDatapoints, numberOfRainDatapoints, numberOfWaterDatapoints, numberOfWaveDatapoints, numberOfEtaDatapoints, numberOfElevationDatapoints, numberOfRunupDatapoints, flush=True)
+        if(self.velocityExists):
+            numberOfVelocityDatapoints = len(self.velocityLabels)
+        print("numberOfDatapoints Wind, Rain, Water, Wave, Eta, Elevation, Runup, Velocity", numberOfWindDatapoints, numberOfRainDatapoints, numberOfWaterDatapoints, numberOfWaveDatapoints, numberOfEtaDatapoints, numberOfElevationDatapoints, numberOfRunupDatapoints, numberOfVelocityDatapoints, flush=True)
         fig, ax = plt.subplots()
-        print("maxWind", self.maxWind, "maxRain", self.maxRain, "maxWave", self.maxSWH, "maxWater", self.maxWater, "maxEta", self.maxEta, "maxElevation", self.maxElevation, "maxRunup", self.maxRunup, flush=True)
+        print("maxWind", self.maxWind, "maxRain", self.maxRain, "maxWave", self.maxSWH, "maxWater", self.maxWater, "maxEta", self.maxEta, "maxElevation", self.maxElevation, "maxRunup", self.maxRunup, "maxVelocity", self.maxVelocity, flush=True)
         
         if(self.windExists):
             ax.scatter(self.obsLongitudes, self.obsLatitudes, label="Obs")
@@ -1100,6 +1174,8 @@ class Grapher:
             ax.scatter(self.etaLongitudes, self.etaLatitudes, label="Eta")
         if(self.runupExists):
             ax.scatter(self.runupLongitudes, self.runupLatitudes)
+        if(self.velocityExists):
+            ax.scatter(self.velocityLongitudes, self.velocityLatitudes, label="Velocity")
         ax.legend(loc="lower right")
 
         for index, label in enumerate(self.obsLabels):
@@ -1128,7 +1204,9 @@ class Grapher:
                 ax.annotate(self.etaLabels[index], (self.etaLongitudes[index], self.etaLatitudes[index]))
         for index, label in enumerate(self.runupLabels):
             ax.annotate(label, (self.runupLongitudes[index], self.runupLatitudes[index]))
-            
+        for index, label in enumerate(self.velocityLabels):
+            ax.annotate(label, (self.velocityLongitudes[index], self.velocityLatitudes[index]))
+
         plt.title("location of datapoints by data type")
         plt.xlabel("longitude")
         plt.ylabel("latitude")
@@ -1502,6 +1580,81 @@ class Grapher:
             plt.savefig(graph_directory + 'map_water_swath.png', bbox_inches="tight")
             plt.close()
             gc.collect()
+        if(len(self.mapVelocityTimes) > 0):
+            vmin = 0
+            vmax = math.ceil(self.maxVelocity)
+            levels = 100
+            levelBoundaries = np.linspace(vmin, vmax, levels + 1)
+
+            # Speed is always >= 0, so a one-hue sequential ramp reads better
+            # than a diverging colormap.
+            velocityCmap = plt.get_cmap("viridis")
+            datapointColor = "#4a3aa7"   # violet
+
+            for index in range(len(self.mapVelocityTimes)):
+                fig, ax = plt.subplots(figsize=(9,9), dpi=150)
+                plt.imshow(img, extent=self.backgroundAxis, alpha=0.6, aspect=aspectRatio, zorder=2)
+                currentMaskedTriangles = self.mapVelocityMaskedTriangles.copy()
+                for triangleIndex, triangle in enumerate(self.mapVelocityTriangles):
+                    for pointIndex in triangle:
+                        speed = self.mapVelocitySpeeds[index][pointIndex]
+                        if(speed == -99999.0):
+                            currentMaskedTriangles[triangleIndex] = True
+                            break
+                velocityTriangulation = Triangulation(self.mapVelocityPointsLongitudes, self.mapVelocityPointsLatitudes, triangles=self.mapVelocityTriangles, mask=currentMaskedTriangles)
+
+                ax.tripcolor(velocityTriangulation, self.mapVelocitySpeeds[index], shading='gouraud', cmap=velocityCmap, vmin=vmin, vmax=vmax, zorder=1)
+                ax.scatter(self.velocityLongitudes, self.velocityLatitudes, label="Datapoints", color=datapointColor, edgecolors="white", linewidths=0.5, s=30, zorder=3)
+
+                plt.axis(plotAxis)
+                ax.set_title(self.titlePrefix + "Water Velocity", fontsize=14, fontweight="bold")
+                ax.set_xlabel(datetime.fromtimestamp(self.mapVelocityTimes[index], timezone.utc).strftime("%Y-%m-%d %H:%M UTC"), fontsize=10)
+                ax.legend(loc="upper right", framealpha=0.9, fontsize=8)
+                plt.colorbar(
+                    ScalarMappable(norm=mcolors.Normalize(vmin=vmin, vmax=vmax), cmap=velocityCmap),
+                    boundaries=levelBoundaries,
+                    values=(levelBoundaries[:-1] + levelBoundaries[1:]) / 2,
+                    label="Velocity (m/s)",
+                    ax=plt.gca()
+                )
+                plt.savefig(graph_directory + 'map_velocity_' + str(index) + '.png', bbox_inches="tight")
+                plt.close()
+                gc.collect()
+            with imageio.get_writer(graph_directory + 'velocity.gif', mode='I') as writer:
+                for index in range(len(self.mapVelocityTimes)):
+                    filename = "map_velocity_" + str(index) + ".png"
+                    image = imageio.imread(graph_directory + filename)
+                    writer.append_data(image)
+                for index in range(len(self.mapVelocityTimes)):
+                    filename = "map_velocity_" + str(index) + ".png"
+                    os.remove(graph_directory + filename)
+
+            swathVelocity = np.max(self.mapVelocitySpeeds, axis=0)
+            swathMaskedTriangles = self.mapVelocityMaskedTriangles.copy()
+            for index, triangle in enumerate(self.mapVelocityTriangles):
+                for pointIndex in triangle:
+                    speed = swathVelocity[pointIndex]
+                    if(speed == -99999.0):
+                        swathMaskedTriangles[index] = True
+                        break
+            velocityTriangulation = Triangulation(self.mapVelocityPointsLongitudes, self.mapVelocityPointsLatitudes, triangles=self.mapVelocityTriangles, mask=swathMaskedTriangles)
+            fig, ax = plt.subplots(figsize=(9,9), dpi=150)
+            plt.imshow(img, alpha=0.5, extent=self.backgroundAxis, aspect=aspectRatio, zorder=2)
+            ax.tripcolor(velocityTriangulation, swathVelocity, shading='gouraud', cmap=velocityCmap, vmin=vmin, vmax=vmax, zorder=1)
+            ax.scatter(self.velocityLongitudes, self.velocityLatitudes, label="Datapoints", color=datapointColor, edgecolors="white", linewidths=0.5, s=30, zorder=3)
+            plt.axis(plotAxis)
+            ax.set_title(self.titlePrefix + "Water Velocity Swath", fontsize=14, fontweight="bold")
+            ax.legend(loc="upper right", framealpha=0.9, fontsize=8)
+            plt.colorbar(
+                ScalarMappable(norm=mcolors.Normalize(vmin=vmin, vmax=vmax), cmap=velocityCmap),
+                boundaries=levelBoundaries,
+                values=(levelBoundaries[:-1] + levelBoundaries[1:]) / 2,
+                label="Max Velocity (m/s)",
+                ax=plt.gca()
+            )
+            plt.savefig(graph_directory + 'map_velocity_swath.png', bbox_inches="tight")
+            plt.close()
+            gc.collect()
         if(len(self.mapWaveTimes) > 0):
             vmin = 0
             vmax = math.ceil(self.maxSWH)
@@ -1612,6 +1765,27 @@ class Grapher:
                 plt.title(stationName + " station wind directions", fontsize=24)
                 plt.ylabel("wind direction (degrees)")
                 plt.savefig(graph_directory + stationName + '_wind_direction.png')
+                plt.close()
+        # Plot water velocity (current speed/direction) over time
+        for index in range(numberOfVelocityDatapoints):
+            stationName = self.velocityStationNames[index]
+            if(len(self.datapointsVelocitySpeeds) > 0):
+                fig, ax = plt.subplots(figsize=(16,9))
+                ax.plot(self.velocityTimes, self.datapointsVelocitySpeeds[index], label="Forecast")
+                ax.legend(loc="lower right")
+                plt.title(self.titlePrefix + stationName + " station current speed", fontsize=24)
+                plt.ylabel("current speed (m/s)")
+                plt.xticks(rotation=45, ha='right')
+                plt.savefig(graph_directory + stationName + '_velocity_speed.png', bbox_inches='tight')
+                plt.close()
+            if(len(self.datapointsVelocityDirections) > 0):
+                fig, ax = plt.subplots(figsize=(16,9))
+                ax.scatter(self.velocityTimes, self.datapointsVelocityDirections[index], marker=".", label="Forecast")
+                ax.legend(loc="lower right")
+                plt.title(self.titlePrefix + stationName + " station current direction", fontsize=24)
+                plt.ylabel("current direction (degrees)")
+                plt.xticks(rotation=45, ha='right')
+                plt.savefig(graph_directory + stationName + '_velocity_direction.png', bbox_inches='tight')
                 plt.close()
         for index in range(numberOfRainDatapoints):
             if(len(self.datapointsRains) > 0):

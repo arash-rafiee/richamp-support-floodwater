@@ -1,4 +1,4 @@
-from Reader import Fort14Reader, Fort74Reader, Fort63Reader, GFSWindReader, GFSRainReader, PostWindReader, WaveReader
+from Reader import Fort14Reader, Fort74Reader, Fort63Reader, Fort64Reader, GFSWindReader, GFSRainReader, PostWindReader, WaveReader
 from Grapher import Grapher
 from DiffGrapher import DiffGrapher
 from GetBuoyWind import GetBuoyWind
@@ -155,6 +155,9 @@ def main():
         "--tidewater", help="Tide Water elevation netcdf file", type=str
     )
     p.add_argument(
+        "--velocity", help="Water velocity (fort.64) netcdf file", type=str
+    )
+    p.add_argument(
         "--rain", help="Rain netcdf file", type=str
     )
     p.add_argument(
@@ -196,6 +199,9 @@ def main():
     )
     p.add_argument(
         "--tidewaterExists", type=bool, help="Graph adcirc tide water elevation data"
+    )
+    p.add_argument(
+        "--velocityExists", type=bool, help="Graph adcirc water velocity (fort.64) data"
     )
     p.add_argument(
         "--wavesExists", type=bool, help="Graph adcirc wave data"
@@ -497,6 +503,12 @@ def main():
         (tidewaterStartDateObject, tidewaterEndDateObject) = Fort63Reader(ADCIRC_WATER_FILE=ADCIRC_TIDEWATER_FILE, STATIONS_FILE=STATIONS_FILE, ADCIRC_WATER_DATA_FILE=ADCIRC_TIDEWATER_DATA_FILE, BACKGROUND_AXIS=backgroundAxis).generateWindDataForStations()
         dataToGraph["TIDEWATER"] = ADCIRC_TIDEWATER_DATA_FILE
 
+    print("args.velocityExists", args.velocityExists, flush=True)
+    if(args.velocityExists):
+        ADCIRC_VELOCITY_FILE = args.velocity
+        ADCIRC_VELOCITY_DATA_FILE = water_temp_directory + "adcirc_velocity_data_file" + ".json"
+        (velocityStartDateObject, velocityEndDateObject) = Fort64Reader(ADCIRC_VELOCITY_FILE=ADCIRC_VELOCITY_FILE, STATIONS_FILE=STATIONS_FILE, ADCIRC_VELOCITY_DATA_FILE=ADCIRC_VELOCITY_DATA_FILE, BACKGROUND_AXIS=backgroundAxis).generateVelocityDataForStations()
+        dataToGraph["VELOCITY"] = ADCIRC_VELOCITY_DATA_FILE
 
     print("args.meshExists", args.meshExists, flush=True)
     if(args.meshExists):

@@ -75,7 +75,11 @@ class Reader:
             valueX = float(dataset.variables["radstress_x"][index][int(nodeIndex)])
             valueY = float(dataset.variables["radstress_y"][index][int(nodeIndex)])
             return(valueX, valueY)
-        
+        elif(dataType == "velocity"):
+            valueX = float(dataset.variables["u-vel"][index][int(nodeIndex)])
+            valueY = float(dataset.variables["v-vel"][index][int(nodeIndex)])
+            return(valueX, valueY)
+
     def getValuesForPoints(self, nodesIndex, dataType, dataset):
         if(dataType == "post"):
             pointsValuesX = []
@@ -124,6 +128,20 @@ class Reader:
             pointsValuesY = []
             dataX = dataset.variables["radstress_x"][::]
             dataY = dataset.variables["radstress_y"][::]
+            for nodeIndex in nodesIndex:
+                valuesX = []
+                valuesY = []
+                for index in range(len(dataX)):
+                    valuesX.append(dataX[index][int(nodeIndex)])
+                    valuesY.append(dataY[index][int(nodeIndex)])
+                pointsValuesX.append(valuesX)
+                pointsValuesY.append(valuesY)
+            return (pointsValuesX, pointsValuesY)
+        if(dataType == "velocity"):
+            pointsValuesX = []
+            pointsValuesY = []
+            dataX = dataset.variables["u-vel"][::]
+            dataY = dataset.variables["v-vel"][::]
             for nodeIndex in nodesIndex:
                 valuesX = []
                 valuesY = []
@@ -327,8 +345,19 @@ class Reader:
                 valuesX.append(subsetDataX)
                 valuesY.append(subsetDataY)
             return(valuesX, valuesY)
-            
-            
+        elif(dataType == "velocity"):
+            valuesX = []
+            valuesY = []
+            dataX = dataset.variables["u-vel"][::][::]
+            dataY = dataset.variables["v-vel"][::][::]
+            for index in range(0, len(dataX), timeSparseness):
+                subsetDataX = np.array(dataX[index])[::spaceSparseness]
+                subsetDataY = np.array(dataY[index])[::spaceSparseness]
+                valuesX.append(subsetDataX)
+                valuesY.append(subsetDataY)
+            return(valuesX, valuesY)
+
+
     def getCoordinates(self, spaceSparseness, dataset):
         nodesIndex = []
         pointsLatitudes = []
@@ -457,7 +486,7 @@ class Reader:
             nodes, nodesIndex = self.getCoordinates(spaceSparseness, dataset)
             mapTriangles, mapMaskedTriangles = self.getTriangles(dataset)
 #             mapElevations = self.getElevations(dataset)
-        if(dataType == "post" or dataType == "gfs" or dataType == "fort" or dataType == "rad"):
+        if(dataType == "post" or dataType == "gfs" or dataType == "fort" or dataType == "rad" or dataType == "velocity"):
             mapValuesX = value[0]
             mapValuesY = value[1]
         else:
@@ -485,6 +514,9 @@ class Reader:
         elif(dataType == "post"):
             data["map_data"]["map_speeds"] = mapValuesX
             data["map_data"]["map_directions"] = mapValuesY
+        elif(dataType == "velocity"):
+            data["map_data"]["map_velocitiesX"] = mapValuesX
+            data["map_data"]["map_velocitiesY"] = mapValuesY
         else:
             data["map_data"]["map_" + dataType] = mapValues
         return data
@@ -650,12 +682,20 @@ class Reader:
             print("radY0", radY0, flush=True)
         elif (dataType == "fort"):
             print("wind at node0")
-        
+
             windX0 = dataset.variables["windx"][0][0]
             windY0 = dataset.variables["windy"][0][0]
 
             print("windX0", windX0, flush=True)
             print("windY0", windY0, flush=True)
+        elif (dataType == "velocity"):
+            print("velocity at node0", flush=True)
+
+            uVel0 = dataset.variables["u-vel"][0][0]
+            vVel0 = dataset.variables["v-vel"][0][0]
+
+            print("uVel0", uVel0, flush=True)
+            print("vVel0", vVel0, flush=True)
         elif (dataType == "water"):
             print("water at node0", flush=True)
             
@@ -947,6 +987,9 @@ class Reader:
             elif(dataType == "post"):
                 data[stationKey]["speeds"] = valuesX
                 data[stationKey]["directions"] = valuesY
+            elif(dataType == "velocity"):
+                data[stationKey]["velocitiesX"] = valuesX
+                data[stationKey]["velocitiesY"] = valuesY
             else:
                 data[stationKey][dataType] = values
 
@@ -990,7 +1033,7 @@ class Reader:
                 points.append(point)
         print("getting time series data for closest nodes", flush=True)
         values = self.getValuesForPoints(nodesIndex, dataType, dataset)
-        if(dataType == "post" or dataType == "gfs" or dataType == "fort" or dataType == "rad"):
+        if(dataType == "post" or dataType == "gfs" or dataType == "fort" or dataType == "rad" or dataType == "velocity"):
             pointsValuesX.extend(values[0])
             pointsValuesY.extend(values[1])
         else:
@@ -1008,7 +1051,7 @@ class Reader:
 #                 pointsValuesY.append(valuesY)
 #             Interpolate values
         print("initializing interpolator", flush=True)
-        if(dataType == "rad" or dataType == "gfs" or dataType == "fort" or dataType == "post"):
+        if(dataType == "rad" or dataType == "gfs" or dataType == "fort" or dataType == "post" or dataType == "velocity"):
             interpolatorX = scipy.interpolate.LinearNDInterpolator(points, pointsValuesX)
             interpolatorY = scipy.interpolate.LinearNDInterpolator(points, pointsValuesY)
         else:
@@ -1038,7 +1081,7 @@ class Reader:
             stationLongitude = float(stationDict["longitude"])
             stationCoordinates = (stationLongitude, stationLatitude)
             print("interpolating data for station", stationKey, "at", stationCoordinates, flush=True)
-            if(dataType == "rad" or dataType == "gfs" or dataType == "fort" or dataType == "post"):
+            if(dataType == "rad" or dataType == "gfs" or dataType == "fort" or dataType == "post" or dataType == "velocity"):
                 interpolatedValuesX = interpolatorX(stationLongitude, stationLatitude)
                 interpolatedValuesY = interpolatorY(stationLongitude, stationLatitude)
             else:
@@ -1052,6 +1095,9 @@ class Reader:
             elif(dataType == "post"):
                 data[stationKey]["speeds"] = interpolatedValuesX
                 data[stationKey]["directions"] = interpolatedValuesY
+            elif(dataType == "velocity"):
+                data[stationKey]["velocitiesX"] = interpolatedValuesX
+                data[stationKey]["velocitiesY"] = interpolatedValuesY
             else:
                 data[stationKey][dataType] = interpolatedValues
         
@@ -1297,7 +1343,47 @@ class Fort63Reader:
         else:
             self.reader.generateDataFiles(waterDataset, "water", timesWater, self.ADCIRC_WATER_DATA_FILE)
         return (datetime.fromtimestamp(timesWater[0], timezone.utc), datetime.fromtimestamp(timesWater[-1], timezone.utc))
-                  
+
+class Fort64Reader:
+    """
+    Fort64Reader is a class for processing ADCIRC depth-averaged water
+    velocity data from 'fort.64.nc' and generating interpolated velocity
+    time series at observation stations.
+
+    It performs the following:
+    - Loads velocity vector components (u-vel and v-vel) from the ADCIRC NetCDF file
+    - Identifies the closest ADCIRC mesh node to each observation station
+    - Interpolates velocity data at station locations using nearby mesh values
+    - Saves the interpolated station velocity time series as a JSON file
+    """
+    def __init__(self, ADCIRC_VELOCITY_FILE="", STATIONS_FILE="", ADCIRC_VELOCITY_DATA_FILE="", BACKGROUND_AXIS=[]):
+        temp_directory = ADCIRC_VELOCITY_DATA_FILE[0:ADCIRC_VELOCITY_DATA_FILE.rfind("/") + 1]
+        self.ADCIRC_VELOCITY_FILE = ADCIRC_VELOCITY_FILE
+        self.STATIONS_FILE = STATIONS_FILE
+        self.STATION_TO_NODE_DISTANCES_FILE = temp_directory + "ADCIRC_Station_To_Node_Distances.json"
+        self.ADCIRC_NODES_FILE = temp_directory + "ADCIRC_Nodes.json"
+        self.ADCIRC_VELOCITY_DATA_FILE = ADCIRC_VELOCITY_DATA_FILE
+        self.ADCIRC_NODES_VELOCITY_DATA_FILE = temp_directory + "ADCIRC_Nodes_Velocity_Data.json"
+        self.BACKGROUND_AXIS = BACKGROUND_AXIS
+        self.reader = Reader(STATIONS_FILE=STATIONS_FILE, STATION_TO_NODE_DISTANCES_FILE=self.STATION_TO_NODE_DISTANCES_FILE, NODES_FILE=self.ADCIRC_NODES_FILE, BACKGROUND_AXIS=self.BACKGROUND_AXIS, format="FORT")
+
+    def generateVelocityDataForStations(self):
+        print("Velocity file", flush=True)
+        print(self.ADCIRC_VELOCITY_FILE, flush=True)
+        velocityDataset, timesVelocity = self.reader.getNetcdfProperties(self.ADCIRC_VELOCITY_FILE, "velocity")
+        initializeClosestVelocityNodes = True
+        if(initializeClosestVelocityNodes):
+            thresholdDistance = 0.25
+            self.reader.initializeClosestNodes(velocityDataset, thresholdDistance, "velocity")
+        spaceSparseness = 1
+        timeSparseness = 1
+        interpolateValues = True
+        if(interpolateValues):
+            self.reader.generateDataFilesWithInterpolation(velocityDataset, "velocity", timesVelocity, spaceSparseness, timeSparseness, self.ADCIRC_VELOCITY_DATA_FILE)
+        else:
+            self.reader.generateDataFiles(velocityDataset, "velocity", timesVelocity, self.ADCIRC_VELOCITY_DATA_FILE)
+        return (datetime.fromtimestamp(timesVelocity[0], timezone.utc), datetime.fromtimestamp(timesVelocity[-1], timezone.utc))
+
 class PostWindReader:
     def __init__(self, POST_WIND_FILE="", STATIONS_FILE="", POST_WIND_DATA_FILE="", BACKGROUND_AXIS=[]):
         temp_directory = POST_WIND_DATA_FILE[0:POST_WIND_DATA_FILE.rfind("/") + 1]
