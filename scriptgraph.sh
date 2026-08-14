@@ -38,6 +38,15 @@
 #  --backgroundChoice RHODE_ISLAND_CHAMP
 #
 #
+#python generateGraphs.py \
+#  --stations OBS_STATIONS.json \
+#  --obsExists true \
+#  --velocityExists true \
+#  --velocity /scratch4/workspace/arash_rafiee_uri_edu-richamp/ecflow_output/ricv1/archive/20260127/hour_12/adcirc/analysis/fort.64.nc \
+#  --tempDir /scratch4/workspace/arash_rafiee_uri_edu-richamp/post_temp/ \
+#  --backgroundChoice RHODE_ISLAND_CHAMP
+#
+#
 python generateGraphs.py \
   --stations OBS_STATIONS.json \
   --obsExists true \
