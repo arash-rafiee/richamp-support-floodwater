@@ -591,11 +591,23 @@ class Grapher:
                         lineSpeed = []
                         lineDirection = []
                         for nodeIndex in range(len(mapVelocitiesX[index])):
-                            pointSpeed = self.vectorSpeed(mapVelocitiesX[index][nodeIndex], mapVelocitiesY[index][nodeIndex])
-                            if(pointSpeed > self.maxVelocity):
-                                self.maxVelocity = pointSpeed
+                            velocityX = mapVelocitiesX[index][nodeIndex]
+                            velocityY = mapVelocitiesY[index][nodeIndex]
+                            # ADCIRC writes -99999.0 for dry/wetting-drying nodes.
+                            # Squaring that into a speed would produce a bogus
+                            # ~141000 m/s magnitude, so keep it as the sentinel
+                            # instead -- the map-rendering code already masks
+                            # out triangles whose speed equals -99999.0.
+                            if(velocityX == -99999.0 or velocityY == -99999.0):
+                                pointSpeed = -99999.0
+                                pointDirection = -99999.0
+                            else:
+                                pointSpeed = self.vectorSpeed(velocityX, velocityY)
+                                pointDirection = self.vectorDirection(velocityX, velocityY)
+                                if(pointSpeed > self.maxVelocity):
+                                    self.maxVelocity = pointSpeed
                             lineSpeed.append(pointSpeed)
-                            lineDirection.append(self.vectorDirection(mapVelocitiesX[index][nodeIndex], mapVelocitiesY[index][nodeIndex]))
+                            lineDirection.append(pointDirection)
                         self.mapVelocitySpeeds.append(lineSpeed)
                         self.mapVelocityDirections.append(lineDirection)
                 else:
