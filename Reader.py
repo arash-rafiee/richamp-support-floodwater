@@ -35,6 +35,25 @@ from Encoders import NumpyEncoder
 # NOS_ADCIRC_WIND_DATA_FILE_NAME = "NOS_Floodwater_Wind_Data.json"
 # NOS_ADCIRC_NODES_WIND_DATA_FILE_NAME = "NOS_Floodwater_Nodes_Wind_Data.json"
 class Reader:
+    # NetCDF variable name(s) for each map-eligible ADCIRC/SWAN dataType, keyed
+    # the same way dataType is used everywhere else in this file. One name is
+    # a scalar field, two names [X, Y] is a vector field. Used only by the
+    # regional map-cropping path (getCroppedMapData); station interpolation
+    # keeps its own separate variable-name lookups untouched.
+    MAP_VARIABLE_NAMES = {
+        "water": ["zeta"],
+        "velocity": ["u-vel", "v-vel"],
+        "fort": ["windx", "windy"],
+        "swh": ["swan_HS"],
+        "mwd": ["swan_DIR"],
+        "mwp": ["swan_TMM10"],
+        "pwp": ["swan_TPS"],
+        "rad": ["radstress_x", "radstress_y"],
+    }
+    # Default number of timesteps read per NetCDF request when building
+    # cropped map data. Override per-call via the chunkSize argument.
+    MAP_TIME_CHUNK_SIZE = 24
+
     def __init__(self, STATIONS_FILE="", STATION_TO_NODE_DISTANCES_FILE="", NODES_FILE="", BACKGROUND_AXIS=[], format=""):
         self.STATIONS_FILE = STATIONS_FILE
         self.STATION_TO_NODE_DISTANCES_FILE = STATION_TO_NODE_DISTANCES_FILE
@@ -466,7 +485,88 @@ class Reader:
 #         print(len(elevations))
 # #         quit()
 #         return elevations
-        
+
+    def cropTrianglesToBackground(self, triangles, longitudes, latitudes):
+        """
+        Generic spatial crop for an unstructured triangular mesh (not tied to
+        any particular field/dataType). Keeps every triangle that intersects
+        self.BACKGROUND_AXIS -- i.e. has at least one vertex inside it -- so
+        triangles straddling the edge of the region are preserved instead of
+        dropped (which is what left gaps at the map boundary before). Every
+        node referenced by a kept triangle is included, even if that node
+        itself sits outside the box, and the surviving global node ids are
+        remapped to compact local indices [0..N) for the cropped mesh.
+
+        Returns (localTriangles, globalNodeIndices, maskedTriangles):
+        globalNodeIndices is sorted ascending (use it to index NetCDF reads),
+        localTriangles indexes into the arrays built from globalNodeIndices,
+        and maskedTriangles is an all-False list sized to localTriangles,
+        kept only so the JSON schema Grapher.py expects is unchanged.
+        """
+        triangles = np.asarray(triangles)
+        longitudes = np.asarray(longitudes)
+        latitudes = np.asarray(latitudes)
+        west, east, north, south = self.BACKGROUND_AXIS
+        insideMask = (longitudes > west) & (longitudes < east) & (latitudes > south) & (latitudes < north)
+        keepTriangleMask = insideMask[triangles[:, 0]] | insideMask[triangles[:, 1]] | insideMask[triangles[:, 2]]
+        keptTriangles = triangles[keepTriangleMask]
+        globalNodeIndices = np.unique(keptTriangles)
+        localTriangles = np.searchsorted(globalNodeIndices, keptTriangles)
+        maskedTriangles = [False] * len(localTriangles)
+        return localTriangles, globalNodeIndices, maskedTriangles
+
+    def readVariablesAtNodesChunked(self, dataset, varNames, globalNodeIndices, numTimesteps, timeSparseness, chunkSize=None):
+        """
+        Generic chunked NetCDF reader for one or more (time, node) variables,
+        restricted to globalNodeIndices. Works the same way for a scalar
+        field (one name, e.g. ["zeta"]) or a two-component vector field (two
+        names, e.g. ["u-vel", "v-vel"]) -- this is what every ADCIRC/SWAN map
+        field shares, so there is no velocity-specific path.
+
+        Reads chunkSize timesteps at a time; each read asks NetCDF for only
+        globalNodeIndices via orthogonal indexing (dataset.variables[name][
+        timeIndices, nodeIndices]), so the full domain is never pulled into
+        memory -- peak memory is bounded by chunkSize * len(globalNodeIndices)
+        per variable rather than numTimesteps * totalNodeCount.
+
+        Returns a list of lists, one per varName, each containing one 1-D
+        array per kept timestep (matching the shape getValues() used to
+        return for a full-domain read).
+        """
+        if(chunkSize is None):
+            chunkSize = self.MAP_TIME_CHUNK_SIZE
+        nodeIndicesForRead = globalNodeIndices.tolist() if hasattr(globalNodeIndices, "tolist") else list(globalNodeIndices)
+        keptTimeIndices = list(range(0, numTimesteps, timeSparseness))
+        resultsPerVar = [[] for _ in varNames]
+        for chunkStart in range(0, len(keptTimeIndices), chunkSize):
+            chunkTimeIndices = keptTimeIndices[chunkStart:chunkStart + chunkSize]
+            for varIndex, varName in enumerate(varNames):
+                chunkData = dataset.variables[varName][chunkTimeIndices, nodeIndicesForRead]
+                resultsPerVar[varIndex].extend(np.asarray(chunkData))
+        return resultsPerVar
+
+    def getCroppedMapData(self, dataset, dataType, times, timeSparseness, chunkSize=None):
+        """
+        Memory-efficient replacement for getValues()+getCoordinates()+
+        getTriangles() when building map_data for a FORT-format (ADCIRC/SWAN)
+        field: crops the mesh to self.BACKGROUND_AXIS first (cheap -- reads
+        the static x/y/element arrays once), then reads only the surviving
+        nodes' time-dependent field data in chunks. Never materializes the
+        full-domain field data.
+        """
+        longitudes = np.asarray(dataset.variables["x"][:])
+        latitudes = np.asarray(dataset.variables["y"][:])
+        triangles = np.array(dataset.variables["element"][:]) - 1
+        localTriangles, globalNodeIndices, maskedTriangles = self.cropTrianglesToBackground(triangles, longitudes, latitudes)
+
+        varNames = self.MAP_VARIABLE_NAMES[dataType]
+        resultsPerVar = self.readVariablesAtNodesChunked(dataset, varNames, globalNodeIndices, len(times), timeSparseness, chunkSize)
+        value = tuple(resultsPerVar) if len(varNames) > 1 else resultsPerVar[0]
+
+        nodes = (latitudes[globalNodeIndices], longitudes[globalNodeIndices])
+        nodesIndex = list(range(len(globalNodeIndices)))
+        return value, nodes, nodesIndex, localTriangles, maskedTriangles
+
     def getMap(self, dataset, dataType, times, spaceSparseness, timeSparseness, data):
         print("getting map", dataType, flush=True)
         mapValuesX = []
@@ -482,9 +582,7 @@ class Reader:
             value = self.getValuesGrid(spaceSparseness, timeSparseness, dataType, dataset)
             nodes, nodesIndex = self.getCoordinatesGrid(spaceSparseness, dataset)
         elif(self.format == "FORT"):
-            value = self.getValues(spaceSparseness, timeSparseness, dataType, dataset)
-            nodes, nodesIndex = self.getCoordinates(spaceSparseness, dataset)
-            mapTriangles, mapMaskedTriangles = self.getTriangles(dataset)
+            value, nodes, nodesIndex, mapTriangles, mapMaskedTriangles = self.getCroppedMapData(dataset, dataType, times, timeSparseness)
 #             mapElevations = self.getElevations(dataset)
         if(dataType == "post" or dataType == "gfs" or dataType == "fort" or dataType == "rad" or dataType == "velocity"):
             mapValuesX = value[0]
