@@ -154,6 +154,38 @@ def readRunProperties(runPropertiesFile):
     return properties
 
 
+def findRunProperties(explicitPath, dataFiles):
+    """Locate run.properties, preferring an explicit --runProperties path.
+
+    The batch script runs from $POSTHOME where properties/run.properties sits
+    in the working directory, but an ad hoc run points --water and friends at
+    an archived scenario directory instead, so also look beside the data and
+    walk up towards the advisory directory.
+    """
+    if explicitPath:
+        return explicitPath if os.path.exists(explicitPath) else ""
+    candidates = [DEFAULT_RUN_PROPERTIES]
+    for dataFile in dataFiles:
+        if not dataFile:
+            continue
+        directory = os.path.dirname(os.path.abspath(dataFile))
+        for _ in range(4):
+            candidates.append(os.path.join(directory, "run.properties"))
+            candidates.append(os.path.join(directory, DEFAULT_RUN_PROPERTIES))
+            parent = os.path.dirname(directory)
+            if parent == directory:
+                break
+            directory = parent
+    seen = set()
+    for candidate in candidates:
+        if candidate in seen:
+            continue
+        seen.add(candidate)
+        if os.path.exists(candidate):
+            return candidate
+    return ""
+
+
 def formatForecastTime(rawTime, packedTime):
     """Prefer the human readable rawstart/rawend, fall back to the packed form."""
     if rawTime:
@@ -280,8 +312,9 @@ def main():
         "--prefix", type=str, help="Prefix for title of graphs" 
     )
     p.add_argument(
-        "--runProperties", type=str, default=DEFAULT_RUN_PROPERTIES,
-        help="run.properties file whose storm info is banded across the top of every graph"
+        "--runProperties", type=str,
+        help="run.properties file whose storm info is banded across the top of every graph; "
+             "defaults to properties/run.properties or one found beside the input data"
     )
     p.add_argument(
         "--generateRunup", type=bool, help="Generate runup predictions from runup stations"
@@ -316,11 +349,17 @@ def main():
     else:
         titlePrefix = args.prefix
 
-    stormBanner = buildStormBanner(readRunProperties(args.runProperties))
+    runPropertiesFile = findRunProperties(args.runProperties, [
+        args.water, args.stillwater, args.tidewater, args.velocity,
+        args.wind, args.rain, args.waveswh, args.mesh,
+    ])
+    stormBanner = buildStormBanner(readRunProperties(runPropertiesFile))
     if stormBanner:
-        print("Graph banner:", stormBanner.replace("\n", " | "), flush=True)
+        print("Graph banner from " + runPropertiesFile + ": "
+              + stormBanner.replace("\n", " | "), flush=True)
     else:
-        print("No storm banner; could not read " + str(args.runProperties), flush=True)
+        print("No storm banner; found no run.properties next to the input data "
+              "or in properties/. Pass --runProperties to point at one.", flush=True)
         
         
     backgroundMap = None
