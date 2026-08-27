@@ -50,8 +50,13 @@ def stampFigureBanner(fig, bannerLines):
     for ax in fig.axes:
         box = ax.get_position()
         ax.set_position([box.x0, box.y0 * scale, box.width, box.height * scale])
+    try:
+        renderer = fig.canvas.get_renderer()
+    except AttributeError:  # a backend that cannot measure text; skip the fitting
+        renderer = None
+    maxWidth = 0.98 * width * fig.dpi
     for index, line in enumerate(bannerLines):
-        fig.text(
+        text = fig.text(
             0.5,
             1.0 - (pad + lineHeight * index) / newHeight,
             line,
@@ -60,6 +65,11 @@ def stampFigureBanner(fig, bannerLines):
             fontsize=SMALL_SIZE if index == 0 else SMALL_SIZE - 3,
             fontweight="bold" if index == 0 else "normal",
         )
+        # A long storm name overruns the narrower figures, so shrink to fit
+        while renderer is not None and text.get_fontsize() > 6:
+            if text.get_window_extent(renderer=renderer).width <= maxWidth:
+                break
+            text.set_fontsize(text.get_fontsize() - 1)
 
 
 def installFigureBanner(banner):
