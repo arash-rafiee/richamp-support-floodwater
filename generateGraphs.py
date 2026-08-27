@@ -137,6 +137,64 @@ WINNAPAUG_MAP = "Winnapaug.png"
 WINNAPAUG_OUTLINE_MAP = "WinnapaugOutline.png"
 WINNAPAUG_AXIS = [-71.81074920654297, -71.75925079345703, 41.34433416895306, 41.30566009263403]
 
+DEFAULT_RUN_PROPERTIES = "properties/run.properties"
+
+
+def readRunProperties(runPropertiesFile):
+    """Parse the "key : value" lines generateRunProperties.py writes."""
+    properties = {}
+    if not runPropertiesFile or not os.path.exists(runPropertiesFile):
+        return properties
+    with open(runPropertiesFile) as f:
+        for line in f:
+            if ":" not in line:
+                continue
+            key, value = line.split(":", 1)
+            properties[key.strip()] = value.strip()
+    return properties
+
+
+def formatForecastTime(rawTime, packedTime):
+    """Prefer the human readable rawstart/rawend, fall back to the packed form."""
+    if rawTime:
+        return rawTime
+    if packedTime:
+        try:
+            return datetime.datetime.strptime(packedTime, "%Y%m%d%H%M%S").strftime("%Y-%m-%d %H:%M")
+        except ValueError:
+            return packedTime
+    return ""
+
+
+def buildStormBanner(properties):
+    """Build the two line storm banner drawn at the top of every graph.
+
+    Line one identifies the storm, line two gives the forecast window. Missing
+    or empty properties are dropped, so a gfs run just shows the window.
+    """
+    if not properties:
+        return ""
+    stormFields = []
+    stormName = properties.get("stormname", "")
+    stormClass = properties.get("stormclass", "")
+    if stormName and stormClass:
+        stormFields.append(stormName + " (" + stormClass + ")")
+    elif stormName:
+        stormFields.append(stormName)
+    for label, key in (("", "stormtype"), ("storm ", "stormnumber"), ("adv ", "advisory"), ("", "year"), ("track ", "track")):
+        value = properties.get(key, "")
+        if value:
+            stormFields.append(label + value)
+    start = formatForecastTime(properties.get("rawstart", ""), properties.get("forecastValidStart", ""))
+    end = formatForecastTime(properties.get("rawend", ""), properties.get("forecastValidEnd", ""))
+    bannerLines = []
+    if stormFields:
+        bannerLines.append(" · ".join(stormFields))
+    if start and end:
+        bannerLines.append(start + " – " + end + " UTC")
+    return "\n".join(bannerLines)
+
+
 def main():
     p = argparse.ArgumentParser(description="Make a request to generate graphs")
     p.add_argument(
@@ -222,6 +280,10 @@ def main():
         "--prefix", type=str, help="Prefix for title of graphs" 
     )
     p.add_argument(
+        "--runProperties", type=str, default=DEFAULT_RUN_PROPERTIES,
+        help="run.properties file whose storm info is banded across the top of every graph"
+    )
+    p.add_argument(
         "--generateRunup", type=bool, help="Generate runup predictions from runup stations"
     )
     args = p.parse_args()
@@ -253,6 +315,12 @@ def main():
         titlePrefix = ""
     else:
         titlePrefix = args.prefix
+
+    stormBanner = buildStormBanner(readRunProperties(args.runProperties))
+    if stormBanner:
+        print("Graph banner:", stormBanner.replace("\n", " | "), flush=True)
+    else:
+        print("No storm banner; could not read " + str(args.runProperties), flush=True)
         
         
     backgroundMap = None
@@ -625,7 +693,8 @@ def main():
         STATIONS_FILE=STATIONS_FILE, 
         backgroundMap=backgroundMap,
         backgroundAxis=backgroundAxis,
-        titlePrefix=titlePrefix).generateGraphs()
+        titlePrefix=titlePrefix,
+        stormBanner=stormBanner).generateGraphs()
 
 if __name__ == "__main__":
     main()

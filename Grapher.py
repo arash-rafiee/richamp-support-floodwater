@@ -7,6 +7,7 @@ import matplotlib.image as mpimg
 import matplotlib.dates as mdates
 import matplotlib.colors as mcolors
 from matplotlib.cm import ScalarMappable
+from matplotlib.figure import Figure
 from matplotlib.tri import Triangulation
 from datetime import datetime, timezone
 import imageio
@@ -25,6 +26,61 @@ plt.rc('xtick', labelsize=SMALL_SIZE)    # fontsize of the tick labels
 plt.rc('ytick', labelsize=SMALL_SIZE)    # fontsize of the tick labels
 plt.rc('legend', fontsize=SMALL_SIZE)    # legend fontsize
 plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
+
+_bannerInstalled = False
+
+
+def stampFigureBanner(fig, bannerLines):
+    """Reserve space at the top of fig and draw bannerLines there.
+
+    The figure is grown by the banner height and every existing axes is moved
+    back to the inch geometry it had before the resize, so the banner never
+    lands on top of an axes title.
+    """
+    if getattr(fig, "richampBannerDrawn", False):
+        return
+    fig.richampBannerDrawn = True
+    pad = 0.12          # inches of whitespace above and below the banner
+    lineHeight = 0.28   # inches per banner line
+    bannerHeight = 2 * pad + lineHeight * len(bannerLines)
+    width, height = fig.get_size_inches()
+    newHeight = height + bannerHeight
+    fig.set_size_inches(width, newHeight, forward=False)
+    scale = height / newHeight
+    for ax in fig.axes:
+        box = ax.get_position()
+        ax.set_position([box.x0, box.y0 * scale, box.width, box.height * scale])
+    for index, line in enumerate(bannerLines):
+        fig.text(
+            0.5,
+            1.0 - (pad + lineHeight * index) / newHeight,
+            line,
+            ha="center",
+            va="top",
+            fontsize=SMALL_SIZE if index == 0 else SMALL_SIZE - 3,
+            fontweight="bold" if index == 0 else "normal",
+        )
+
+
+def installFigureBanner(banner):
+    """Draw banner at the top of every figure Grapher saves.
+
+    Wrapping Figure.savefig stamps all of the graphs from one place instead of
+    touching each of the ~78 individual title/savefig pairs.
+    """
+    global _bannerInstalled
+    if not banner or _bannerInstalled:
+        return
+    bannerLines = banner.split("\n")
+    originalSavefig = Figure.savefig
+
+    def savefigWithBanner(self, *args, **kwargs):
+        stampFigureBanner(self, bannerLines)
+        return originalSavefig(self, *args, **kwargs)
+
+    Figure.savefig = savefigWithBanner
+    _bannerInstalled = True
+
 
 class Grapher:
     DATE_FORMAT = "%m/%d/%y-%HZ"    
@@ -133,7 +189,7 @@ class Grapher:
     # Usage example:
     # plot_extended_lines(self, ax, runupIndex, index, runupLabel)
 
-    def __init__(self, dataToGraph={}, STATIONS_FILE="", backgroundMap="", backgroundAxis=[], titlePrefix=""):
+    def __init__(self, dataToGraph={}, STATIONS_FILE="", backgroundMap="", backgroundAxis=[], titlePrefix="", stormBanner=""):
         print("Initializing grapher", flush=True)
         self.obsExists = False
         self.gaugeExists = False
@@ -165,6 +221,8 @@ class Grapher:
         self.backgroundAxis = backgroundAxis
         
         self.titlePrefix=titlePrefix
+        self.stormBanner=stormBanner
+        installFigureBanner(stormBanner)
         
         if("OBS" in dataToGraph):
             self.obsExists = True
