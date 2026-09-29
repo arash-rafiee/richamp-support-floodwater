@@ -26,4 +26,9 @@ track.richamp
 TrackRMW.txt
 Wind_Inp.txt
 /properties
+gfs_wind/
+*.mp4
+*.gif
+comparison_gfs_*/
+snapshots/
 *.docx
