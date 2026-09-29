@@ -1,0 +1,23 @@
+{
+  "_comment": "Points for report_brief/pond_timeseries.py. lon/lat in degrees. 'group' = one figure per group; the first point in each group is the reference (open water outside the pond). 'max_dist_m' overrides the default search radius for the nearest subtidal node. Checked against the ricv1_noriv_nopump mesh with the Jan 2026 GFS subset.",
+  "points": [
+    {"group": "Ninigret / Green Hill", "name": "Block Island Sound (off breachway)", "lon": -71.634, "lat": 41.352},
+    {"group": "Ninigret / Green Hill", "name": "Charlestown Breachway (channel)",   "lon": -71.6355, "lat": 41.3655},
+    {"group": "Ninigret / Green Hill", "name": "Ninigret Pond (east basin)",        "lon": -71.655, "lat": 41.365},
+    {"group": "Ninigret / Green Hill", "name": "Ninigret Pond (west basin)",        "lon": -71.685, "lat": 41.365},
+    {"group": "Ninigret / Green Hill", "name": "Green Hill Pond",                   "lon": -71.612, "lat": 41.378},
+
+    {"group": "Potter / Point Judith", "name": "Harbor of Refuge (outside)",              "lon": -71.497, "lat": 41.368},
+    {"group": "Potter / Point Judith", "name": "Point Judith Pond (Snug Harbor)",         "lon": -71.508, "lat": 41.390},
+    {"group": "Potter / Point Judith", "name": "Point Judith Pond, W side (Succotash Rd)", "lon": -71.522, "lat": 41.381},
+    {"group": "Potter / Point Judith", "name": "Potter Pond inlet channel",               "lon": -71.5275, "lat": 41.3845, "max_dist_m": 150},
+    {"group": "Potter / Point Judith", "name": "Potter Pond",                             "lon": -71.532, "lat": 41.392},
+
+    {"group": "Goose Neck Cove (Newport)", "name": "Atlantic off Ocean Ave",   "lon": -71.336, "lat": 41.451},
+    {"group": "Goose Neck Cove (Newport)", "name": "Goose Neck Cove",          "lon": -71.331, "lat": 41.461},
+
+    {"group": "Watchemoket Cove (East Providence)", "name": "Providence River",                  "lon": -71.395, "lat": 41.805},
+    {"group": "Watchemoket Cove (East Providence)", "name": "Watchemoket Cove",                  "lon": -71.3875, "lat": 41.806},
+    {"group": "Watchemoket Cove (East Providence)", "name": "Pond off old golf club (inside VMP culvert)", "lon": -71.3765, "lat": 41.803}
+  ]
+}
