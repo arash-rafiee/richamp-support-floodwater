@@ -1,3 +1,22 @@
+# Placeholder RICHAMP_fort63.nc (zeta = 0) over the RICHAMP_wind.nc time span, mesh/attrs from a real RICHAMP_fort63.nc
+# python make_placeholder_fort63.py --template C:/Users/rafiee/Desktop/Misc/RICHAMP/RICHAMP_fort63.nc --wind RICHAMP_wind.nc -o RICHAMP_fort63.nc
+
+# RICHAMP_fort63.nc from a full-domain ADCIRC fort.63.nc (Python port of subset_fort63_richamp.m)
+# python subset_fort63_richamp.py /path/to/fort.63.nc -o RICHAMP_fort63.nc
+
+# Animate RICHAMP_wind.nc over the Rhode Island map (GFS grid as mesh, or --fort14 for the ADCIRC mesh)
+# python wind_video.py RICHAMP_wind.nc -o RICHAMP_wind_RI.mp4
+
+# Raw GFS 10 m wind in RICHAMP_wind.nc layout (no roughness scaling), for the dashboard
+# python gfs_to_richamp_wind.py gfs_wind.nc -o RICHAMP_wind --grid NLCD_z0_RICHAMP_Reg_Grid.nc   # on the RICHAMP grid
+# python gfs_to_richamp_wind.py gfs_wind.nc -o RICHAMP_wind                                     # on the GFS 0.25 deg grid
+
+# GFS wind straight from NOMADS (no metget): download -> generic-netcdf -> RICHAMP_wind.nc
+# python get_gfs_wind.py --region 43 40 -73 -70 --step 1
+# python gfs_grib_to_wind_nc.py gfs_wind/<YYYYMMDD>_<HH>z -o gfs_wind.nc
+# python scale_and_subset.py -o RICHAMP_wind -sl up-down -hr NLCD_z0_RICHAMP_Reg_Grid.nc -w gfs_wind.nc -wfmt "generic-netcdf" -wr gfs-roughness.nc -z0name z0_interp -z0sv -r 3000 -sigma 1000 -t 3 -wasync   # first time: -z0sv builds z0_interp.pickle (hours)
+# python scale_and_subset.py -o RICHAMP_wind -sl up-down -hr NLCD_z0_RICHAMP_Reg_Grid.nc -w gfs_wind.nc -wfmt "generic-netcdf" -wr gfs-roughness.nc -z0name z0_interp -r 3000 -sigma 1000 -t 3 -wasync         # later runs reuse the pickle
+
 # python generateWindGraphs.py --stations OBS_STATIONS.json --wind RICHAMP_wind.nc --rain RICHAMP_rain.nc --obs True
 
 # python scale_and_subset.py -o RICHAMP_wind -sl up-down -hr NLCD_z0_RICHAMP_Reg_Grid.nc -w gfs_wind.nc -wfmt "generic-netcdf" -wr gfs-roughness.nc -z0name generated_z0_interp $z0_sv -r 3000 -sigma 1000 -t 3 -wasync
