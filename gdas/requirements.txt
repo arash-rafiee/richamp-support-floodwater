@@ -1,0 +1,10 @@
+# GDAS -> OWI .wnd/.pre (gdas/download_gdas.py)
+numpy
+requests
+# GRIB2 decoding. pip wheels bundle the ecCodes library; alternatively
+# `conda install -c conda-forge eccodes python-eccodes` or `module load eccodes` on HPC.
+eccodes
+
+# Tests only (gdas/tests). netCDF4 is also what owi2wind.py needs.
+pytest
+netCDF4
