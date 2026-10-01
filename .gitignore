@@ -36,5 +36,6 @@ snapshots/
 # GDAS forcing (gdas/download_gdas.py) runtime data
 gdas/cache/
 gdas/work/
+gdas/output/
 gdas/**/*.grib2
 gdas/**/*.grb2
