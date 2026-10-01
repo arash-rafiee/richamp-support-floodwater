@@ -68,8 +68,8 @@ def parse_args(argv=None):
     p.add_argument("--timeout", type=float, default=120.0, help="HTTP timeout in seconds (default: 120)")
     p.add_argument("--reference-wnd", type=Path, help="Existing MetGet .wnd to compare structure with")
     p.add_argument("--reference-pre", type=Path, help="Existing MetGet .pre to compare structure with")
-    p.add_argument("--grib-reader", choices=["auto", "eccodes", "rasterio"], default="auto",
-                   help="GRIB2 decoder. auto: eccodes if installed, otherwise rasterio (GDAL)")
+    p.add_argument("--grib-reader", choices=["auto", "eccodes", "builtin"], default="auto",
+                   help="GRIB2 decoder. auto: eccodes if installed, otherwise the built-in numpy decoder")
     p.add_argument("--dry-run", action="store_true", help="Print the hourly source plan and exit")
     return p.parse_args(argv)
 

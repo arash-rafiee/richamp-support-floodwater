@@ -46,7 +46,7 @@ line endings on every platform.
 | `--source auto/nomads/aws` | `auto`: NOMADS for cycles younger than 9 days, otherwise the AWS archive. |
 | `--buffer` | Extra source margin around the domain in degrees (default 1.0). |
 | `--reference-wnd/--reference-pre` | Compare the layout with existing MetGet files. Values are not compared. |
-| `--grib-reader auto/eccodes/rasterio` | GRIB2 decoder. `auto`: eccodes if installed, otherwise rasterio (GDAL). |
+| `--grib-reader auto/eccodes/builtin` | GRIB2 decoder. `auto`: eccodes if installed, otherwise the built-in numpy decoder. |
 | `--dry-run` | Print which GDAS cycle/forecast hour feeds every output hour. |
 
 The exit status is 0 only when validation passes.
@@ -130,14 +130,19 @@ After writing, both files are re-read the way the downstream tools read them:
 
 Two readers give the same result:
 * **eccodes**, used when installed.
-* **rasterio/GDAL**, used in the `floodwater` env. Here fields are identified by their GRIB2
-  codes (discipline/category/number, surface type and level, forecast hour) rather than
-  GDAL's version-dependent names.
+* **builtin** (`grib2.py`), numpy only, used in the `floodwater` env. That env has no
+  eccodes, and its GDAL lacks the GRIB plugin.
 
-Tested on 2025-10-28 00-06Z:
-* the grids are identical on both the AWS global and the NOMADS subset layouts;
-* the `.wnd` files are byte-identical;
-* the `.pre` files differ by at most 0.0001 hPa, because GDAL returns float32.
+The built-in decoder supports exactly what GDAS uses for these fields:
+* a regular lat/lon grid (template 3.0) and an analysis/forecast product (template 4.0);
+* simple packing (5.0, NOMADS subsets) and complex packing with spatial differencing
+  (5.3, AWS/NCEP files);
+* no bitmap.
+
+It refuses anything else. Fields are identified by their GRIB2 codes
+(discipline/category/number, surface type and level, forecast hour). Against eccodes,
+on AWS 2021 and 2025 files and a NOMADS subset, all values agree to within 1e-11
+(floating-point rounding), and the grid and time metadata are identical.
 
 `gdas/tests/check_grib_reader.py` downloads one hour and compares 7 grid points against
 eccodes reference values. It needs neither pytest nor eccodes.
@@ -157,7 +162,8 @@ Offline tests cover the format against a MetGet sample, the timeline, regridding
 ```
 gdas/
 ├── download_gdas.py   command line: download -> regrid -> write -> validate
-├── gdas_source.py     hourly timeline, NOMADS/AWS download with retries and cache, GRIB2 decoding
+├── gdas_source.py     hourly timeline, NOMADS/AWS download with retries and cache, GRIB2 field checks
+├── grib2.py           numpy-only GRIB2 decoder (used when eccodes is not installed)
 ├── grid.py            target grid and bilinear interpolation
 ├── owi.py             OWI .wnd/.pre writer, re-reader and checks
 ├── requirements.txt

@@ -6,7 +6,7 @@ compares values at fixed 0.25 deg grid points with reference values decoded with
 eccodes. Run from the repository root, e.g. on the cluster:
 
     python gdas/tests/check_grib_reader.py              # reader picked like download_gdas.py
-    python gdas/tests/check_grib_reader.py rasterio     # force GDAL/rasterio
+    python gdas/tests/check_grib_reader.py builtin      # force the numpy decoder
 """
 import datetime as dt
 import sys

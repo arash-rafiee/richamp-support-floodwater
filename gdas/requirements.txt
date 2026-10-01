@@ -1,12 +1,10 @@
 # GDAS -> OWI .wnd/.pre (gdas/download_gdas.py)
 #
-# Nothing needs installing in the RICHAMP `floodwater` conda env: it already has
-# numpy, requests, netCDF4 and rasterio (GDAL GRIB driver), which is used for GRIB2
-# decoding when eccodes is absent. Check with: python gdas/tests/check_grib_reader.py
+# Nothing needs installing in the RICHAMP `floodwater` conda env: GRIB2 is decoded
+# by gdas/grib2.py (numpy only) unless eccodes is installed.
+# Check with: python gdas/tests/check_grib_reader.py
 numpy
 requests
-# One GRIB2 reader is needed: rasterio (GDAL) or eccodes (preferred when installed).
-rasterio
 
 # Offline tests (python -m pytest gdas/tests) only. netCDF4 is also needed by owi2wind.py.
 pytest
