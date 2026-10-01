@@ -36,13 +36,14 @@ class Field:
     category: int
     number: int
     level: int       # value of the first fixed surface (10 m, or 0 for MSL)
+    surface: int     # GRIB2 type of first fixed surface (103 height above ground, 101 MSL)
     units: str       # units eccodes must report
 
 
 FIELDS = (
-    Field("u10", "UGRD:10 m above ground", 0, 2, 2, 10, "m s**-1"),
-    Field("v10", "VGRD:10 m above ground", 0, 2, 3, 10, "m s**-1"),
-    Field("mslp", "PRMSL:mean sea level", 0, 3, 1, 0, "Pa"),
+    Field("u10", "UGRD:10 m above ground", 0, 2, 2, 10, 103, "m s**-1"),
+    Field("v10", "VGRD:10 m above ground", 0, 2, 3, 10, 103, "m s**-1"),
+    Field("mslp", "PRMSL:mean sea level", 0, 3, 1, 0, 101, "Pa"),
 )
 
 
@@ -259,11 +260,48 @@ class NativeHour:
     data: dict        # name -> (nlat, nlon) array; mslp in Pa
 
 
-def read_hour(path: Path, h: HourSource) -> NativeHour:
-    """Decode the three fields, verify identity/time/units, and normalise orientation.
+def grib_reader(choice: str = "auto") -> str:
+    """Pick the GRIB2 decoder: eccodes if importable, otherwise GDAL through rasterio."""
+    if choice != "auto":
+        return choice
+    try:
+        import eccodes  # noqa: F401
+        return "eccodes"
+    except ImportError:
+        pass
+    try:
+        import rasterio  # noqa: F401
+        return "rasterio"
+    except ImportError:
+        raise RuntimeError("No GRIB2 reader found: install eccodes, or use an env with rasterio (GDAL)")
 
-    eccodes is not thread-safe here; call from one thread only.
+
+def read_hour(path: Path, h: HourSource, reader: str = "eccodes") -> NativeHour:
+    """Decode the three fields, verify identity/time, and normalise orientation.
+
+    Neither reader is used from several threads; call from one thread only.
     """
+    found, lat, lon = (_read_eccodes if reader == "eccodes" else _read_rasterio)(Path(path), h)
+    missing = [x.name for x in FIELDS if x.name not in found]
+    if missing:
+        raise ValueError(f"{path} lacks {missing}")
+    lon = (lon + 180.0) % 360.0 - 180.0
+    lat, lon = np.round(lat, 6), np.round(lon, 6)
+    jorder, iorder = np.argsort(lat), np.argsort(lon)
+    data = {k: v[jorder][:, iorder] for k, v in found.items()}
+    return NativeHour(lat[jorder], lon[iorder], data)
+
+
+def _check_identity(found: dict, fld, path: Path, ref, valid, h: HourSource):
+    if fld is None:
+        raise ValueError(f"unexpected GRIB field in {path}")
+    if fld.name in found:
+        raise ValueError(f"duplicate {fld.name} in {path}")
+    if ref != h.cycle or valid != h.valid:
+        raise ValueError(f"{fld.name} in {path} is {ref} valid {valid}, expected {h.cycle} valid {h.valid}")
+
+
+def _read_eccodes(path: Path, h: HourSource):
     import eccodes
 
     found = {}
@@ -278,16 +316,11 @@ def read_hour(path: Path, h: HourSource) -> NativeHour:
                 ident = (g("discipline"), g("parameterCategory"), g("parameterNumber"), g("level"))
                 fld = next((x for x in FIELDS
                             if (x.discipline, x.category, x.number, x.level) == ident), None)
-                if fld is None:
-                    raise ValueError(f"unexpected GRIB field {g('shortName')} in {path}")
-                if fld.name in found:
-                    raise ValueError(f"duplicate {fld.name} in {path}")
-                if g("units") != fld.units:
-                    raise ValueError(f"{fld.name} units {g('units')!r}, expected {fld.units!r}")
                 ref = dt.datetime.strptime(f"{g('dataDate')}{g('dataTime'):04d}", "%Y%m%d%H%M")
                 valid = dt.datetime.strptime(f"{g('validityDate')}{g('validityTime'):04d}", "%Y%m%d%H%M")
-                if ref != h.cycle or valid != h.valid:
-                    raise ValueError(f"{fld.name} in {path} is {ref} valid {valid}, expected {h.cycle} valid {h.valid}")
+                _check_identity(found, fld, path, ref, valid, h)
+                if g("units") != fld.units:
+                    raise ValueError(f"{fld.name} units {g('units')!r}, expected {fld.units!r}")
                 if g("gridType") != "regular_ll" or g("iScansNegatively") or g("jPointsAreConsecutive"):
                     raise ValueError(f"unsupported grid layout in {path}")
                 ni, nj = g("Ni"), g("Nj")
@@ -304,14 +337,52 @@ def read_hour(path: Path, h: HourSource) -> NativeHour:
                 found[fld.name] = values
             finally:
                 eccodes.codes_release(gid)
-    missing = [x.name for x in FIELDS if x.name not in found]
-    if missing:
-        raise ValueError(f"{path} lacks {missing}")
-
+    if grid_sig is None:
+        return found, np.array([]), np.array([])
     ni, nj, dlon, dlat, lon0, lat0, jpos = grid_sig
     lat = lat0 + (1 if jpos else -1) * dlat * np.arange(nj)
-    lon = (lon0 + dlon * np.arange(ni) + 180.0) % 360.0 - 180.0
-    lat, lon = np.round(lat, 6), np.round(lon, 6)
-    jorder, iorder = np.argsort(lat), np.argsort(lon)
-    data = {k: v[jorder][:, iorder] for k, v in found.items()}
-    return NativeHour(lat[jorder], lon[iorder], data)
+    lon = lon0 + dlon * np.arange(ni)
+    return found, lat, lon
+
+
+def _epoch(tag: str) -> dt.datetime:
+    seconds = int(tag.split()[0])
+    return dt.datetime.fromtimestamp(seconds, dt.timezone.utc).replace(tzinfo=None)
+
+
+def _read_rasterio(path: Path, h: HourSource):
+    """GDAL GRIB driver via rasterio.
+
+    Fields are identified by their GRIB2 codes from the product definition template,
+    because GDAL's parameter names/units depend on its version and data files. For
+    these codes WMO fixes the units: 0/2/2 and 0/2/3 in m/s, 0/3/1 in Pa.
+    """
+    import rasterio
+
+    found = {}
+    with rasterio.open(path) as ds:
+        if ds.driver != "GRIB":
+            raise ValueError(f"{path} is not read as GRIB by GDAL ({ds.driver})")
+        t = ds.transform
+        if t.b != 0 or t.d != 0:
+            raise ValueError(f"rotated grid in {path}")
+        # GDAL reports pixel corners; GRIB values sit at the centres.
+        lon = t.c + (np.arange(ds.width) + 0.5) * t.a
+        lat = t.f + (np.arange(ds.height) + 0.5) * t.e
+        for band in range(1, ds.count + 1):
+            tags = ds.tags(band)
+            if tags.get("GRIB_PDS_PDTN") != "0":
+                raise ValueError(f"unexpected product template {tags.get('GRIB_PDS_PDTN')} in {path}")
+            # Template 4.0, one number per octet: [0] category, [1] number, [8] time unit,
+            # [9:13] forecast time, [13] first surface type, [14] scale, [15:19] scaled value.
+            pds = [int(x) for x in tags["GRIB_PDS_TEMPLATE_NUMBERS"].split()]
+            discipline = int(tags["GRIB_DISCIPLINE"].split("(")[0])
+            level = int.from_bytes(bytes(pds[15:19]), "big") / 10 ** pds[14]
+            fld = next((x for x in FIELDS
+                        if (x.discipline, x.category, x.number, x.level, x.surface)
+                        == (discipline, pds[0], pds[1], level, pds[13])), None)
+            if pds[8] != 1 or int.from_bytes(bytes(pds[9:13]), "big") != h.fhour:
+                raise ValueError(f"band {band} of {path} is not forecast hour {h.fhour}")
+            _check_identity(found, fld, path, _epoch(tags["GRIB_REF_TIME"]), _epoch(tags["GRIB_VALID_TIME"]), h)
+            found[fld.name] = ds.read(band, masked=True).astype(float).filled(np.nan)
+    return found, lat, lon

@@ -13,10 +13,11 @@ gdas/download_gdas.py ─────────── GDAS ────┘
 
 ## Usage
 
-Linux / HPC (Unity), from the repository root:
+Linux / HPC (Unity), from the repository root, in the existing `floodwater` env. Nothing needs installing:
 
 ```bash
-pip install -r gdas/requirements.txt        # once
+conda activate floodwater
+python gdas/tests/check_grib_reader.py      # once: confirms this env decodes GDAS GRIB2 correctly
 
 python gdas/download_gdas.py \
     --domain 0.1 -98.0 3.0 4.0 47.0 \
@@ -45,6 +46,7 @@ line endings on every platform.
 | `--source auto/nomads/aws` | `auto`: NOMADS for cycles younger than 9 days, otherwise the AWS archive. |
 | `--buffer` | Extra source margin around the domain in degrees (default 1.0). |
 | `--reference-wnd/--reference-pre` | Compare the layout with existing MetGet files. Values are not compared. |
+| `--grib-reader auto/eccodes/rasterio` | GRIB2 decoder. `auto`: eccodes if installed, otherwise rasterio (GDAL). |
 | `--dry-run` | Print which GDAS cycle/forecast hour feeds every output hour. |
 
 The exit status is 0 only when validation passes.
@@ -124,10 +126,26 @@ After writing, both files are re-read the way the downstream tools read them:
 * the grid size `owi2wind.py` will rebuild from `Wind_Inp.txt`. Its integer truncation loses a row or column
   for some small domains; RICHAMP's domain is fine.
 
+## GRIB2 decoding
+
+Two readers give the same result:
+* **eccodes**, used when installed.
+* **rasterio/GDAL**, used in the `floodwater` env. Here fields are identified by their GRIB2
+  codes (discipline/category/number, surface type and level, forecast hour) rather than
+  GDAL's version-dependent names.
+
+Tested on 2025-10-28 00-06Z:
+* the grids are identical on both the AWS global and the NOMADS subset layouts;
+* the `.wnd` files are byte-identical;
+* the `.pre` files differ by at most 0.0001 hPa, because GDAL returns float32.
+
+`gdas/tests/check_grib_reader.py` downloads one hour and compares 7 grid points against
+eccodes reference values. It needs neither pytest nor eccodes.
+
 ## Tests
 
 ```bash
-python -m pytest gdas/tests -q
+python -m pytest gdas/tests -q      # needs pytest (e.g. on a workstation)
 ```
 
 Offline tests cover the format against a MetGet sample, the timeline, regridding, download checks
@@ -143,5 +161,7 @@ gdas/
 ├── grid.py            target grid and bilinear interpolation
 ├── owi.py             OWI .wnd/.pre writer, re-reader and checks
 ├── requirements.txt
-└── tests/test_gdas.py
+└── tests/
+    ├── test_gdas.py           offline pytest suite
+    └── check_grib_reader.py   one-hour GRIB decoding check for a new environment
 ```

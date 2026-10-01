@@ -25,7 +25,7 @@ from pathlib import Path
 
 import numpy as np
 
-from gdas_source import FIELDS, NATIVE_RES, Downloader, hourly_timeline, read_hour
+from gdas_source import NATIVE_RES, Downloader, grib_reader, hourly_timeline, read_hour
 from grid import Bilinear, TargetGrid
 from owi import LIMITS, OwiWriter, compare_with_reference, downstream_grid_size, scan_owi_file, title_line
 
@@ -68,6 +68,8 @@ def parse_args(argv=None):
     p.add_argument("--timeout", type=float, default=120.0, help="HTTP timeout in seconds (default: 120)")
     p.add_argument("--reference-wnd", type=Path, help="Existing MetGet .wnd to compare structure with")
     p.add_argument("--reference-pre", type=Path, help="Existing MetGet .pre to compare structure with")
+    p.add_argument("--grib-reader", choices=["auto", "eccodes", "rasterio"], default="auto",
+                   help="GRIB2 decoder. auto: eccodes if installed, otherwise rasterio (GDAL)")
     p.add_argument("--dry-run", action="store_true", help="Print the hourly source plan and exit")
     return p.parse_args(argv)
 
@@ -112,11 +114,11 @@ def build(args, grid: TargetGrid, hours, dl: Downloader, paths: dict, wnd: Path,
     with OwiWriter(wnd, pre, grid, hours[0].valid, hours[-1].valid) as writer:
         for n, h in enumerate(hours, 1):
             try:
-                native = read_hour(paths[h], h)
+                native = read_hour(paths[h], h, args.grib_reader)
             except Exception as e:
                 log.warning("Cannot decode %s (%s); downloading again", paths[h], e)
                 paths[h].unlink(missing_ok=True)
-                native = read_hour(dl.fetch(h), h)
+                native = read_hour(dl.fetch(h), h, args.grib_reader)
             key = (native.lat[0], native.lat[-1], len(native.lat), native.lon[0], native.lon[-1], len(native.lon))
             if key not in regridders:
                 regridders[key] = Bilinear(native.lat, native.lon, grid.lats, grid.lons)
@@ -187,7 +189,7 @@ def validate(args, grid, hours, writer, wnd: Path, pre: Path):
     return not errors, {"errors": errors, "vars": var_status, "times": sw.times, "refs": ref_notes}
 
 
-def print_summary(grid, hours, sources_used, wnd, pre, ok, rep, elapsed):
+def print_summary(grid, hours, sources_used, reader, wnd, pre, ok, rep, elapsed):
     t = rep["times"]
     cycles = sorted({f"{h.cycle:%H}" for h in hours})
     lines = [
@@ -201,6 +203,7 @@ def print_summary(grid, hours, sources_used, wnd, pre, ok, rep, elapsed):
         "Dataset:     NOAA/NCEP GDAS pgrb2.0p25 (UGRD/VGRD 10 m, PRMSL)",
         f"Cycles:      {'/'.join(cycles)} (f000 analysis + f001-f005 hourly forecasts)",
         f"Resolution:  {NATIVE_RES} deg -> bilinear",
+        f"GRIB reader: {reader}",
         f"Fetched via: {', '.join(sorted(sources_used))}", "",
         "Target grid", "-----------",
         f"West:        {grid.west:g}", f"East:        {grid.east:g}",
@@ -250,11 +253,12 @@ def run(args) -> int:
         return 0
 
     t0 = time.time()
+    args.grib_reader = grib_reader(args.grib_reader)
     bounds = download_bounds(grid, args.buffer)
     dl = Downloader(args.cache_dir, args.source, bounds, args.retries, args.timeout,
                     failed_log=args.work_dir / "failed_urls.log")
-    log.info("GDAS %s -> %s: %d hourly records, source=%s, cache=%s",
-             args.start, args.end, len(hours), args.source, args.cache_dir)
+    log.info("GDAS %s -> %s: %d hourly records, source=%s, cache=%s, GRIB reader=%s",
+             args.start, args.end, len(hours), args.source, args.cache_dir, args.grib_reader)
     log.info("Target grid NX=%d NY=%d; download box lon %g..%g lat %g..%g",
              grid.nx, grid.ny, bounds[0], bounds[2], bounds[1], bounds[3])
     paths = download_all(dl, hours, args.workers)
@@ -267,7 +271,7 @@ def run(args) -> int:
 
     log.info("Validating %s and %s", wnd.name, pre.name)
     ok, rep = validate(args, grid, hours, writer, wnd, pre)
-    print_summary(grid, hours, sources_used, wnd, pre, ok, rep, time.time() - t0)
+    print_summary(grid, hours, sources_used, args.grib_reader, wnd, pre, ok, rep, time.time() - t0)
     return 0 if ok else 1
 
 
