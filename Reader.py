@@ -53,6 +53,9 @@ class Reader:
     # Default number of timesteps read per NetCDF request when building
     # cropped map data. Override per-call via the chunkSize argument.
     MAP_TIME_CHUNK_SIZE = 24
+    # Set from generateGraphs --maps; when on, map_data is added for these types
+    GENERATE_MAPS = False
+    MAP_DATA_TYPES = ("water", "velocity", "swh", "gfs", "rain")
 
     def __init__(self, STATIONS_FILE="", STATION_TO_NODE_DISTANCES_FILE="", NODES_FILE="", BACKGROUND_AXIS=[], format=""):
         self.STATIONS_FILE = STATIONS_FILE
@@ -1102,9 +1105,8 @@ class Reader:
             stationsDict = json.load(stations_file)
 
         data = {}
-#         if(dataType == "water" or dataType == "swh" or dataType == "gfs" or dataType == "rain"):
-        if(False):
-#            if(dataType == "water" or dataType == "swh" or dataType == "gfs" or dataType == "rain"):
+        # Full field maps are slow and large, so they are only built on request (--maps)
+        if(self.GENERATE_MAPS and dataType in self.MAP_DATA_TYPES):
 
             data = self.getMap(dataset, dataType, times, spaceSparseness, timeSparseness, data)
 

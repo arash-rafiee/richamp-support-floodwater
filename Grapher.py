@@ -93,6 +93,97 @@ def installFigureBanner(banner):
     _bannerInstalled = True
 
 
+MAP_VIDEO_FPS = 10
+
+
+def writeMjpegAvi(outputFile, frames, width, height, fps):
+    """Write RGB uint8 frames as a Motion JPEG .avi using only Pillow.
+
+    Needs no ffmpeg or extra package. Each frame is its own JPEG inside a
+    plain RIFF/AVI 1.0 container with an idx1 index, which VLC, Windows Media
+    Player and PowerPoint all play.
+    """
+    import struct
+    from io import BytesIO
+    from PIL import Image
+
+    def chunk(fourcc, payload):
+        return fourcc + struct.pack("<I", len(payload)) + payload + (b"\0" if len(payload) % 2 else b"")
+
+    with open(outputFile, "wb") as f:
+        # Headers are written with a zero frame count and patched at the end
+        def headers(frameCount, maxFrameBytes):
+            avih = struct.pack("<10I4I", int(1e6 / fps), maxFrameBytes * fps, 0, 0x10, frameCount,
+                               0, 1, maxFrameBytes, width, height, 0, 0, 0, 0)
+            strh = (b"vidsMJPG" + struct.pack("<IHHIIIIIIiI", 0, 0, 0, 0, 1, fps, 0, frameCount,
+                                              maxFrameBytes, -1, 0)
+                    + struct.pack("<4h", 0, 0, width, height))
+            strf = struct.pack("<IiiHH4sIiiII", 40, width, height, 1, 24, b"MJPG", width * height * 3, 0, 0, 0, 0)
+            strl = b"LIST" + struct.pack("<I", 4 + len(chunk(b"strh", strh)) + len(chunk(b"strf", strf))) + b"strl" \
+                + chunk(b"strh", strh) + chunk(b"strf", strf)
+            hdrl = b"hdrl" + chunk(b"avih", avih) + strl
+            return b"LIST" + struct.pack("<I", len(hdrl)) + hdrl
+
+        f.write(b"RIFF\0\0\0\0AVI ")
+        f.write(headers(0, 0))
+        moviStart = f.tell()
+        f.write(b"LIST\0\0\0\0movi")
+        index = []
+        maxFrameBytes = 0
+        for frame in frames:
+            buffer = BytesIO()
+            Image.fromarray(frame).save(buffer, format="JPEG", quality=92)
+            data = buffer.getvalue()
+            index.append((f.tell() - (moviStart + 8), len(data)))
+            maxFrameBytes = max(maxFrameBytes, len(data))
+            f.write(chunk(b"00dc", data))
+        moviEnd = f.tell()
+        f.write(b"idx1" + struct.pack("<I", 16 * len(index)))
+        for offset, size in index:
+            f.write(b"00dc" + struct.pack("<III", 0x10, offset, size))
+        fileEnd = f.tell()
+        f.seek(4)
+        f.write(struct.pack("<I", fileEnd - 8))
+        f.seek(12)
+        f.write(headers(len(index), maxFrameBytes))
+        f.seek(moviStart + 4)
+        f.write(struct.pack("<I", moviEnd - moviStart - 8))
+
+
+def writeMapAnimation(graph_directory, framePrefix, frameCount, name):
+    """Stitch graph_directory/<framePrefix><i>.png into <name>.avi and remove the frames.
+
+    The floodwater conda environment has no video encoder (no ffmpeg), so the
+    video is a Motion JPEG .avi written with Pillow alone. bbox_inches="tight"
+    frames can differ by a few pixels as the time label changes, so each frame
+    is padded with white to the largest size.
+    """
+    from PIL import Image
+    frameFiles = [graph_directory + framePrefix + str(index) + ".png" for index in range(frameCount)]
+    if not frameFiles:
+        return
+    sizes = []
+    for frameFile in frameFiles:
+        with Image.open(frameFile) as frame:
+            sizes.append(frame.size)
+    width = max(size[0] for size in sizes)
+    height = max(size[1] for size in sizes)
+
+    def paddedFrames():
+        for frameFile in frameFiles:
+            with Image.open(frameFile) as frame:
+                image = np.asarray(frame.convert("RGB"))
+            canvas = np.full((height, width, 3), 255, dtype=np.uint8)
+            canvas[:image.shape[0], :image.shape[1]] = image
+            yield canvas
+
+    outputFile = graph_directory + name + ".avi"
+    writeMjpegAvi(outputFile, paddedFrames(), width, height, MAP_VIDEO_FPS)
+    print("Wrote " + outputFile, flush=True)
+    for frameFile in frameFiles:
+        os.remove(frameFile)
+
+
 def compactDateRange(start, end):
     """Format a date span as "Sep 13–20, 2026", widening as months/years differ."""
     if start.year != end.year:
@@ -1383,14 +1474,7 @@ class Grapher:
                 plt.savefig(graph_directory + 'map_wind_' + str(index) + '.png')
                 plt.close()
                 gc.collect()
-            with imageio.get_writer(graph_directory + 'wind.gif', mode='I') as writer:
-                for index in range(len(self.mapWindTimes)):
-                    filename = "map_wind_" + str(index) + ".png"
-                    image = imageio.imread(graph_directory + filename)
-                    writer.append_data(image)
-                for index in range(len(self.mapWindTimes)):
-                    filename = "map_wind_" + str(index) + ".png"
-                    os.remove(graph_directory + filename)
+            writeMapAnimation(graph_directory, "map_wind_", len(self.mapWindTimes), "wind")
             mapSpeedsNoNan = np.nan_to_num(self.mapSpeeds)
             swathWind = np.max(mapSpeedsNoNan, axis=0)
             fig, ax = plt.subplots()
@@ -1447,14 +1531,7 @@ class Grapher:
                 plt.savefig(graph_directory + 'map_rain_' + str(index) + '.png')
                 plt.close()
                 gc.collect()
-            with imageio.get_writer(graph_directory + 'rain.gif', mode='I') as writer:
-                for index in range(len(self.mapRainTimes)):
-                    filename = "map_rain_" + str(index) + ".png"
-                    image = imageio.imread(graph_directory + filename)
-                    writer.append_data(image)
-                for index in range(len(self.mapRainTimes)):
-                    filename = "map_rain_" + str(index) + ".png"
-                    os.remove(graph_directory + filename)
+            writeMapAnimation(graph_directory, "map_rain_", len(self.mapRainTimes), "rain")
             mapRainsNoNan = np.nan_to_num(self.mapRains)
             accumulatedRain = np.sum(mapRainsNoNan, axis=0)
             fig, ax = plt.subplots()
@@ -1546,14 +1623,7 @@ class Grapher:
                 plt.savefig(graph_directory + 'map_eta_' + str(index) + '.png')
                 plt.close()
                 gc.collect()
-            with imageio.get_writer(graph_directory + 'eta.gif', mode='I') as writer:
-                for index in range(len(self.mapEtaTimes)):
-                    filename = "map_eta_" + str(index) + ".png"
-                    image = imageio.imread(graph_directory + filename)
-                    writer.append_data(image)
-                for index in range(len(self.mapEtaTimes)):
-                    filename = "map_eta_" + str(index) + ".png"
-                    os.remove(graph_directory + filename)
+            writeMapAnimation(graph_directory, "map_eta_", len(self.mapEtaTimes), "eta")
             mapEtaNoNan = np.nan_to_num(self.mapEta)
             swathEta = np.max(self.mapEta, axis=0)
             fig, ax = plt.subplots()
@@ -1651,14 +1721,7 @@ class Grapher:
                 plt.savefig(graph_directory + 'map_water_' + str(index) + '.png', bbox_inches="tight")
                 plt.close()
                 gc.collect()
-            with imageio.get_writer(graph_directory + 'water.gif', mode='I') as writer:
-                for index in range(len(self.mapWaterTimes)):
-                    filename = "map_water_" + str(index) + ".png"
-                    image = imageio.imread(graph_directory + filename)
-                    writer.append_data(image)
-                for index in range(len(self.mapWaterTimes)):
-                    filename = "map_water_" + str(index) + ".png"
-                    os.remove(graph_directory + filename)
+            writeMapAnimation(graph_directory, "map_water_", len(self.mapWaterTimes), "water")
 
             swathWaters = np.max(self.mapWaters, axis=0)
             print(len(swathWaters), len(self.mapWaterMaskedTriangles))
@@ -1740,14 +1803,7 @@ class Grapher:
                 plt.savefig(graph_directory + 'map_velocity_' + str(index) + '.png', bbox_inches="tight")
                 plt.close()
                 gc.collect()
-            with imageio.get_writer(graph_directory + 'velocity.gif', mode='I') as writer:
-                for index in range(len(self.mapVelocityTimes)):
-                    filename = "map_velocity_" + str(index) + ".png"
-                    image = imageio.imread(graph_directory + filename)
-                    writer.append_data(image)
-                for index in range(len(self.mapVelocityTimes)):
-                    filename = "map_velocity_" + str(index) + ".png"
-                    os.remove(graph_directory + filename)
+            writeMapAnimation(graph_directory, "map_velocity_", len(self.mapVelocityTimes), "velocity")
 
             swathVelocity = np.max(self.mapVelocitySpeeds, axis=0)
             swathMaskedTriangles = self.mapVelocityMaskedTriangles.copy()
@@ -1818,14 +1874,7 @@ class Grapher:
                 plt.savefig(graph_directory + 'map_swh_' + str(index) + '.png')
                 plt.close()
                 gc.collect()
-            with imageio.get_writer(graph_directory + 'wave.gif', mode='I') as writer:
-                for index in range(len(self.mapWaveTimes)):
-                    filename = "map_swh_" + str(index) + ".png"
-                    image = imageio.imread(graph_directory + filename)
-                    writer.append_data(image)
-                for index in range(len(self.mapWaveTimes)):
-                    filename = "map_swh_" + str(index) + ".png"
-                    os.remove(graph_directory + filename)
+            writeMapAnimation(graph_directory, "map_swh_", len(self.mapWaveTimes), "wave")
             swathSWH = np.max(self.mapSWH, axis=0)
             for index, triangle in enumerate(self.mapWaveTriangles):
                 for pointIndex in triangle:

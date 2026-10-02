@@ -52,6 +52,8 @@
 #   --bannerFromData true \
 # To plot NOAA tide predictions instead of the observed water levels, add:
 #   --obsPredicted true \
+# To also draw map frames over --backgroundChoice and save them as an .avi video, add:
+#   --maps true \
 #
 python generateGraphs.py \
   --stations OBS_STATIONS.json \

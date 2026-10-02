@@ -1,4 +1,4 @@
-from Reader import Fort14Reader, Fort74Reader, Fort63Reader, Fort64Reader, GFSWindReader, GFSRainReader, PostWindReader, WaveReader
+from Reader import Reader, Fort14Reader, Fort74Reader, Fort63Reader, Fort64Reader, GFSWindReader, GFSRainReader, PostWindReader, WaveReader
 from Grapher import Grapher
 from DiffGrapher import DiffGrapher
 from GetBuoyWind import GetBuoyWind
@@ -358,6 +358,10 @@ def main():
              "defaults to properties/run.properties or one found beside the input data"
     )
     p.add_argument(
+        "--maps", type=bool,
+        help="Also draw map frames of water/velocity/waves/wind/rain over --backgroundChoice and save them as an .avi"
+    )
+    p.add_argument(
         "--obsPredicted", type=bool,
         help="Plot NOAA tide predictions in place of the observed (verified/preliminary) water levels"
     )
@@ -370,6 +374,7 @@ def main():
     )
     args = p.parse_args()
     args.epsg = 4326
+    Reader.GENERATE_MAPS = bool(args.maps)
     print("Generating Wind Graphs!", flush=True)
     wind_temp_directory = args.tempDir
     graphs_directory = "graphs/"
