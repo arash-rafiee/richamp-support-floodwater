@@ -358,6 +358,10 @@ def main():
              "defaults to properties/run.properties or one found beside the input data"
     )
     p.add_argument(
+        "--obsPredicted", type=bool,
+        help="Plot NOAA tide predictions in place of the observed (verified/preliminary) water levels"
+    )
+    p.add_argument(
         "--bannerFromData", type=bool,
         help="Show the first and last time of the input netcdf in the banner instead of the run.properties window"
     )
@@ -747,7 +751,8 @@ def main():
         if(args.waterExists):
             print("Parsed start and end date from netCDF, ", waterStartDateObject, waterEndDateObject, flush=True)
             OBS_WATER_DATA_FILE = wind_temp_directory + "obs_water_data_file" + ".json"
-            GetBuoyWater(STATIONS_FILE=STATIONS_FILE, OBS_WATER_DATA_FILE=OBS_WATER_DATA_FILE, startDateObject=waterStartDateObject, endDateObject=waterEndDateObject)
+            GetBuoyWater(STATIONS_FILE=STATIONS_FILE, OBS_WATER_DATA_FILE=OBS_WATER_DATA_FILE, startDateObject=waterStartDateObject, endDateObject=waterEndDateObject,
+                         usePredicted=bool(args.obsPredicted))
             dataToGraph["TIDE"] = OBS_WATER_DATA_FILE
         if(args.meshExists):
             print("Calling get observational elevation data", flush=True)
@@ -789,7 +794,8 @@ def main():
         backgroundMap=backgroundMap,
         backgroundAxis=backgroundAxis,
         titlePrefix=titlePrefix,
-        stormBanner=stormBanner).generateGraphs()
+        stormBanner=stormBanner,
+        obsWaterLabel="Predicted" if args.obsPredicted else "Obs").generateGraphs()
 
 if __name__ == "__main__":
     main()

@@ -105,7 +105,7 @@ def download_coops_water_level_csv(stationId, startDateObject, endDateObject, fi
 
 
 class GetBuoyWater:
-    def __init__(self, STATIONS_FILE="", OBS_WATER_DATA_FILE="", startDateObject="", endDateObject=""):
+    def __init__(self, STATIONS_FILE="", OBS_WATER_DATA_FILE="", startDateObject="", endDateObject="", usePredicted=False):
         temp_directory = OBS_WATER_DATA_FILE[0:OBS_WATER_DATA_FILE.rfind("/") + 1]
         print(type(startDateObject), flush=True)
         print(startDateObject, flush=True)
@@ -234,12 +234,16 @@ class GetBuoyWater:
                 if not filtered_data.empty:
                     unixTimes = (filtered_data["datetime"].astype("int64") // 10**9).to_numpy()
         
-                    # Use Verified (m) if available, otherwise fall back to Preliminary (m)
-                    waters = filtered_data["Verified (m)"].replace("-", np.nan).astype(float)
-                    waters = waters.fillna(filtered_data["Preliminary (m)"].replace("-", np.nan).astype(float)).to_numpy()
-        
                     # Extract predicted water levels
                     prediction_waters = filtered_data["Predicted (m)"].replace("-", np.nan).astype(float).to_numpy()
+
+                    if usePredicted:
+                        # NOAA tide predictions in place of the observed levels
+                        waters = prediction_waters
+                    else:
+                        # Use Verified (m) if available, otherwise fall back to Preliminary (m)
+                        waters = filtered_data["Verified (m)"].replace("-", np.nan).astype(float)
+                        waters = waters.fillna(filtered_data["Preliminary (m)"].replace("-", np.nan).astype(float)).to_numpy()
         
 #                     # Add MOORING_LENGTH to waters
 #                     waters = waters + MOORING_LENGTH

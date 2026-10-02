@@ -199,7 +199,7 @@ class Grapher:
     # Usage example:
     # plot_extended_lines(self, ax, runupIndex, index, runupLabel)
 
-    def __init__(self, dataToGraph={}, STATIONS_FILE="", backgroundMap="", backgroundAxis=[], titlePrefix="", stormBanner=""):
+    def __init__(self, dataToGraph={}, STATIONS_FILE="", backgroundMap="", backgroundAxis=[], titlePrefix="", stormBanner="", obsWaterLabel="Obs"):
         print("Initializing grapher", flush=True)
         self.obsExists = False
         self.gaugeExists = False
@@ -232,6 +232,7 @@ class Grapher:
         
         self.titlePrefix=titlePrefix
         self.stormBanner=stormBanner
+        self.obsWaterLabel=obsWaterLabel
         installFigureBanner(stormBanner)
         
         if("OBS" in dataToGraph):
@@ -1922,7 +1923,7 @@ class Grapher:
                     ax.plot(self.tidewaterTimes, self.datapointsTidewaters[index], label=r"$\eta_{tide}$", linestyle="--")
                 ax.plot(self.waterTimes, self.datapointsWaters[index], label=r"$\eta$")
                 if(self.tideExists):
-                    ax.plot(self.tideDatapointsTimes[index], self.tideDatapointsWaters[index], label="Obs")
+                    ax.plot(self.tideDatapointsTimes[index], self.tideDatapointsWaters[index], label=self.obsWaterLabel)
 #                     ax.plot(self.tideDatapointsPredictionTimes[index], self.tideDatapointsPredictionWaters[index], label="Tides")
                 ax.legend(loc="upper left")
                 ax.grid(True, alpha=0.3)

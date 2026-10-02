@@ -50,6 +50,8 @@
 # The banner at the top of each graph comes from run.properties by default.
 # To show the first and last time of the input .nc file instead, add:
 #   --bannerFromData true \
+# To plot NOAA tide predictions instead of the observed water levels, add:
+#   --obsPredicted true \
 #
 python generateGraphs.py \
   --stations OBS_STATIONS.json \
