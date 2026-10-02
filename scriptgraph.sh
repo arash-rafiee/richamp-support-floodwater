@@ -47,6 +47,10 @@
 #  --backgroundChoice RHODE_ISLAND_CHAMP
 #
 #
+# The banner at the top of each graph comes from run.properties by default.
+# To show the first and last time of the input .nc file instead, add:
+#   --bannerFromData true \
+#
 python generateGraphs.py \
   --stations OBS_STATIONS.json \
   --obsExists true \

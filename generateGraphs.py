@@ -198,14 +198,19 @@ def formatForecastTime(rawTime, packedTime):
     return ""
 
 
-def buildStormBanner(properties):
+def buildStormBanner(properties, dataWindow=None):
     """Build the two line storm banner drawn at the top of every graph.
 
     Line one identifies the storm, line two gives the forecast window. Missing
     or empty properties are dropped, so a gfs run just shows the window.
+    A dataWindow (start, end) pair, read from the netcdf times, replaces the
+    run.properties forecast window.
     """
-    if not properties:
+    properties = dict(properties or {})
+    if not properties and not dataWindow:
         return ""
+    if properties.get("stormtype"):
+        properties["stormtype"] = properties["stormtype"].upper()
     stormFields = []
     stormName = properties.get("stormname", "")
     stormClass = properties.get("stormclass", "")
@@ -217,14 +222,50 @@ def buildStormBanner(properties):
         value = properties.get(key, "")
         if value:
             stormFields.append(label + value)
-    start = formatForecastTime(properties.get("rawstart", ""), properties.get("forecastValidStart", ""))
-    end = formatForecastTime(properties.get("rawend", ""), properties.get("forecastValidEnd", ""))
+    if dataWindow:
+        start, end = dataWindow
+    else:
+        start = formatForecastTime(properties.get("rawstart", ""), properties.get("forecastValidStart", ""))
+        end = formatForecastTime(properties.get("rawend", ""), properties.get("forecastValidEnd", ""))
     bannerLines = []
     if stormFields:
         bannerLines.append(" · ".join(stormFields))
     if start and end:
         bannerLines.append(start + " – " + end + " UTC")
     return "\n".join(bannerLines)
+
+
+def readNetcdfWindow(dataFiles):
+    """Return the first and last time of the first readable netcdf file.
+
+    Times are "<unit> since <date> <time>" offsets; ADCIRC appends extra text
+    after the reference time, so the units string is matched rather than
+    handed to netCDF4.num2date. Post wind files keep time inside "Main".
+    """
+    import re
+    import netCDF4
+    unitSeconds = {"second": 1, "minute": 60, "hour": 3600, "day": 86400}
+    for dataFile in dataFiles:
+        if not dataFile or not os.path.exists(dataFile):
+            continue
+        with netCDF4.Dataset(dataFile) as dataset:
+            group = dataset
+            if "time" not in group.variables and "Main" in dataset.groups:
+                group = dataset["Main"]
+            if "time" not in group.variables:
+                continue
+            timeVariable = group.variables["time"]
+            match = re.match(r"\s*(second|minute|hour|day)s?\s+since\s+(\d{4}-\d{2}-\d{2})[ T](\d{1,2}:\d{2}(?::\d{2})?)",
+                             timeVariable.units)
+            if not match or len(timeVariable) == 0:
+                continue
+            clock = match.group(3) if match.group(3).count(":") == 2 else match.group(3) + ":00"
+            reference = datetime.datetime.strptime(match.group(2) + " " + clock, "%Y-%m-%d %H:%M:%S")
+            scale = unitSeconds[match.group(1)]
+            first = reference + datetime.timedelta(seconds=float(timeVariable[0]) * scale)
+            last = reference + datetime.timedelta(seconds=float(timeVariable[-1]) * scale)
+            return first.strftime("%Y-%m-%d %H:%M"), last.strftime("%Y-%m-%d %H:%M")
+    return None
 
 
 def main():
@@ -317,6 +358,10 @@ def main():
              "defaults to properties/run.properties or one found beside the input data"
     )
     p.add_argument(
+        "--bannerFromData", type=bool,
+        help="Show the first and last time of the input netcdf in the banner instead of the run.properties window"
+    )
+    p.add_argument(
         "--generateRunup", type=bool, help="Generate runup predictions from runup stations"
     )
     args = p.parse_args()
@@ -353,9 +398,20 @@ def main():
         args.water, args.stillwater, args.tidewater, args.velocity,
         args.wind, args.rain, args.waveswh, args.mesh,
     ])
-    stormBanner = buildStormBanner(readRunProperties(runPropertiesFile))
+    dataWindow = None
+    if args.bannerFromData:
+        dataFiles = [args.water, args.stillwater, args.tidewater, args.velocity,
+                     args.wind, args.rain, args.waveswh]
+        dataWindow = readNetcdfWindow(dataFiles)
+        if not dataWindow:
+            print("--bannerFromData: no readable time variable in the input netcdf, "
+                  "falling back to the run.properties window", flush=True)
+    stormBanner = buildStormBanner(readRunProperties(runPropertiesFile), dataWindow)
     if stormBanner:
-        print("Graph banner from " + runPropertiesFile + ": "
+        bannerSource = runPropertiesFile or "netcdf"
+        if dataWindow:
+            bannerSource += " (window from netcdf times)"
+        print("Graph banner from " + bannerSource + ": "
               + stormBanner.replace("\n", " | "), flush=True)
     else:
         print("No storm banner; found no run.properties next to the input data "
