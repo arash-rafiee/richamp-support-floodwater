@@ -795,7 +795,7 @@ def main():
         backgroundAxis=backgroundAxis,
         titlePrefix=titlePrefix,
         stormBanner=stormBanner,
-        obsWaterLabel="Predicted" if args.obsPredicted else "Obs").generateGraphs()
+        obsWaterLabel="NOAA Predicted Tide" if args.obsPredicted else "NOAA Observed").generateGraphs()
 
 if __name__ == "__main__":
     main()

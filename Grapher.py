@@ -11,6 +11,7 @@ from matplotlib.figure import Figure
 from matplotlib.tri import Triangulation
 from datetime import datetime, timezone
 import imageio
+import re
 import gc
 from geographiclib.geodesic import Geodesic
 
@@ -90,6 +91,41 @@ def installFigureBanner(banner):
 
     Figure.savefig = savefigWithBanner
     _bannerInstalled = True
+
+
+def compactDateRange(start, end):
+    """Format a date span as "Sep 13–20, 2026", widening as months/years differ."""
+    if start.year != end.year:
+        return f"{start:%b} {start.day}, {start.year} – {end:%b} {end.day}, {end.year}"
+    if start.month != end.month:
+        return f"{start:%b} {start.day} – {end:%b} {end.day}, {end.year}"
+    if start.day != end.day:
+        return f"{start:%b} {start.day}–{end.day}, {end.year}"
+    return f"{start:%b} {start.day}, {end.year}"
+
+
+def bannerSubtitle(banner, fallbackStart=None, fallbackEnd=None):
+    """Condense the two line storm banner into "GFS | Sep 13–20, 2026 UTC".
+
+    The banner window is "YYYY-MM-DD HH:MM – YYYY-MM-DD HH:MM UTC"; when the
+    banner has none, the plotted data's own first and last time is used.
+    """
+    lines = [line for line in (banner or "").split("\n") if line.strip()]
+    source = ""
+    start, end = fallbackStart, fallbackEnd
+    for line in lines:
+        dates = re.findall(r"\d{4}-\d{2}-\d{2}", line)
+        if len(dates) == 2:
+            start = datetime.strptime(dates[0], "%Y-%m-%d")
+            end = datetime.strptime(dates[1], "%Y-%m-%d")
+        elif not source:
+            source = line
+    parts = []
+    if source:
+        parts.append(source)
+    if start is not None and end is not None:
+        parts.append(compactDateRange(start, end) + " UTC")
+    return " | ".join(parts)
 
 
 class Grapher:
@@ -199,7 +235,7 @@ class Grapher:
     # Usage example:
     # plot_extended_lines(self, ax, runupIndex, index, runupLabel)
 
-    def __init__(self, dataToGraph={}, STATIONS_FILE="", backgroundMap="", backgroundAxis=[], titlePrefix="", stormBanner="", obsWaterLabel="Obs"):
+    def __init__(self, dataToGraph={}, STATIONS_FILE="", backgroundMap="", backgroundAxis=[], titlePrefix="", stormBanner="", obsWaterLabel="NOAA Observed"):
         print("Initializing grapher", flush=True)
         self.obsExists = False
         self.gaugeExists = False
@@ -308,6 +344,7 @@ class Grapher:
         self.tideLongitudes = []
         self.tideLatitudes = []
         self.tideLabels = []
+        self.tideIds = []
         
         self.tideDatapointsTimes = []
         self.tideDatapointsWaters = []
@@ -829,6 +866,7 @@ class Grapher:
                     
                         if(not tideLabelsInitialized):
                             self.tideLabels.append(self.obsMetadata["NOS"][stationKey]["name"])
+                            self.tideIds.append(self.obsMetadata["NOS"][stationKey].get("id", ""))
                             self.tideLatitudes.append(float(self.obsMetadata["NOS"][stationKey]["latitude"]))
                             self.tideLongitudes.append(float(self.obsMetadata["NOS"][stationKey]["longitude"]))
 
@@ -913,6 +951,7 @@ class Grapher:
                     
                         if(not tideLabelsInitialized):
                             self.tideLabels.append(self.obsMetadata["NOS"][stationKey]["name"])
+                            self.tideIds.append(self.obsMetadata["NOS"][stationKey].get("id", ""))
                             self.tideLatitudes.append(float(self.obsMetadata["NOS"][stationKey]["latitude"]))
                             self.tideLongitudes.append(float(self.obsMetadata["NOS"][stationKey]["longitude"]))
     
@@ -1916,25 +1955,47 @@ class Grapher:
                 plt.close()
         for index in range(numberOfWaterDatapoints):
             if(len(self.datapointsWaters) > 0):
-                fig, ax = plt.subplots(figsize=(16,9))
+                # Publication style figure: compact layout, title and a small
+                # forcing/date subtitle in place of the global banner
+                fig, ax = plt.subplots(figsize=(11, 5.5), layout="constrained")
+                fig.richampBannerDrawn = True
+                lineWidth = 2.0
                 if(self.stillwaterExists):
-                    ax.plot(self.stillwaterTimes, self.datapointsStillwaters[index], label=r"$\eta_{still}$", linestyle="--")
+                    ax.plot(self.stillwaterTimes, self.datapointsStillwaters[index], label="ADCIRC Stillwater", linestyle=":", linewidth=lineWidth)
                 if(self.tidewaterExists):
-                    ax.plot(self.tidewaterTimes, self.datapointsTidewaters[index], label=r"$\eta_{tide}$", linestyle="--")
-                ax.plot(self.waterTimes, self.datapointsWaters[index], label=r"$\eta$")
+                    ax.plot(self.tidewaterTimes, self.datapointsTidewaters[index], label="ADCIRC Tide Only", linestyle="-.", linewidth=lineWidth)
+                ax.plot(self.waterTimes, self.datapointsWaters[index], label="ADCIRC", color="C0", linestyle="-", linewidth=lineWidth)
                 if(self.tideExists):
-                    ax.plot(self.tideDatapointsTimes[index], self.tideDatapointsWaters[index], label=self.obsWaterLabel)
+                    ax.plot(self.tideDatapointsTimes[index], self.tideDatapointsWaters[index], label=self.obsWaterLabel, color="C1", linestyle="--", linewidth=lineWidth)
 #                     ax.plot(self.tideDatapointsPredictionTimes[index], self.tideDatapointsPredictionWaters[index], label="Tides")
-                ax.legend(loc="upper left")
-                ax.grid(True, alpha=0.3)
-                ax.format_xdata = mdates.DateFormatter('%d')
                 stationName = self.tideLabels[index]
+                stationId = self.tideIds[index] if index < len(self.tideIds) else ""
                 maxElevation = str(round(max(self.datapointsWaters[index]), 2))
-                plt.title(self.titlePrefix + stationName + " station water elevation", fontsize=24)
-#                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT))
-                plt.ylabel("elevation (meters)")
-                plt.xticks(rotation=45, ha='right')
-                plt.savefig(graph_directory + stationName + '_water.png', bbox_inches='tight')
+
+                title = self.titlePrefix + stationName
+                if stationId:
+                    title += " — Station " + stationId
+                fig.suptitle(title, fontsize=15, fontweight="bold")
+                subtitle = bannerSubtitle(self.stormBanner, self.waterTimes[0], self.waterTimes[-1])
+                if subtitle:
+                    ax.set_title(subtitle, fontsize=11, color="0.25")
+
+                ax.set_ylabel("Water Level (m)", fontsize=12)
+                ax.tick_params(labelsize=10)
+                ax.margins(x=0)
+                # Headroom above the highest crest so the legend sits clear of the data
+                low, high = ax.get_ylim()
+                ax.set_ylim(low, high + 0.15 * (high - low))
+                ax.xaxis.set_major_locator(mdates.DayLocator(tz=timezone.utc))
+                ax.xaxis.set_major_formatter(plt.FuncFormatter(
+                    lambda value, position: (lambda d: f"{d:%b} {d.day}")(mdates.num2date(value, tz=timezone.utc))))
+                plt.setp(ax.get_xticklabels(), rotation=30, ha="right")
+                ax.grid(True, which="major", color="0.88", linewidth=0.6)
+                ax.set_axisbelow(True)
+                ax.set_facecolor("white")
+                ax.legend(loc="best", fontsize=10, frameon=True, framealpha=0.9, edgecolor="0.8",
+                          ncol=2, handlelength=2.6, borderpad=0.4, columnspacing=1.2)
+                fig.savefig(graph_directory + stationName + '_water.png', dpi=200, facecolor="white", bbox_inches='tight', pad_inches=0.05)
                 plt.close()
                 
 
