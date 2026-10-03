@@ -184,6 +184,70 @@ def writeMapAnimation(graph_directory, framePrefix, frameCount, name):
         os.remove(frameFile)
 
 
+def loadMapArrays(dataset):
+    """Swap {"npy": path} entries Reader.saveMapArrays left in map_data back to numpy arrays."""
+    mapData = dataset.get("map_data") if isinstance(dataset, dict) else None
+    if mapData:
+        for key, value in mapData.items():
+            if isinstance(value, dict) and "npy" in value:
+                mapData[key] = np.load(value["npy"])
+    return dataset
+
+
+class MeshRasterizer:
+    """Linear interpolation of node values onto a fixed pixel grid of the plot area.
+
+    Each pixel's containing triangle and barycentric weights are found once;
+    after that a frame is a gather and a weighted sum. This draws the same
+    linear-within-triangle shading as tripcolor(shading="gouraud"). A pixel is
+    blank when its triangle is masked or has a node at the -99999 dry value.
+    """
+
+    DRY = -99999.0
+
+    def __init__(self, longitudes, latitudes, triangles, maskedTriangles, plotAxis, width=1200):
+        longitudes = np.asarray(longitudes, dtype=np.float64)
+        latitudes = np.asarray(latitudes, dtype=np.float64)
+        triangles = np.asarray(triangles)
+        west, east, south, north = plotAxis
+        self.extent = [west, east, south, north]
+        self.width = int(width)
+        self.height = max(1, int(round(self.width * (north - south) / (east - west))))
+        pixelX = west + (np.arange(self.width) + 0.5) * (east - west) / self.width
+        pixelY = south + (np.arange(self.height) + 0.5) * (north - south) / self.height
+        gridX, gridY = np.meshgrid(pixelX, pixelY)
+        gridX = gridX.ravel()
+        gridY = gridY.ravel()
+        triangleIds = Triangulation(longitudes, latitudes, triangles=triangles).get_trifinder()(gridX, gridY)
+        if len(maskedTriangles):
+            masked = np.asarray(maskedTriangles, dtype=bool)
+            triangleIds = np.where((triangleIds >= 0) & ~masked[np.maximum(triangleIds, 0)], triangleIds, -1)
+        inside = triangleIds >= 0
+        self.pixels = np.flatnonzero(inside)
+        self.nodes = triangles[triangleIds[inside]]
+        x0, x1, x2 = (longitudes[self.nodes[:, k]] for k in range(3))
+        y0, y1, y2 = (latitudes[self.nodes[:, k]] for k in range(3))
+        px = gridX[inside]
+        py = gridY[inside]
+        det = (y1 - y2) * (x0 - x2) + (x2 - x1) * (y0 - y2)
+        w0 = ((y1 - y2) * (px - x2) + (x2 - x1) * (py - y2)) / det
+        w1 = ((y2 - y0) * (px - x2) + (x0 - x2) * (py - y2)) / det
+        self.weights = np.stack([w0, w1, 1.0 - w0 - w1], axis=1).astype(np.float32)
+
+    def values(self, nodeValues):
+        """(height, width) float32 image of nodeValues, NaN where nothing is drawn."""
+        nodeValues = np.asarray(nodeValues, dtype=np.float32)
+        cornerValues = nodeValues[self.nodes]
+        dry = (cornerValues == self.DRY).any(axis=1)
+        image = np.full(self.width * self.height, np.nan, dtype=np.float32)
+        image[self.pixels] = np.where(dry, np.nan, (cornerValues * self.weights).sum(axis=1))
+        return image.reshape(self.height, self.width)
+
+    def imshow(self, ax, nodeValues, **kwargs):
+        return ax.imshow(self.values(nodeValues), extent=self.extent, origin="lower",
+                         interpolation="nearest", **kwargs)
+
+
 def compactDateRange(start, end):
     """Format a date span as "Sep 13–20, 2026", widening as months/years differ."""
     if start.year != end.year:
@@ -921,7 +985,7 @@ class Grapher:
             
         if(self.waterExists):
             with open(dataToGraph["WATER"]) as outfile:
-                waterDataset = json.load(outfile)
+                waterDataset = loadMapArrays(json.load(outfile))
                 
             if(self.stillwaterExists):
                 with open(dataToGraph["STILLWATER"]) as outfile:
@@ -942,12 +1006,9 @@ class Grapher:
                     self.mapWaterPoints = waterDataset["map_data"]["map_points"]
                     self.mapWaterPointsLatitudes = waterDataset["map_data"]["map_pointsLatitudes"]
                     self.mapWaterPointsLongitudes = waterDataset["map_data"]["map_pointsLongitude"]
-                    self.mapWaters = waterDataset["map_data"]["map_water"]
-                    for index in range(len(self.mapWaterTimes)):
-                        for nodeIndex in range(len(self.mapWaters[index])):
-                            pointWater = self.mapWaters[index][nodeIndex]
-                            if(pointWater > self.maxWater):
-                                self.maxWater = pointWater
+                    self.mapWaters = np.asarray(waterDataset["map_data"]["map_water"])
+                    if(self.mapWaters.size):
+                        self.maxWater = max(self.maxWater, float(self.mapWaters.max()))
                 else:
                     nodeIndex = waterDataset[stationKey]["nodeIndex"]
                     if(not self.tideExists or (stationKey in tideDataset.keys())):
@@ -1667,81 +1728,66 @@ class Grapher:
             buoyColor = "#1baf7a"        # aqua
             datapointColor = "#4a3aa7"   # violet
 
-            for index in range(len(self.mapWaterTimes)):
-                fig, ax = plt.subplots(figsize=(9,9), dpi=150)
-    #             print(self.endWavePointsLongitudes)
-    #             print(self.endWavePointsLatitudes)
-    #             print(self.endSWH)
-                plt.imshow(img, extent=self.backgroundAxis, alpha=0.6, aspect=aspectRatio, zorder=2)
-                currentMaskedTriangles = self.mapWaterMaskedTriangles.copy()
-                for triangleIndex, triangle in enumerate(self.mapWaterTriangles):
-                    for pointIndex in triangle:
-                        water = self.mapWaters[index][pointIndex]
-    #                     Check for nan value
-    #                     point = (self.mapWaterPointsLongitudes[pointIndex], self.mapWaterPointsLatitudes[pointIndex])
-                        if(water == -99999.0):
-    #                     if(point[0] < -72.1 and point[0] > -72.15 and point[1] > 41.4 and point[1] < 41.42):
-    #                         print("point, water", point, water)
-                            currentMaskedTriangles[triangleIndex] = True
-                            break
-                waterTriangulation = Triangulation(self.mapWaterPointsLongitudes, self.mapWaterPointsLatitudes, triangles=self.mapWaterTriangles, mask=currentMaskedTriangles)
-
-                contourset = ax.tripcolor(waterTriangulation, self.mapWaters[index], shading='gouraud', cmap=waterCmap, norm=waterNorm, zorder=1)
+            # The mesh is turned into a pixel grid once and every frame reuses one
+            # figure, so a frame costs one numpy gather and a savefig instead of a
+            # tripcolor of ~1M triangles plus a fresh figure (~0.6 s vs ~8 s).
+            print("Rasterizing water mesh for the map frames", flush=True)
+            rasterizer = MeshRasterizer(self.mapWaterPointsLongitudes, self.mapWaterPointsLatitudes,
+                                        self.mapWaterTriangles, self.mapWaterMaskedTriangles, plotAxis)
+            fig, ax = plt.subplots(figsize=(9,9), dpi=150)
+            plt.imshow(img, extent=self.backgroundAxis, alpha=0.6, aspect=aspectRatio, zorder=2)
+            waterImage = rasterizer.imshow(ax, self.mapWaters[0], cmap=waterCmap, norm=waterNorm, aspect=aspectRatio, zorder=1)
 
 #                 Plot points
-                if(self.meshExists):
-                    ax.scatter(self.assetLongitudes, self.assetLatitudes, label="Assets", zorder=3, alpha=0.85, marker="o", s=35, color=assetColor, edgecolors="white", linewidths=0.5)
+            if(self.meshExists):
+                ax.scatter(self.assetLongitudes, self.assetLatitudes, label="Assets", zorder=3, alpha=0.85, marker="o", s=35, color=assetColor, edgecolors="white", linewidths=0.5)
 
-                if(self.obsExists):
-                    ax.scatter(self.tideLongitudes, self.tideLatitudes, label="Obs", zorder=3, alpha=0.85, marker="o", s=35, color=obsColor, edgecolors="white", linewidths=0.5)
-                    for tideIndex in range(len(self.tideLabels)):
-                        ax.annotate(self.tideLabels[tideIndex], (self.tideLongitudes[tideIndex], self.tideLatitudes[tideIndex]), fontsize=7)
+            if(self.obsExists):
+                ax.scatter(self.tideLongitudes, self.tideLatitudes, label="Obs", zorder=3, alpha=0.85, marker="o", s=35, color=obsColor, edgecolors="white", linewidths=0.5)
+                for tideIndex in range(len(self.tideLabels)):
+                    ax.annotate(self.tideLabels[tideIndex], (self.tideLongitudes[tideIndex], self.tideLatitudes[tideIndex]), fontsize=7)
 
+            plt.axis(plotAxis)
+            ax.set_title(self.titlePrefix + "Water Elevation", fontsize=14, fontweight="bold")
+            timeLabel = ax.set_xlabel("", fontsize=10)
+            if(self.meshExists or self.obsExists):
+                ax.legend(loc="upper right", framealpha=0.9, fontsize=8)
+            plt.colorbar(
+                ScalarMappable(norm=waterNorm, cmap=waterCmap),
+                boundaries=levelBoundaries,
+                values=(levelBoundaries[:-1] + levelBoundaries[1:]) / 2,
+                label="Water Elevation (m)",
+                ax=ax
+            )
+            frameBox = "tight"
+            for index in range(len(self.mapWaterTimes)):
+                waterImage.set_data(rasterizer.values(self.mapWaters[index]))
+                timeLabel.set_text(datetime.fromtimestamp(self.mapWaterTimes[index], timezone.utc).strftime("%Y-%m-%d %H:%M UTC"))
+                # Runup lines change every frame; remember what they add so it can be removed after saving
+                frameArtists = []
                 if(self.runupExists):
+                    before = set(ax.get_children())
                     for runupIndex, runupLabel in enumerate(self.runupLabels):
                         self.plotExtendedLines(ax, runupIndex, index, runupLabel)
-#                         print("datapointsWaterlineLongitudes", type(self.datapointsWaterlineLongitudes[runupIndex][index]))
-#                         ax.plot(self.datapointsWaterlineLongitudes[runupIndex][index], self.datapointsWaterlineLatitudes[runupIndex][index], label=runupLabel, zorder=3, alpha=0.7, marker=".", color="green")
-#                         ax.plot(self.datapointsRunupLongitudes[runupIndex][index], self.datapointsRunupLatitudes[runupIndex][index], label=runupLabel, zorder=3, alpha=0.7, marker=".", color="red")
-#               Todo: Fix triangulation errors
-#                 contourset = ax.tripcolor(self.mapWaterPointsLongitudes, self.mapWaterPointsLatitudes, self.mapWaters[index], shading='gouraud', cmap="jet", vmin=vmin, vmax=vmax, zorder=1)
-                plt.axis(plotAxis)
-                ax.set_title(self.titlePrefix + "Water Elevation", fontsize=14, fontweight="bold")
-                ax.set_xlabel(datetime.fromtimestamp(self.mapWaterTimes[index], timezone.utc).strftime("%Y-%m-%d %H:%M UTC"), fontsize=10)
-    #             plt.gca().invert_yaxis()
-                if(self.meshExists or self.obsExists):
-                    ax.legend(loc="upper right", framealpha=0.9, fontsize=8)
-                plt.colorbar(
-                    ScalarMappable(norm=waterNorm, cmap=waterCmap),
-                    boundaries=levelBoundaries,
-                    values=(levelBoundaries[:-1] + levelBoundaries[1:]) / 2,
-                    label="Water Elevation (m)",
-                    ax=plt.gca()
-                )
-                plt.savefig(graph_directory + 'map_water_' + str(index) + '.png', bbox_inches="tight")
-                plt.close()
-                gc.collect()
+                    frameArtists = [artist for artist in ax.get_children() if artist not in before]
+                fig.savefig(graph_directory + 'map_water_' + str(index) + '.png', bbox_inches=frameBox)
+                if(frameBox == "tight"):
+                    # The first save stamps the banner; fixing the box after it skips a tight-bbox pass per frame
+                    frameBox = fig.get_tightbbox(fig.canvas.get_renderer()).padded(0.1)
+                for artist in frameArtists:
+                    artist.remove()
+                if(index % 50 == 0):
+                    print("  water map frame", index, "of", len(self.mapWaterTimes), flush=True)
+            plt.close(fig)
+            gc.collect()
             writeMapAnimation(graph_directory, "map_water_", len(self.mapWaterTimes), "water")
 
             swathWaters = np.max(self.mapWaters, axis=0)
             print(len(swathWaters), len(self.mapWaterMaskedTriangles))
-            for index, triangle in enumerate(self.mapWaterTriangles):
-                for pointIndex in triangle:
-                    water = swathWaters[pointIndex]
-#                     Check for nan value
-#                     point = (self.mapWaterPointsLongitudes[pointIndex], self.mapWaterPointsLatitudes[pointIndex])
-                    if(water == -99999.0):
-#                     if(point[0] < -72.1 and point[0] > -72.15 and point[1] > 41.4 and point[1] < 41.42):
-#                         print("point, water", point, water)
-                        self.mapWaterMaskedTriangles[index] = True
-                        break
-            waterTriangulation = Triangulation(self.mapWaterPointsLongitudes, self.mapWaterPointsLatitudes, triangles=self.mapWaterTriangles, mask=self.mapWaterMaskedTriangles)
-#             print(self.mapWaterTriangles[0])
-#             mapWatersNoNan = np.nan_to_num(self.mapWaters)
-#             swathWaters = np.max(self.mapWaters, axis=0)
             fig, ax = plt.subplots(figsize=(9,9), dpi=150)
             plt.imshow(img, alpha=0.5, extent=self.backgroundAxis, aspect=aspectRatio, zorder=2)
-            contourset = ax.tripcolor(waterTriangulation, swathWaters, shading='gouraud', cmap=swathCmap, vmin=vminSwath, vmax=vmax, zorder=1)
+            # A node that never got wet keeps the -99999 fill in the max, so it stays blank
+            contourset = rasterizer.imshow(ax, swathWaters, cmap=swathCmap, vmin=vminSwath, vmax=vmax, aspect=aspectRatio, zorder=1)
             ax.scatter(self.waterLongitudes, self.waterLatitudes, label="Datapoints", color=datapointColor, edgecolors="white", linewidths=0.5, s=30, zorder=3)
             if(self.buoyExists):
                     ax.scatter(self.buoyLongitudes, self.buoyLatitudes, label="Buoy", zorder=3, color=buoyColor, edgecolors="white", linewidths=0.5, s=30)

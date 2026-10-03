@@ -56,7 +56,6 @@ class Reader:
     # Set from generateGraphs --maps; when on, map_data is added for these types
     GENERATE_MAPS = False
     MAP_DATA_TYPES = ("water", "velocity", "swh", "gfs", "rain")
-
     def __init__(self, STATIONS_FILE="", STATION_TO_NODE_DISTANCES_FILE="", NODES_FILE="", BACKGROUND_AXIS=[], format=""):
         self.STATIONS_FILE = STATIONS_FILE
         self.STATION_TO_NODE_DISTANCES_FILE = STATION_TO_NODE_DISTANCES_FILE
@@ -538,14 +537,25 @@ class Reader:
         """
         if(chunkSize is None):
             chunkSize = self.MAP_TIME_CHUNK_SIZE
-        nodeIndicesForRead = globalNodeIndices.tolist() if hasattr(globalNodeIndices, "tolist") else list(globalNodeIndices)
+        # Read one contiguous time x node block per chunk and pick the nodes in
+        # numpy. Passing the node list to NetCDF (orthogonal indexing) is
+        # hundreds of times slower on zlib-chunked ADCIRC output: ~5 s per
+        # timestep for a 589k node RI CHAMP crop versus milliseconds here.
+        nodeIndices = np.asarray(globalNodeIndices, dtype=np.int64)
+        nodeStart = int(nodeIndices.min())
+        nodeStop = int(nodeIndices.max()) + 1
+        localNodeIndices = nodeIndices - nodeStart
         keptTimeIndices = list(range(0, numTimesteps, timeSparseness))
         resultsPerVar = [[] for _ in varNames]
         for chunkStart in range(0, len(keptTimeIndices), chunkSize):
             chunkTimeIndices = keptTimeIndices[chunkStart:chunkStart + chunkSize]
+            timeStart = chunkTimeIndices[0]
+            timeStop = chunkTimeIndices[-1] + 1
             for varIndex, varName in enumerate(varNames):
-                chunkData = dataset.variables[varName][chunkTimeIndices, nodeIndicesForRead]
-                resultsPerVar[varIndex].extend(np.asarray(chunkData))
+                block = dataset.variables[varName][timeStart:timeStop, nodeStart:nodeStop][::timeSparseness]
+                # float32 halves memory; the -99999 dry fill value is exact in float32
+                resultsPerVar[varIndex].extend(np.asarray(block)[:, localNodeIndices].astype(np.float32))
+            print("  map read timesteps", timeStart, "to", timeStop - 1, "of", numTimesteps, flush=True)
         return resultsPerVar
 
     def getCroppedMapData(self, dataset, dataType, times, timeSparseness, chunkSize=None):
@@ -1200,11 +1210,40 @@ class Reader:
                 data[stationKey]["velocitiesY"] = interpolatedValuesY
             else:
                 data[stationKey][dataType] = interpolatedValues
-        
+
+        if(dataType == "water"):
+            self.saveMapArrays(data, DATA_FILE)
         print("Writing data to", DATA_FILE, flush=True)
         with open(DATA_FILE, "w") as outfile:
             json.dump(data, outfile, cls=NumpyEncoder)
-        
+
+    # map_data keys moved out of the JSON into .npy files, with the dtype to store them as
+    MAP_ARRAY_DTYPES = {
+        "map_water": np.float32,
+        "map_triangles": np.int32,
+        "map_pointsLatitudes": np.float64,
+        "map_pointsLongitude": np.float64,
+    }
+
+    def saveMapArrays(self, data, DATA_FILE):
+        """Write the big map_data arrays as .npy files beside DATA_FILE.
+
+        A full RI CHAMP water field is hundreds of millions of values; as JSON
+        text it is several GB to write and needs >15 GB of Python floats to
+        read back. The JSON keeps {"npy": path} and Grapher's loadMapArrays
+        swaps the array back in.
+        """
+        mapData = data.get("map_data")
+        if(not mapData):
+            return
+        for key, dtype in self.MAP_ARRAY_DTYPES.items():
+            if(key not in mapData or isinstance(mapData[key], dict)):
+                continue
+            path = DATA_FILE + "." + key + ".npy"
+            np.save(path, np.asarray(mapData[key], dtype=dtype))
+            mapData[key] = {"npy": os.path.abspath(path)}
+            print("Wrote", path, flush=True)
+
     def generateDataFilesWithInterpolationForPoints(self, points, triangles, maskedTriangles, elevations, dataType, DATA_FILE):
         
         with open(self.NODES_FILE) as outfile:
