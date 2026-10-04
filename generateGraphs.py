@@ -359,7 +359,7 @@ def main():
     )
     p.add_argument(
         "--maps", type=bool,
-        help="Also draw map frames of water/velocity/waves/wind/rain over --backgroundChoice and save them as an .avi"
+        help="Also draw map frames of water/velocity/waves/wind/rain over --backgroundChoice and save them as an .avi (water: .mp4 when an ffmpeg program is already available)"
     )
     p.add_argument(
         "--obsPredicted", type=bool,

@@ -95,6 +95,84 @@ def installFigureBanner(banner):
 
 MAP_VIDEO_FPS = 10
 
+# ---------------------------------------------------------------------------
+# Water-surface elevation video (--maps). Only the look is set here; the
+# ADCIRC values, wet/dry masking and timing come straight from the run.
+# ---------------------------------------------------------------------------
+WATER_VIDEO_SIZE_PX = (1920, 1080)   # output frame (width, height), 16:9
+WATER_VIDEO_DPI = 100                # with SIZE_PX this sets the font scale
+WATER_VIDEO_FPS = MAP_VIDEO_FPS
+WATER_VIDEO_EXTENT = None            # [west, east, south, north]; None = --backgroundChoice axis
+# Fixed color limits for every frame. vcenter=0 keeps 0 m white even though
+# the scale is not symmetric, so set-down (blue) and surge (red) read apart.
+WATER_VIDEO_VMIN = -1.0
+WATER_VIDEO_VMAX = 3.0
+WATER_VIDEO_TICK_STEP = 0.5
+WATER_VIDEO_CMAP = "RdBu_r"
+WATER_VIDEO_DATUM = ""               # e.g. "NAVD88" -> "Water-Surface Elevation (m NAVD88)"
+WATER_VIDEO_TITLE = "ADCIRC Water-Surface Elevation"   # "" hides it
+WATER_VIDEO_TIME_FORMAT = "%Y-%m-%d %H:%M UTC"
+# Extra lines under the timestamp, off by default, e.g.
+# ["GFS 12Z Forecast", "Forecast initialized: 2026-09-24 12Z"]
+WATER_VIDEO_ANNOTATIONS = []
+WATER_VIDEO_FIELD_ALPHA = 0.95       # opacity of the ADCIRC field
+WATER_VIDEO_LAND_COLOR = "#e4e4e4"   # dry land / outside the mesh
+WATER_VIDEO_COASTLINE = True         # thin line around the always-wet area
+WATER_VIDEO_COASTLINE_COLOR = "#555555"
+WATER_VIDEO_BASEMAP = False          # True draws the --backgroundChoice photo under the field
+WATER_VIDEO_BASEMAP_ALPHA = 0.35     # how strongly the faded photo shows
+WATER_VIDEO_FONT = "DejaVu Sans"
+WATER_VIDEO_FONT_SIZES = {"title": 13, "time": 20, "annotation": 12,
+                          "cbar_label": 14, "cbar_ticks": 11, "ticks": 11, "legend": 11, "station": 9}
+
+
+def findFfmpeg():
+    """Path of an ffmpeg program that is already present, or None. Nothing is installed."""
+    import shutil
+    path = shutil.which("ffmpeg")
+    if path:
+        return path
+    try:
+        import imageio_ffmpeg
+        return imageio_ffmpeg.get_ffmpeg_exe()
+    except Exception:
+        return None
+
+
+def writeVideo(outputBase, makeFrames, width, height, fps):
+    """Write frames as outputBase.mp4 (H.264) when ffmpeg exists, else outputBase.avi (MJPEG).
+
+    makeFrames() returns a fresh iterator of (height, width, 3) uint8 frames; it
+    is called again for the .avi if the ffmpeg encode fails part way.
+    """
+    import subprocess
+    ffmpeg = findFfmpeg()
+    if ffmpeg:
+        outputFile = outputBase + ".mp4"
+        command = [ffmpeg, "-y", "-loglevel", "error",
+                   "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{width}x{height}", "-r", str(fps), "-i", "-",
+                   "-c:v", "libx264", "-preset", "medium", "-crf", "18", "-pix_fmt", "yuv420p",
+                   "-movflags", "+faststart", "-metadata", "title=ADCIRC water-surface elevation", outputFile]
+        process = None
+        try:
+            process = subprocess.Popen(command, stdin=subprocess.PIPE)
+            for frame in makeFrames():
+                process.stdin.write(np.ascontiguousarray(frame).tobytes())
+            process.stdin.close()
+            if process.wait() == 0:
+                print("Wrote " + outputFile, flush=True)
+                return outputFile
+        except (OSError, ValueError) as error:
+            print("ffmpeg failed (" + str(error) + ")", flush=True)
+            if process is not None:
+                process.kill()
+                process.wait()
+        print("ffmpeg could not write " + outputFile + "; writing an .avi instead", flush=True)
+    outputFile = outputBase + ".avi"
+    writeMjpegAvi(outputFile, makeFrames(), width, height, fps)
+    print("Wrote " + outputFile, flush=True)
+    return outputFile
+
 
 def writeMjpegAvi(outputFile, frames, width, height, fps):
     """Write RGB uint8 frames as a Motion JPEG .avi using only Pillow.
@@ -156,7 +234,9 @@ def writeMapAnimation(graph_directory, framePrefix, frameCount, name):
     The floodwater conda environment has no video encoder (no ffmpeg), so the
     video is a Motion JPEG .avi written with Pillow alone. bbox_inches="tight"
     frames can differ by a few pixels as the time label changes, so each frame
-    is padded with white to the largest size.
+    is padded with white to the largest size, rounded up to a multiple of 16.
+    Some players (KMPlayer) garble or refuse MJPEG at widths such as 1130, and
+    the tight box gives a different size on every run.
     """
     from PIL import Image
     frameFiles = [graph_directory + framePrefix + str(index) + ".png" for index in range(frameCount)]
@@ -166,8 +246,8 @@ def writeMapAnimation(graph_directory, framePrefix, frameCount, name):
     for frameFile in frameFiles:
         with Image.open(frameFile) as frame:
             sizes.append(frame.size)
-    width = max(size[0] for size in sizes)
-    height = max(size[1] for size in sizes)
+    width = -(-max(size[0] for size in sizes) // 16) * 16
+    height = -(-max(size[1] for size in sizes) // 16) * 16
 
     def paddedFrames():
         for frameFile in frameFiles:
@@ -318,6 +398,171 @@ class Grapher:
     #     WIND_PROFILE_EXPONENT = 0.11
     #     return windVelocity * ((10.0/altitude)**WIND_PROFILE_EXPONENT)
     
+    def writeWaterVideo(self, graph_directory, rasterizer, plotAxis, img):
+        """Draw the water-surface elevation frames into one fixed 16:9 figure and save the video.
+
+        Only presentation lives here: the field is the rasterizer's linear
+        interpolation of the ADCIRC node values, dry nodes stay blank, and every
+        frame shares one color normalization. Static artists (axes, colorbar,
+        coastline, stations) are drawn once; each frame only swaps the field
+        data, the timestamp and any runup lines.
+        """
+        from matplotlib.backends.backend_agg import FigureCanvasAgg
+        from matplotlib.ticker import MultipleLocator, FuncFormatter
+
+        fontSizes = WATER_VIDEO_FONT_SIZES
+        west, east, south, north = WATER_VIDEO_EXTENT or plotAxis
+        if WATER_VIDEO_EXTENT:
+            rasterizer = MeshRasterizer(self.mapWaterPointsLongitudes, self.mapWaterPointsLatitudes,
+                                        self.mapWaterTriangles, self.mapWaterMaskedTriangles, [west, east, south, north])
+
+        vmin, vmax = WATER_VIDEO_VMIN, WATER_VIDEO_VMAX
+        cmap = plt.get_cmap(WATER_VIDEO_CMAP)
+        if vmin < 0 < vmax:
+            norm = mcolors.TwoSlopeNorm(vmin=vmin, vcenter=0, vmax=vmax)
+        else:
+            norm = mcolors.Normalize(vmin=vmin, vmax=vmax)
+        levelBoundaries = np.linspace(vmin, vmax, 101)
+        ticks = np.arange(vmin, vmax + WATER_VIDEO_TICK_STEP / 2, WATER_VIDEO_TICK_STEP)
+        label = "Water-Surface Elevation (m" + (" " + WATER_VIDEO_DATUM if WATER_VIDEO_DATUM else "") + ")"
+
+        # True geographic shape: a degree of longitude is cos(latitude) as long as
+        # a degree of latitude, so the map is drawn taller than it is wide here.
+        lonScale = math.cos(math.radians((south + north) / 2))
+        mapAspect = (north - south) / ((east - west) * lonScale)   # on-screen height / width
+
+        # Layout in inches, left to right: text column | lat ticks | map | colorbar | colorbar label.
+        # The map takes the full frame height; the group is centered horizontally.
+        widthPx, heightPx = WATER_VIDEO_SIZE_PX
+        dpi = WATER_VIDEO_DPI
+        figW, figH = widthPx / dpi, heightPx / dpi
+        marginTop, marginBottom, marginSide = 0.35, 0.55, 0.3
+        textW, textGap = 3.9, 0.75          # textGap leaves room for the latitude tick labels
+        cbarGap, cbarW, cbarLabelW = 0.18, 0.24, 1.1
+        mapH = figH - marginTop - marginBottom
+        mapW = mapH / mapAspect
+        availableW = figW - 2 * marginSide - textW - textGap - cbarGap - cbarW - cbarLabelW
+        if mapW > availableW:               # a wide extent is limited by width instead
+            mapW = availableW
+            mapH = mapW * mapAspect
+        groupLeft = (figW - (textW + textGap + mapW + cbarGap + cbarW + cbarLabelW)) / 2
+        mapLeft = groupLeft + textW + textGap
+        mapBottom = marginBottom + (figH - marginTop - marginBottom - mapH) / 2
+        mapTop = mapBottom + mapH
+
+        with plt.rc_context({"font.family": WATER_VIDEO_FONT}):
+            fig = Figure(figsize=(figW, figH), dpi=dpi, facecolor="white")
+            canvas = FigureCanvasAgg(fig)
+            ax = fig.add_axes([mapLeft / figW, mapBottom / figH, mapW / figW, mapH / figH])
+            ax.set_facecolor(WATER_VIDEO_LAND_COLOR)
+
+            if WATER_VIDEO_BASEMAP and img is not None:
+                # Desaturated and lightened toward white so it gives context without competing
+                photo = np.asarray(img, dtype=np.float32)[..., :3]
+                if photo.max() > 1.0:
+                    photo = photo / 255.0
+                photo = 0.5 * photo + 0.5 * photo.mean(axis=2, keepdims=True)
+                photo = 1.0 - WATER_VIDEO_BASEMAP_ALPHA * (1.0 - photo)
+                ax.imshow(photo, extent=self.backgroundAxis, zorder=0)
+
+            field = rasterizer.imshow(ax, self.mapWaters[0], cmap=cmap, norm=norm,
+                                      alpha=WATER_VIDEO_FIELD_ALPHA, zorder=1)
+
+            if WATER_VIDEO_COASTLINE:
+                # Outline of the nodes that stay wet in every frame (the normal water
+                # body); flooding shows as color beyond it. Drawn once, never changes.
+                alwaysWet = np.ones(len(self.mapWaters[0]), dtype=bool)
+                for frameWaters in self.mapWaters:
+                    alwaysWet &= np.asarray(frameWaters) != MeshRasterizer.DRY
+                wetFraction = rasterizer.values(alwaysWet.astype(np.float32))
+                rWest, rEast, rSouth, rNorth = rasterizer.extent
+                gridX = rWest + (np.arange(rasterizer.width) + 0.5) * (rEast - rWest) / rasterizer.width
+                gridY = rSouth + (np.arange(rasterizer.height) + 0.5) * (rNorth - rSouth) / rasterizer.height
+                if np.nanmax(wetFraction) > 0.5 > np.nanmin(wetFraction):
+                    ax.contour(gridX, gridY, wetFraction, levels=[0.5], colors=WATER_VIDEO_COASTLINE_COLOR,
+                               linewidths=0.6, zorder=2)
+
+            if(self.meshExists):
+                ax.scatter(self.assetLongitudes, self.assetLatitudes, label="Assets", zorder=3, marker="o", s=30,
+                           color="#eb6834", edgecolors="white", linewidths=0.6)
+            if(self.obsExists):
+                ax.scatter(self.tideLongitudes, self.tideLatitudes, label="Observation stations", zorder=3, marker="o",
+                           s=30, color="#256abf", edgecolors="white", linewidths=0.6)
+                for tideIndex in range(len(self.tideLabels)):
+                    ax.annotate(self.tideLabels[tideIndex], (self.tideLongitudes[tideIndex], self.tideLatitudes[tideIndex]),
+                                xytext=(4, 3), textcoords="offset points", fontsize=fontSizes["station"], color="#222222",
+                                zorder=4)
+
+            ax.set_xlim(west, east)
+            ax.set_ylim(south, north)
+            ax.set_aspect(1 / lonScale, adjustable="box", anchor="C")
+            # 0.1° ticks for a bay-sized extent, matplotlib's choice for larger ones
+            if max(east - west, north - south) <= 2:
+                ax.xaxis.set_major_locator(MultipleLocator(0.1))
+                ax.yaxis.set_major_locator(MultipleLocator(0.1))
+            degrees = FuncFormatter(lambda value, position: f"{value:.1f}".replace("-", "−"))
+            ax.xaxis.set_major_formatter(degrees)
+            ax.yaxis.set_major_formatter(degrees)
+            ax.tick_params(labelsize=fontSizes["ticks"], colors="#444444", length=3, width=0.6)
+            for spine in ax.spines.values():
+                spine.set_linewidth(0.6)
+                spine.set_color("#666666")
+
+            # Colorbar the height of the map, just to its right, fixed for every frame
+            cax = fig.add_axes([(mapLeft + mapW + cbarGap) / figW, mapBottom / figH, cbarW / figW, mapH / figH])
+            colorbar = fig.colorbar(ScalarMappable(norm=norm, cmap=cmap), cax=cax, boundaries=levelBoundaries,
+                                    values=(levelBoundaries[:-1] + levelBoundaries[1:]) / 2, ticks=ticks)
+            colorbar.ax.yaxis.set_major_formatter(
+                FuncFormatter(lambda value, position: "0" if abs(value) < 1e-9 else f"{value:.1f}".replace("-", "−")))
+            colorbar.ax.tick_params(labelsize=fontSizes["cbar_ticks"], colors="#333333", length=3, width=0.6)
+            colorbar.outline.set_linewidth(0.6)
+            colorbar.set_label(label, fontsize=fontSizes["cbar_label"], color="#222222", labelpad=10)
+
+            # Text column left of the map, top-aligned with it: title, the one
+            # timestamp, optional annotations, then the station legend.
+            textX = groupLeft / figW
+            cursor = mapTop
+            if WATER_VIDEO_TITLE:
+                fig.text(textX, cursor / figH, self.titlePrefix + WATER_VIDEO_TITLE, ha="left", va="top",
+                         fontsize=fontSizes["title"], color="#444444")
+                cursor -= fontSizes["title"] * 1.6 / 72
+            timeText = fig.text(textX, cursor / figH, "", ha="left", va="top", fontsize=fontSizes["time"], color="#111111")
+            cursor -= fontSizes["time"] * 1.5 / 72
+            for annotation in WATER_VIDEO_ANNOTATIONS:
+                fig.text(textX, cursor / figH, annotation, ha="left", va="top",
+                         fontsize=fontSizes["annotation"], color="#444444")
+                cursor -= fontSizes["annotation"] * 1.5 / 72
+            if(self.meshExists or self.obsExists):
+                cursor -= 0.15
+                ax.legend(loc="upper left", bbox_to_anchor=(textX, cursor / figH), bbox_transform=fig.transFigure,
+                          frameon=False, fontsize=fontSizes["legend"], borderaxespad=0, handletextpad=0.4)
+
+            frameCount = len(self.mapWaterTimes)
+            canvas.draw()
+            frameHeight, frameWidth = np.asarray(canvas.buffer_rgba()).shape[:2]
+
+            def makeFrames():
+                for index in range(frameCount):
+                    field.set_data(rasterizer.values(self.mapWaters[index]))
+                    timeText.set_text(datetime.fromtimestamp(self.mapWaterTimes[index], timezone.utc)
+                                      .strftime(WATER_VIDEO_TIME_FORMAT))
+                    # Runup lines change every frame; remember what they add so it can be removed after drawing
+                    frameArtists = []
+                    if(self.runupExists):
+                        before = set(ax.get_children())
+                        for runupIndex, runupLabel in enumerate(self.runupLabels):
+                            self.plotExtendedLines(ax, runupIndex, index, runupLabel)
+                        frameArtists = [artist for artist in ax.get_children() if artist not in before]
+                    canvas.draw()
+                    frame = np.asarray(canvas.buffer_rgba())[:, :, :3].copy()
+                    for artist in frameArtists:
+                        artist.remove()
+                    if(index % 50 == 0):
+                        print("  water map frame", index, "of", frameCount, flush=True)
+                    yield frame
+
+            writeVideo(graph_directory + "water", makeFrames, frameWidth, frameHeight, WATER_VIDEO_FPS)
+
     def plotExtendedLines(self, ax, runupIndex, index, runupLabel):
         # Get coordinates for waterline (two points)
         waterline_lon1 = float(self.datapointsWaterlineLongitudes[runupIndex][index][0])
@@ -1729,58 +1974,13 @@ class Grapher:
             datapointColor = "#4a3aa7"   # violet
 
             # The mesh is turned into a pixel grid once and every frame reuses one
-            # figure, so a frame costs one numpy gather and a savefig instead of a
-            # tripcolor of ~1M triangles plus a fresh figure (~0.6 s vs ~8 s).
+            # figure, so a frame costs one numpy gather and a redraw instead of a
+            # tripcolor of ~1M triangles plus a fresh figure.
             print("Rasterizing water mesh for the map frames", flush=True)
             rasterizer = MeshRasterizer(self.mapWaterPointsLongitudes, self.mapWaterPointsLatitudes,
                                         self.mapWaterTriangles, self.mapWaterMaskedTriangles, plotAxis)
-            fig, ax = plt.subplots(figsize=(9,9), dpi=150)
-            plt.imshow(img, extent=self.backgroundAxis, alpha=0.6, aspect=aspectRatio, zorder=2)
-            waterImage = rasterizer.imshow(ax, self.mapWaters[0], cmap=waterCmap, norm=waterNorm, aspect=aspectRatio, zorder=1)
-
-#                 Plot points
-            if(self.meshExists):
-                ax.scatter(self.assetLongitudes, self.assetLatitudes, label="Assets", zorder=3, alpha=0.85, marker="o", s=35, color=assetColor, edgecolors="white", linewidths=0.5)
-
-            if(self.obsExists):
-                ax.scatter(self.tideLongitudes, self.tideLatitudes, label="Obs", zorder=3, alpha=0.85, marker="o", s=35, color=obsColor, edgecolors="white", linewidths=0.5)
-                for tideIndex in range(len(self.tideLabels)):
-                    ax.annotate(self.tideLabels[tideIndex], (self.tideLongitudes[tideIndex], self.tideLatitudes[tideIndex]), fontsize=7)
-
-            plt.axis(plotAxis)
-            ax.set_title(self.titlePrefix + "Water Elevation", fontsize=14, fontweight="bold")
-            timeLabel = ax.set_xlabel("", fontsize=10)
-            if(self.meshExists or self.obsExists):
-                ax.legend(loc="upper right", framealpha=0.9, fontsize=8)
-            plt.colorbar(
-                ScalarMappable(norm=waterNorm, cmap=waterCmap),
-                boundaries=levelBoundaries,
-                values=(levelBoundaries[:-1] + levelBoundaries[1:]) / 2,
-                label="Water Elevation (m)",
-                ax=ax
-            )
-            frameBox = "tight"
-            for index in range(len(self.mapWaterTimes)):
-                waterImage.set_data(rasterizer.values(self.mapWaters[index]))
-                timeLabel.set_text(datetime.fromtimestamp(self.mapWaterTimes[index], timezone.utc).strftime("%Y-%m-%d %H:%M UTC"))
-                # Runup lines change every frame; remember what they add so it can be removed after saving
-                frameArtists = []
-                if(self.runupExists):
-                    before = set(ax.get_children())
-                    for runupIndex, runupLabel in enumerate(self.runupLabels):
-                        self.plotExtendedLines(ax, runupIndex, index, runupLabel)
-                    frameArtists = [artist for artist in ax.get_children() if artist not in before]
-                fig.savefig(graph_directory + 'map_water_' + str(index) + '.png', bbox_inches=frameBox)
-                if(frameBox == "tight"):
-                    # The first save stamps the banner; fixing the box after it skips a tight-bbox pass per frame
-                    frameBox = fig.get_tightbbox(fig.canvas.get_renderer()).padded(0.1)
-                for artist in frameArtists:
-                    artist.remove()
-                if(index % 50 == 0):
-                    print("  water map frame", index, "of", len(self.mapWaterTimes), flush=True)
-            plt.close(fig)
+            self.writeWaterVideo(graph_directory, rasterizer, plotAxis, img)
             gc.collect()
-            writeMapAnimation(graph_directory, "map_water_", len(self.mapWaterTimes), "water")
 
             swathWaters = np.max(self.mapWaters, axis=0)
             print(len(swathWaters), len(self.mapWaterMaskedTriangles))
