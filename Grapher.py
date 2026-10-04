@@ -106,12 +106,18 @@ WATER_VIDEO_WIDTH_PX = None
 WATER_VIDEO_DPI = 100                # with the frame size this sets the font scale
 WATER_VIDEO_FPS = MAP_VIDEO_FPS
 WATER_VIDEO_EXTENT = None            # [west, east, south, north]; None = --backgroundChoice axis
-# Fixed color limits for every frame. vcenter=0 keeps 0 m white even though
-# the scale is not symmetric, so set-down (blue) and surge (red) read apart.
-WATER_VIDEO_VMIN = -1.0
-WATER_VIDEO_VMAX = 3.0
-WATER_VIDEO_TICK_STEP = 0.5
+# Color limits are the same for every frame. vcenter=0 keeps 0 m at the
+# blue/red boundary even when the scale is not symmetric, so set-down (blue)
+# and surge (red) read apart.
+# None takes the limit from the run's wet extremes (over all frames, rounded
+# outward to WATER_VIDEO_AUTO_ROUND m); set numbers, e.g. -1.0 and 3.0, to
+# compare runs on one scale.
+WATER_VIDEO_VMIN = None
+WATER_VIDEO_VMAX = None
+WATER_VIDEO_AUTO_ROUND = 0.25
+WATER_VIDEO_TICK_STEP = None         # None picks 0.1/0.25/0.5/1 m from the range
 WATER_VIDEO_CMAP = "RdBu_r"
+WATER_VIDEO_CMAP_TRIM = 0.12         # fraction of the pale middle removed each side of 0; 0 keeps it
 WATER_VIDEO_DATUM = ""               # e.g. "NAVD88" -> "Water-Surface Elevation (m NAVD88)"
 WATER_VIDEO_TITLE = "ADCIRC Water-Surface Elevation"   # "" hides it
 WATER_VIDEO_TIME_FORMAT = "%Y-%m-%d %H:%M UTC"
@@ -119,7 +125,7 @@ WATER_VIDEO_TIME_FORMAT = "%Y-%m-%d %H:%M UTC"
 # ["GFS 12Z Forecast", "Forecast initialized: 2026-09-24 12Z"]
 WATER_VIDEO_ANNOTATIONS = []
 WATER_VIDEO_FIELD_ALPHA = 0.95       # opacity of the ADCIRC field
-WATER_VIDEO_LAND_COLOR = "#e4e4e4"   # dry land / outside the mesh
+WATER_VIDEO_LAND_COLOR = "#c4c4c4"   # dry land / outside the mesh; mid gray stays gray if a player brightens video
 WATER_VIDEO_COASTLINE = True         # thin line around the always-wet area
 WATER_VIDEO_COASTLINE_COLOR = "#555555"
 WATER_VIDEO_BASEMAP = False          # True draws the --backgroundChoice photo under the field
@@ -446,13 +452,41 @@ class Grapher:
                                         self.mapWaterTriangles, self.mapWaterMaskedTriangles, [west, east, south, north])
 
         vmin, vmax = WATER_VIDEO_VMIN, WATER_VIDEO_VMAX
+        if vmin is None or vmax is None:
+            # One range for the whole run (never per frame): the wet extremes over
+            # every frame, rounded outward to WATER_VIDEO_AUTO_ROUND, at least one step each side of 0
+            step = WATER_VIDEO_AUTO_ROUND
+            low, high = np.inf, -np.inf
+            for frameWaters in self.mapWaters:
+                wet = np.asarray(frameWaters)
+                wet = wet[wet != MeshRasterizer.DRY]
+                if wet.size:
+                    low, high = min(low, float(wet.min())), max(high, float(wet.max()))
+            if not np.isfinite(low):
+                low, high = -step, step
+            if vmin is None:
+                vmin = min(-step, math.floor(low / step) * step)
+            if vmax is None:
+                vmax = max(step, math.ceil(high / step) * step)
+            print("Water video color range", vmin, "to", vmax, "m (run extremes", low, "to", high, ")", flush=True)
         cmap = plt.get_cmap(WATER_VIDEO_CMAP)
+        if WATER_VIDEO_CMAP_TRIM > 0:
+            # Drop the near-white middle of the diverging map so small set-up or
+            # set-down is still clearly colored; 0 m is the sharp blue/red boundary
+            half = 128
+            cmap = mcolors.ListedColormap(np.vstack([cmap(np.linspace(0, 0.5 - WATER_VIDEO_CMAP_TRIM, half)),
+                                                     cmap(np.linspace(0.5 + WATER_VIDEO_CMAP_TRIM, 1, half))]))
         if vmin < 0 < vmax:
             norm = mcolors.TwoSlopeNorm(vmin=vmin, vcenter=0, vmax=vmax)
         else:
             norm = mcolors.Normalize(vmin=vmin, vmax=vmax)
         levelBoundaries = np.linspace(vmin, vmax, 101)
-        ticks = np.arange(vmin, vmax + WATER_VIDEO_TICK_STEP / 2, WATER_VIDEO_TICK_STEP)
+        tickStep = WATER_VIDEO_TICK_STEP
+        if tickStep is None:
+            span = vmax - vmin
+            tickStep = 0.1 if span <= 1 else 0.25 if span <= 2 else 0.5 if span <= 5 else 1.0
+        # Ticks on whole multiples of the step (so 0 is always one when it is in range)
+        ticks = np.arange(math.ceil(vmin / tickStep - 1e-9), math.floor(vmax / tickStep + 1e-9) + 1) * tickStep
         label = "Water-Surface Elevation (m" + (" " + WATER_VIDEO_DATUM if WATER_VIDEO_DATUM else "") + ")"
 
         # True geographic shape: a degree of longitude is cos(latitude) as long as
@@ -544,7 +578,8 @@ class Grapher:
             colorbar = fig.colorbar(ScalarMappable(norm=norm, cmap=cmap), cax=cax, boundaries=levelBoundaries,
                                     values=(levelBoundaries[:-1] + levelBoundaries[1:]) / 2, ticks=ticks)
             colorbar.ax.yaxis.set_major_formatter(
-                FuncFormatter(lambda value, position: "0" if abs(value) < 1e-9 else f"{value:.1f}".replace("-", "−")))
+                FuncFormatter(lambda value, position: "0" if abs(value) < 1e-9
+                              else f"{value:.2f}".rstrip("0").rstrip(".").replace("-", "−")))
             colorbar.ax.tick_params(labelsize=fontSizes["cbar_ticks"], colors="#333333", length=3, width=0.6)
             colorbar.outline.set_linewidth(0.6)
             colorbar.set_label(label, fontsize=fontSizes["cbar_label"], color="#222222", labelpad=10)
@@ -567,7 +602,7 @@ class Grapher:
                     ax.text(lon, lat, name, ha=align, va="center", fontsize=fontSizes["water"], style="italic",
                             color="#2b4a6b", path_effects=halo, zorder=5, clip_on=True)
                 else:
-                    ax.text(lon, lat, name, ha=align, va="center", fontsize=fontSizes["region"], color="#8a8a8a",
+                    ax.text(lon, lat, name, ha=align, va="center", fontsize=fontSizes["region"], color="#666666",
                             path_effects=halo, zorder=5, clip_on=True)
 
             barKm = WATER_VIDEO_SCALE_BAR_KM
