@@ -52,6 +52,8 @@
 #   --bannerFromData true \
 # To name the wind forcing in the banner (e.g. GDAS instead of run.properties' gfs), add:
 #   --windProduct GDAS \
+# Graph units are metric (m, m/s, mm) by default; for feet, mph and inches, add:
+#   --unit imperial \
 # To plot NOAA tide predictions instead of the observed water levels, add:
 #   --obsPredicted true \
 # To also draw map frames over --backgroundChoice and save them as an .avi video

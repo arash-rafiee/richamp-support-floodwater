@@ -2,6 +2,8 @@ import os
 import json
 import math
 import numpy as np
+import matplotlib
+import matplotlib.ticker
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import matplotlib.dates as mdates
@@ -29,6 +31,119 @@ plt.rc('legend', fontsize=SMALL_SIZE)    # legend fontsize
 plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
 
 _bannerInstalled = False
+
+# ---------------------------------------------------------------------------
+# Output units (--unit). All data and calculations stay metric; imperial only
+# changes what is shown: axis/colorbar labels and ticks, numbers in titles,
+# the statistics table and CSV, and the map video scale bar.
+# ---------------------------------------------------------------------------
+UNIT_SYSTEM = "metric"
+FEET_PER_METER = 3.28084
+MPH_PER_MPS = 2.23694
+INCHES_PER_MM = 1 / 25.4
+# (label pattern, imperial replacement, factor), first match wins. Labels in
+# degrees, seconds, 1/m^2s^2 or without a unit are left as they are.
+UNIT_LABEL_RULES = [
+    (r"\(m/s\)", "(mph)", MPH_PER_MPS),
+    (r"Meters/Second", "Miles/Hour", MPH_PER_MPS),
+    (r"\(mm/hr\)", "(in/hr)", INCHES_PER_MM),
+    (r"\(mm\)", "(in)", INCHES_PER_MM),
+    (r"\(m(\s+NAVD88)?\)", r"(ft\1)", FEET_PER_METER),
+    (r"\(meters\)", "(feet)", FEET_PER_METER),
+    (r"\bMeters\b", "Feet", FEET_PER_METER),
+]
+
+
+def setUnitSystem(name):
+    """Set UNIT_SYSTEM from --unit; accepts metric/metrics/si and imperial/imperical/us."""
+    global UNIT_SYSTEM
+    name = (name or "metric").strip().lower()
+    if name in ("metric", "metrics", "si"):
+        UNIT_SYSTEM = "metric"
+    elif name in ("imperial", "imperical", "us", "english"):
+        UNIT_SYSTEM = "imperial"
+    else:
+        raise ValueError("--unit must be metric or imperial, not " + repr(name))
+    if UNIT_SYSTEM == "imperial":
+        installUnitConversion()
+    return UNIT_SYSTEM
+
+
+def imperial():
+    return UNIT_SYSTEM == "imperial"
+
+
+def lengthText(meters, digits=2):
+    """A length for a title, e.g. "1.23 m" or "4.04 ft"."""
+    if imperial():
+        return f"{round(meters * FEET_PER_METER, digits)} ft"
+    return f"{round(meters, digits)} m"
+
+
+def rainText(millimeters, digits=2):
+    """A rain depth for a title, e.g. "12.3 mm" or "0.48 in"."""
+    if imperial():
+        return f"{round(millimeters * INCHES_PER_MM, digits)} in"
+    return f"{round(millimeters, digits)} mm"
+
+
+class ConvertedLocator(matplotlib.ticker.Locator):
+    """Round tick values in the display unit for an axis whose data stay metric."""
+
+    def __init__(self, factor):
+        self.factor = factor
+        self.inner = matplotlib.ticker.MaxNLocator(nbins="auto", steps=[1, 2, 2.5, 5, 10])
+
+    def __call__(self):
+        low, high = self.axis.get_view_interval()
+        return self.tick_values(low, high)
+
+    def tick_values(self, vmin, vmax):
+        self.inner.set_axis(self.axis)
+        return np.asarray(self.inner.tick_values(vmin * self.factor, vmax * self.factor)) / self.factor
+
+
+def convertAxisUnits(axis):
+    """Relabel one metric axis to imperial and put its ticks on round imperial values."""
+    if getattr(axis, "richampUnitsConverted", False):
+        return
+    label = axis.get_label().get_text()
+    for pattern, replacement, factor in UNIT_LABEL_RULES:
+        if re.search(pattern, label):
+            axis.richampUnitsConverted = True
+            axis.set_label_text(re.sub(pattern, replacement, label, count=1))
+            axis.set_major_locator(ConvertedLocator(factor))
+            axis.set_major_formatter(matplotlib.ticker.FuncFormatter(
+                lambda value, position, factor=factor: f"{round(value * factor, 6):g}".replace("-", "−")))
+            axis.set_minor_locator(matplotlib.ticker.NullLocator())
+            return
+
+
+def convertFigureUnits(fig):
+    """Convert every metric axis and colorbar of fig to imperial (no-op for metric)."""
+    if not imperial():
+        return
+    for ax in fig.axes:
+        convertAxisUnits(ax.xaxis)
+        convertAxisUnits(ax.yaxis)
+
+
+_unitsInstalled = False
+
+
+def installUnitConversion():
+    """Convert axis units on every figure Grapher saves, like installFigureBanner does for the banner."""
+    global _unitsInstalled
+    if _unitsInstalled:
+        return
+    originalSavefig = Figure.savefig
+
+    def savefigWithUnits(self, *args, **kwargs):
+        convertFigureUnits(self)
+        return originalSavefig(self, *args, **kwargs)
+
+    Figure.savefig = savefigWithUnits
+    _unitsInstalled = True
 
 
 def stampFigureBanner(fig, bannerLines):
@@ -437,14 +552,16 @@ def drawStatisticsTable(ax, rows, observedLabel):
     ax.plot([0.0, tableRight], [y - 0.8 * lineHeight] * 2, transform=ax.transAxes, color="0.75", linewidth=0.6)
     for label, color, stats in rows:
         y -= lineHeight
-        values = [str(stats["n"]), f"{stats['bias']:+.3f}", f"{stats['mae']:.3f}", f"{stats['rmse']:.3f}",
+        factor = FEET_PER_METER if imperial() else 1.0
+        values = [str(stats["n"]), f"{stats['bias'] * factor:+.3f}", f"{stats['mae'] * factor:.3f}",
+                  f"{stats['rmse'] * factor:.3f}",
                   "–" if not np.isfinite(stats["r"]) else f"{stats['r']:.2f}"]
         ax.text(0.0, y - 0.2 * lineHeight, label, transform=ax.transAxes, ha="left", va="top", fontsize=10,
                 fontweight="bold", color=color)
         for (name, x, align), value in zip(columns[1:], values):
             ax.text(x, y - 0.2 * lineHeight, value, transform=ax.transAxes, ha=align, va="top", fontsize=10,
                     color="0.15")
-    ax.text(tableRight, 0.0, "Errors in m; bias = model − observed", transform=ax.transAxes, ha="right", va="bottom",
+    ax.text(tableRight, 0.0, "Errors in " + ("ft" if imperial() else "m") + "; bias = model − observed", transform=ax.transAxes, ha="right", va="bottom",
             fontsize=8.5, color="0.45")
 
 
@@ -701,6 +818,7 @@ class Grapher:
             colorbar.ax.tick_params(labelsize=fontSizes["cbar_ticks"], colors="#333333", length=3, width=0.6)
             colorbar.outline.set_linewidth(0.6)
             colorbar.set_label(label, fontsize=fontSizes["cbar_label"], color="#222222", labelpad=10)
+            convertFigureUnits(fig)   # the video is not saved with savefig, so convert here
 
             # White halo keeps labels readable over both land and the colored field
             halo = [patheffects.withStroke(linewidth=3, foreground="white")]
@@ -731,11 +849,18 @@ class Grapher:
                             path_effects=halo, zorder=6)
 
             barKm = WATER_VIDEO_SCALE_BAR_KM
+            barLabel = f"{barKm:g} km" if barKm else ""
             if barKm is None:
-                # Largest round length up to a fifth of the map width
+                # Largest round length up to a fifth of the map width, in m/km or ft/mi
                 mapKm = (east - west) * 111.32 * lonScale
-                barKm = max([length for length in (0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50, 100, 200, 500, 1000)
-                             if length <= mapKm / 5] or [0.05])
+                if imperial():
+                    lengths = [(feet * 0.0003048, f"{feet} ft") for feet in (20, 50, 100, 200, 500, 1000, 2000)]
+                    lengths += [(miles * 1.609344, f"{miles} mi") for miles in (1, 2, 5, 10, 20, 50, 100, 200, 500)]
+                else:
+                    lengths = [(meters / 1000, f"{meters} m") for meters in (5, 10, 20, 50, 100, 200, 500)]
+                    lengths += [(km, f"{km} km") for km in (1, 2, 5, 10, 20, 50, 100, 200, 500, 1000)]
+                fitting = [length for length in lengths if length[0] <= mapKm / 5] or lengths[:1]
+                barKm, barLabel = fitting[-1]
             if barKm:
                 # Scale bar in the lower-left corner; length uses the map's mid-latitude
                 barDegrees = barKm / (111.32 * lonScale)
@@ -743,7 +868,7 @@ class Grapher:
                 barY = south + 0.04 * (north - south)
                 ax.plot([barX, barX + barDegrees], [barY, barY], color="#222222", linewidth=2.5,
                         solid_capstyle="butt", path_effects=halo, zorder=5)
-                ax.annotate(f"{barKm:g} km" if barKm >= 1 else f"{barKm * 1000:g} m", (barX + barDegrees / 2, barY), xytext=(0, 5),
+                ax.annotate(barLabel, (barX + barDegrees / 2, barY), xytext=(0, 5),
                             textcoords="offset points", ha="center", va="bottom", fontsize=fontSizes["scale"],
                             color="#222222", path_effects=halo, zorder=5)
 
@@ -2444,7 +2569,7 @@ class Grapher:
                 if(self.gaugeExists):
                     ax.plot(self.gaugeDatapointsTimes[index], self.gaugeDatapointsRains[index], label="Gauge")
                     gaugeNoNan = np.nan_to_num(self.gaugeDatapointsRains[index])
-                    accumulationGauge = str(round(np.sum(gaugeNoNan), 2))
+                    accumulationGauge = rainText(np.sum(gaugeNoNan))
                     accumulationSeriesGauge = []
                     for rainIndex, gaugeRain in enumerate(gaugeNoNan):
                         if(rainIndex == 0):
@@ -2460,7 +2585,7 @@ class Grapher:
                 
 
                 rainNoNan = np.nan_to_num(self.datapointsRains[index])
-                accumulationRain = str(round(np.sum(rainNoNan), 2))
+                accumulationRain = rainText(np.sum(rainNoNan))
                 accumulationSeriesRain = []
                 for rainIndex, rain in enumerate(rainNoNan):
                     if(rainIndex == 0):
@@ -2573,9 +2698,10 @@ class Grapher:
             import csv
             with open(graph_directory + "water_statistics.csv", "w", newline="") as statisticsFile:
                 writer = csv.writer(statisticsFile)
-                writer.writerow(["station", "station_id", "model", "n", "bias_m", "mae_m", "rmse_m", "r"])
+                unit, factor = ("ft", FEET_PER_METER) if imperial() else ("m", 1.0)
+                writer.writerow(["station", "station_id", "model", "n", "bias_" + unit, "mae_" + unit, "rmse_" + unit, "r"])
                 for row in statisticsCsvRows:
-                    writer.writerow(row[:4] + [f"{value:.4f}" for value in row[4:]])
+                    writer.writerow(row[:4] + [f"{value * factor:.4f}" for value in row[4:7]] + [f"{row[7]:.4f}"])
 #         No loop because no timeseries
         if(len(self.datapointsElevation) > 0):
             fig, ax = plt.subplots(figsize=(16,13))
@@ -2826,7 +2952,7 @@ class Grapher:
                 plt.xticks(fontsize=12)
                 plt.yticks(fontsize=12)
                 stationName = self.runupLabels[index]
-                maxRunupDistance = str(round(max(self.datapointsRunup[index]), 2))
+                maxRunupDistance = lengthText(max(self.datapointsRunup[index]))
                 plt.title(self.titlePrefix + stationName + " station runup distance max: " + maxRunupDistance, fontsize=18)
 #                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
                 plt.ylabel("runup distance along shore (meters)", fontsize=14)
@@ -2852,7 +2978,7 @@ class Grapher:
                 plt.xticks(fontsize=12)
                 plt.yticks(fontsize=12)
                 stationName = self.runupLabels[index]
-                maxRunup = str(round(max(self.datapointsRunupHolmanMid[index]), 2)) + ", " + str(round(max(self.datapointsRunupStockdon[index]), 2))
+                maxRunup = lengthText(max(self.datapointsRunupHolmanMid[index])) + ", " + lengthText(max(self.datapointsRunupStockdon[index]))
                 plt.title(self.titlePrefix + stationName + " station runup (adcirc, stockdon): " + maxRunup, fontsize=18)
 #                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
                 plt.ylabel("runup (meters)", fontsize=14)
@@ -2873,7 +2999,7 @@ class Grapher:
                 plt.xticks(fontsize=12)
                 plt.yticks(fontsize=12)
                 stationName = self.runupLabels[index]
-                maxSwh = str(round(max(self.datapointsRunupHolmanLow[index]), 2))
+                maxSwh = lengthText(max(self.datapointsRunupHolmanLow[index]))
                 plt.title(self.titlePrefix + stationName + " station deepwater SWH max: " + maxSwh, fontsize=18)
 #                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
                 plt.ylabel("Deepwater SWH (meters)", fontsize=14)
@@ -2895,7 +3021,7 @@ class Grapher:
                 ax.legend(loc="upper left")
                 ax.format_xdata = mdates.DateFormatter('%d')
                 stationName = self.runupLabels[index]
-                maxSetup = str(round(max(self.datapointsSetupStockdonLow[index]), 2)) + ", " + str(round(max(self.datapointsSetupStockdon[index]), 2))
+                maxSetup = lengthText(max(self.datapointsSetupStockdonLow[index])) + ", " + lengthText(max(self.datapointsSetupStockdon[index]))
                 plt.title(self.titlePrefix + stationName + " station setup max (SWAN, Stockdon): " + maxSetup, fontsize=24)
 #                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
                 plt.ylabel("setup (meters)")
@@ -2916,7 +3042,7 @@ class Grapher:
                 plt.xticks(fontsize=12)
                 plt.yticks(fontsize=12)
                 stationName = self.runupLabels[index]
-                maxSwash = str(round(max(self.datapointsSwashStockdonIncident[index]), 2)) + ", " + str(round(max(self.datapointsSwashStockdonInfragravity[index]), 2))
+                maxSwash = lengthText(max(self.datapointsSwashStockdonIncident[index])) + ", " + lengthText(max(self.datapointsSwashStockdonInfragravity[index]))
                 plt.title(self.titlePrefix + stationName + " station swash max (inc, ig): " + maxSwash, fontsize=18)
 #                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
                 plt.ylabel("swash (meters)", fontsize=14)
@@ -2934,7 +3060,7 @@ class Grapher:
                 plt.xticks(fontsize=12)
                 plt.yticks(fontsize=12)
                 stationName = self.runupLabels[index]
-                maxIncidentSwash = str(round(max(self.datapointsSwashStockdonIncident[index]), 2))
+                maxIncidentSwash = lengthText(max(self.datapointsSwashStockdonIncident[index]))
                 plt.title(self.titlePrefix + stationName + " station incident (<3min) swash max: " + maxIncidentSwash, fontsize=18)
 #                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
                 plt.ylabel("swash (meters)", fontsize=14)
@@ -2951,7 +3077,7 @@ class Grapher:
                 plt.xticks(fontsize=12)
                 plt.yticks(fontsize=12)
                 stationName = self.runupLabels[index]
-                maxInfragravitySwash = str(round(max(self.datapointsSwashStockdonInfragravity[index]), 2))
+                maxInfragravitySwash = lengthText(max(self.datapointsSwashStockdonInfragravity[index]))
                 plt.title(self.titlePrefix + stationName + " station infragravity (>3 min) swash max: " + maxInfragravitySwash, fontsize=18)
 #                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
                 plt.ylabel("swash (meters)", fontsize=14)
@@ -2991,7 +3117,7 @@ class Grapher:
                         # Calculate the maximum elevation including the swash
                         max_water_elevation = max(self.datapointsWaters[datapointsWaterRunupIndex])
                         max_swash_upper = max(upper_bound)
-                        maxElevation = str(round(max_water_elevation, 2)) + ", " + str(round(max_swash_upper, 2))
+                        maxElevation = lengthText(max_water_elevation) + ", " + lengthText(max_swash_upper)
                         
                         # Customize the plot
                         ax.legend(loc="upper left")
@@ -3018,7 +3144,7 @@ class Grapher:
                 plt.xticks(fontsize=12)
                 plt.yticks(fontsize=12)
                 stationName = self.runupLabels[index]
-                maxWavelength = str(round(max(self.datapointsWavelength[index]), 2))
+                maxWavelength = lengthText(max(self.datapointsWavelength[index]))
                 plt.title(self.titlePrefix + stationName + " station wavelength max: " + maxWavelength, fontsize=18)
 #                 plt.xlabel("Start: " + self.waterStartDate.strftime(self.DATE_FORMAT), fontsize=14)
                 plt.ylabel("wavelength (meters)", fontsize=14)

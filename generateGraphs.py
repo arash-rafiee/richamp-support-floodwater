@@ -1,5 +1,5 @@
 from Reader import Reader, Fort14Reader, Fort74Reader, Fort63Reader, Fort64Reader, GFSWindReader, GFSRainReader, PostWindReader, WaveReader
-from Grapher import Grapher
+from Grapher import Grapher, setUnitSystem
 from DiffGrapher import DiffGrapher
 from GetBuoyWind import GetBuoyWind
 from GetBuoyWater import GetBuoyWater
@@ -377,9 +377,18 @@ def main():
         help="Wind forcing name shown in the banner (e.g. GDAS), replacing the run.properties stormtype"
     )
     p.add_argument(
+        "--unit", "--units", dest="unit", type=str, default="metric",
+        help="Units shown on the graphs and videos: metric (default; m, m/s, mm) or imperial (ft, mph, in). "
+             "Only the display changes; data and calculations stay metric"
+    )
+    p.add_argument(
         "--generateRunup", type=bool, help="Generate runup predictions from runup stations"
     )
     args = p.parse_args()
+    try:
+        print("Graph units: " + setUnitSystem(args.unit), flush=True)
+    except ValueError as error:
+        p.error(str(error))
     args.epsg = 4326
     Reader.GENERATE_MAPS = bool(args.maps)
     print("Generating Wind Graphs!", flush=True)
