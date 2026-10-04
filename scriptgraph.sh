@@ -50,7 +50,8 @@
 # The banner at the top of each graph comes from run.properties by default.
 # To show the first and last time of the input .nc file instead, add:
 #   --bannerFromData true \
-# To plot NOAA tide predictions instead of the observed water levels, add:
+# To name the wind forcing in the banner (e.g. GDAS instead of run.properties' gfs), add:
+#   --windProduct GDAS \n# To plot NOAA tide predictions instead of the observed water levels, add:
 #   --obsPredicted true \
 # To also draw map frames over --backgroundChoice and save them as an .avi video
 # (water is .mp4 instead when an ffmpeg program is already on the PATH), add:

@@ -198,15 +198,18 @@ def formatForecastTime(rawTime, packedTime):
     return ""
 
 
-def buildStormBanner(properties, dataWindow=None):
+def buildStormBanner(properties, dataWindow=None, windProduct=None):
     """Build the two line storm banner drawn at the top of every graph.
 
     Line one identifies the storm, line two gives the forecast window. Missing
     or empty properties are dropped, so a gfs run just shows the window.
     A dataWindow (start, end) pair, read from the netcdf times, replaces the
-    run.properties forecast window.
+    run.properties forecast window. A windProduct (e.g. "GDAS") replaces the
+    run.properties stormtype, which names the wind forcing ("gfs").
     """
     properties = dict(properties or {})
+    if windProduct:
+        properties["stormtype"] = windProduct
     if not properties and not dataWindow:
         return ""
     if properties.get("stormtype"):
@@ -370,6 +373,10 @@ def main():
         help="Show the first and last time of the input netcdf in the banner instead of the run.properties window"
     )
     p.add_argument(
+        "--windProduct", "--WindProduct", dest="windProduct", type=str,
+        help="Wind forcing name shown in the banner (e.g. GDAS), replacing the run.properties stormtype"
+    )
+    p.add_argument(
         "--generateRunup", type=bool, help="Generate runup predictions from runup stations"
     )
     args = p.parse_args()
@@ -415,7 +422,7 @@ def main():
         if not dataWindow:
             print("--bannerFromData: no readable time variable in the input netcdf, "
                   "falling back to the run.properties window", flush=True)
-    stormBanner = buildStormBanner(readRunProperties(runPropertiesFile), dataWindow)
+    stormBanner = buildStormBanner(readRunProperties(runPropertiesFile), dataWindow, args.windProduct)
     if stormBanner:
         bannerSource = runPropertiesFile or "netcdf"
         if dataWindow:
