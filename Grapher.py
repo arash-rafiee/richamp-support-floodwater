@@ -99,8 +99,11 @@ MAP_VIDEO_FPS = 10
 # Water-surface elevation video (--maps). Only the look is set here; the
 # ADCIRC values, wet/dry masking and timing come straight from the run.
 # ---------------------------------------------------------------------------
-WATER_VIDEO_SIZE_PX = (1920, 1080)   # output frame (width, height), 16:9
-WATER_VIDEO_DPI = 100                # with SIZE_PX this sets the font scale
+WATER_VIDEO_HEIGHT_PX = 1080         # output frame height
+# None fits the frame width to the map, so a tall region has no empty side
+# bands. Set e.g. 1920 for a fixed 16:9 frame (the map is centered in it).
+WATER_VIDEO_WIDTH_PX = None
+WATER_VIDEO_DPI = 100                # with the frame size this sets the font scale
 WATER_VIDEO_FPS = MAP_VIDEO_FPS
 WATER_VIDEO_EXTENT = None            # [west, east, south, north]; None = --backgroundChoice axis
 # Fixed color limits for every frame. vcenter=0 keeps 0 m white even though
@@ -123,7 +126,30 @@ WATER_VIDEO_BASEMAP = False          # True draws the --backgroundChoice photo u
 WATER_VIDEO_BASEMAP_ALPHA = 0.35     # how strongly the faded photo shows
 WATER_VIDEO_FONT = "DejaVu Sans"
 WATER_VIDEO_FONT_SIZES = {"title": 13, "time": 20, "annotation": 12,
-                          "cbar_label": 14, "cbar_ticks": 11, "ticks": 11, "legend": 11, "station": 9}
+                          "cbar_label": 14, "cbar_ticks": 11, "ticks": 11, "legend": 11, "station": 9,
+                          "city": 11, "water": 11, "region": 13, "scale": 10}
+# Reference labels drawn on the map (only those inside the extent show).
+# (name, longitude, latitude, kind, horizontal alignment); kind "city" gets a
+# dot, "water" is italic blue-gray, "region" is light gray capitals.
+WATER_VIDEO_PLACES = [
+    ("Providence", -71.4128, 41.8240, "city", "left"),
+    ("Warwick", -71.4162, 41.7001, "city", "right"),
+    ("Bristol", -71.2662, 41.6771, "city", "left"),
+    ("Fall River", -71.1550, 41.7015, "city", "right"),
+    ("Newport", -71.3128, 41.4901, "city", "left"),
+    ("Narragansett", -71.4495, 41.4501, "city", "right"),
+    ("Westerly", -71.8273, 41.3776, "city", "left"),
+    ("New London", -72.0995, 41.3557, "city", "right"),
+    ("Montauk", -71.9545, 41.0359, "city", "left"),
+    ("Block Island", -71.5330, 41.1650, "water", "left"),
+    ("Narragansett\nBay", -71.4000, 41.5850, "water", "center"),
+    ("Rhode Island Sound", -71.3300, 41.3400, "water", "center"),
+    ("Block Island Sound", -71.7300, 41.2300, "water", "center"),
+    ("RHODE ISLAND", -71.6200, 41.7800, "region", "center"),
+    ("MA", -71.2300, 41.9300, "region", "center"),
+    ("CT", -71.8550, 41.7000, "region", "center"),
+]
+WATER_VIDEO_SCALE_BAR_KM = None      # None picks a round length for the extent; 0 hides it
 
 
 def findFfmpeg():
@@ -168,6 +194,8 @@ def writeVideo(outputBase, makeFrames, width, height, fps):
                 process.kill()
                 process.wait()
         print("ffmpeg could not write " + outputFile + "; writing an .avi instead", flush=True)
+        if os.path.exists(outputFile):
+            os.remove(outputFile)
     outputFile = outputBase + ".avi"
     writeMjpegAvi(outputFile, makeFrames(), width, height, fps)
     print("Wrote " + outputFile, flush=True)
@@ -408,7 +436,8 @@ class Grapher:
         data, the timestamp and any runup lines.
         """
         from matplotlib.backends.backend_agg import FigureCanvasAgg
-        from matplotlib.ticker import MultipleLocator, FuncFormatter
+        from matplotlib.ticker import MaxNLocator, FuncFormatter
+        from matplotlib import patheffects
 
         fontSizes = WATER_VIDEO_FONT_SIZES
         west, east, south, north = WATER_VIDEO_EXTENT or plotAxis
@@ -431,24 +460,26 @@ class Grapher:
         lonScale = math.cos(math.radians((south + north) / 2))
         mapAspect = (north - south) / ((east - west) * lonScale)   # on-screen height / width
 
-        # Layout in inches, left to right: text column | lat ticks | map | colorbar | colorbar label.
-        # The map takes the full frame height; the group is centered horizontally.
-        widthPx, heightPx = WATER_VIDEO_SIZE_PX
+        # Layout in inches, left to right: lat ticks | map | colorbar | colorbar label.
+        # The map takes the full frame height and the title/timestamp sit inside
+        # it, so with WATER_VIDEO_WIDTH_PX = None the frame is only as wide as needed.
         dpi = WATER_VIDEO_DPI
-        figW, figH = widthPx / dpi, heightPx / dpi
-        marginTop, marginBottom, marginSide = 0.35, 0.55, 0.3
-        textW, textGap = 3.9, 0.75          # textGap leaves room for the latitude tick labels
-        cbarGap, cbarW, cbarLabelW = 0.18, 0.24, 1.1
+        figH = WATER_VIDEO_HEIGHT_PX / dpi
+        marginTop, marginBottom, marginLeft = 0.2, 0.45, 0.65
+        cbarGap, cbarW, cbarLabelW = 0.18, 0.24, 1.25
+        marginRight = cbarGap + cbarW + cbarLabelW
         mapH = figH - marginTop - marginBottom
         mapW = mapH / mapAspect
-        availableW = figW - 2 * marginSide - textW - textGap - cbarGap - cbarW - cbarLabelW
-        if mapW > availableW:               # a wide extent is limited by width instead
-            mapW = availableW
-            mapH = mapW * mapAspect
-        groupLeft = (figW - (textW + textGap + mapW + cbarGap + cbarW + cbarLabelW)) / 2
-        mapLeft = groupLeft + textW + textGap
+        if WATER_VIDEO_WIDTH_PX:
+            figW = WATER_VIDEO_WIDTH_PX / dpi
+            if mapW > figW - marginLeft - marginRight:   # a wide extent is limited by width instead
+                mapW = figW - marginLeft - marginRight
+                mapH = mapW * mapAspect
+        else:
+            # Rounded up to a multiple of 16 pixels; KMPlayer garbles MJPEG at some odd widths
+            figW = math.ceil((marginLeft + mapW + marginRight) * dpi / 16) * 16 / dpi
+        mapLeft = marginLeft + (figW - marginLeft - mapW - marginRight) / 2
         mapBottom = marginBottom + (figH - marginTop - marginBottom - mapH) / 2
-        mapTop = mapBottom + mapH
 
         with plt.rc_context({"font.family": WATER_VIDEO_FONT}):
             fig = Figure(figsize=(figW, figH), dpi=dpi, facecolor="white")
@@ -478,7 +509,7 @@ class Grapher:
                 rWest, rEast, rSouth, rNorth = rasterizer.extent
                 gridX = rWest + (np.arange(rasterizer.width) + 0.5) * (rEast - rWest) / rasterizer.width
                 gridY = rSouth + (np.arange(rasterizer.height) + 0.5) * (rNorth - rSouth) / rasterizer.height
-                if np.nanmax(wetFraction) > 0.5 > np.nanmin(wetFraction):
+                if np.isfinite(wetFraction).any() and np.nanmax(wetFraction) > 0.5 > np.nanmin(wetFraction):
                     ax.contour(gridX, gridY, wetFraction, levels=[0.5], colors=WATER_VIDEO_COASTLINE_COLOR,
                                linewidths=0.6, zorder=2)
 
@@ -496,13 +527,13 @@ class Grapher:
             ax.set_xlim(west, east)
             ax.set_ylim(south, north)
             ax.set_aspect(1 / lonScale, adjustable="box", anchor="C")
-            # 0.1° ticks for a bay-sized extent, matplotlib's choice for larger ones
-            if max(east - west, north - south) <= 2:
-                ax.xaxis.set_major_locator(MultipleLocator(0.1))
-                ax.yaxis.set_major_locator(MultipleLocator(0.1))
-            degrees = FuncFormatter(lambda value, position: f"{value:.1f}".replace("-", "−"))
-            ax.xaxis.set_major_formatter(degrees)
-            ax.yaxis.set_major_formatter(degrees)
+            # About 5-7 round ticks per side whatever the extent (1, 2 or 5 x 10^n
+            # degrees), with just enough decimals to tell them apart
+            for axis, span in ((ax.xaxis, east - west), (ax.yaxis, north - south)):
+                axis.set_major_locator(MaxNLocator(nbins=6, steps=[1, 2, 5, 10]))
+                decimals = max(1, -math.floor(math.log10(span / 6)))
+                axis.set_major_formatter(FuncFormatter(
+                    lambda value, position, decimals=decimals: f"{value:.{decimals}f}".replace("-", "−")))
             ax.tick_params(labelsize=fontSizes["ticks"], colors="#444444", length=3, width=0.6)
             for spine in ax.spines.values():
                 spine.set_linewidth(0.6)
@@ -518,28 +549,70 @@ class Grapher:
             colorbar.outline.set_linewidth(0.6)
             colorbar.set_label(label, fontsize=fontSizes["cbar_label"], color="#222222", labelpad=10)
 
-            # Text column left of the map, top-aligned with it: title, the one
-            # timestamp, optional annotations, then the station legend.
-            textX = groupLeft / figW
-            cursor = mapTop
+            # White halo keeps labels readable over both land and the colored field
+            halo = [patheffects.withStroke(linewidth=3, foreground="white")]
+
+            # Reference places, drawn once
+            for name, lon, lat, kind, align in WATER_VIDEO_PLACES:
+                if not (west <= lon <= east and south <= lat <= north):
+                    continue
+                if kind == "city":
+                    ax.plot(lon, lat, "o", markersize=3.5, color="#222222", markeredgecolor="white",
+                            markeredgewidth=0.6, zorder=4)
+                    offset = {"left": 5, "right": -5}.get(align, 0)
+                    ax.annotate(name, (lon, lat), xytext=(offset, 0), textcoords="offset points", ha=align,
+                                va="center", fontsize=fontSizes["city"], color="#222222", path_effects=halo, zorder=5,
+                                clip_on=True)
+                elif kind == "water":
+                    ax.text(lon, lat, name, ha=align, va="center", fontsize=fontSizes["water"], style="italic",
+                            color="#2b4a6b", path_effects=halo, zorder=5, clip_on=True)
+                else:
+                    ax.text(lon, lat, name, ha=align, va="center", fontsize=fontSizes["region"], color="#8a8a8a",
+                            path_effects=halo, zorder=5, clip_on=True)
+
+            barKm = WATER_VIDEO_SCALE_BAR_KM
+            if barKm is None:
+                # Largest round length up to a fifth of the map width
+                mapKm = (east - west) * 111.32 * lonScale
+                barKm = max([length for length in (0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50, 100, 200, 500, 1000)
+                             if length <= mapKm / 5] or [0.05])
+            if barKm:
+                # Scale bar in the lower-left corner; length uses the map's mid-latitude
+                barDegrees = barKm / (111.32 * lonScale)
+                barX = west + 0.05 * (east - west)
+                barY = south + 0.04 * (north - south)
+                ax.plot([barX, barX + barDegrees], [barY, barY], color="#222222", linewidth=2.5,
+                        solid_capstyle="butt", path_effects=halo, zorder=5)
+                ax.annotate(f"{barKm:g} km" if barKm >= 1 else f"{barKm * 1000:g} m", (barX + barDegrees / 2, barY), xytext=(0, 5),
+                            textcoords="offset points", ha="center", va="bottom", fontsize=fontSizes["scale"],
+                            color="#222222", path_effects=halo, zorder=5)
+
+            # Title, the one timestamp and optional annotations, stacked in the
+            # upper-left corner of the map
+            cursor = -8
             if WATER_VIDEO_TITLE:
-                fig.text(textX, cursor / figH, self.titlePrefix + WATER_VIDEO_TITLE, ha="left", va="top",
-                         fontsize=fontSizes["title"], color="#444444")
-                cursor -= fontSizes["title"] * 1.6 / 72
-            timeText = fig.text(textX, cursor / figH, "", ha="left", va="top", fontsize=fontSizes["time"], color="#111111")
-            cursor -= fontSizes["time"] * 1.5 / 72
+                ax.annotate(self.titlePrefix + WATER_VIDEO_TITLE, (0, 1), xycoords="axes fraction", xytext=(10, cursor),
+                            textcoords="offset points", ha="left", va="top", fontsize=fontSizes["title"],
+                            color="#333333", path_effects=halo, zorder=6)
+                cursor -= fontSizes["title"] * 1.5
+            timeText = ax.annotate("", (0, 1), xycoords="axes fraction", xytext=(10, cursor), textcoords="offset points",
+                                   ha="left", va="top", fontsize=fontSizes["time"], color="#111111",
+                                   path_effects=halo, zorder=6)
+            cursor -= fontSizes["time"] * 1.4
             for annotation in WATER_VIDEO_ANNOTATIONS:
-                fig.text(textX, cursor / figH, annotation, ha="left", va="top",
-                         fontsize=fontSizes["annotation"], color="#444444")
-                cursor -= fontSizes["annotation"] * 1.5 / 72
+                ax.annotate(annotation, (0, 1), xycoords="axes fraction", xytext=(10, cursor), textcoords="offset points",
+                            ha="left", va="top", fontsize=fontSizes["annotation"], color="#333333",
+                            path_effects=halo, zorder=6)
+                cursor -= fontSizes["annotation"] * 1.5
             if(self.meshExists or self.obsExists):
-                cursor -= 0.15
-                ax.legend(loc="upper left", bbox_to_anchor=(textX, cursor / figH), bbox_transform=fig.transFigure,
-                          frameon=False, fontsize=fontSizes["legend"], borderaxespad=0, handletextpad=0.4)
+                ax.legend(loc="lower right", framealpha=0.85, edgecolor="none", fontsize=fontSizes["legend"],
+                          handletextpad=0.4)
 
             frameCount = len(self.mapWaterTimes)
-            canvas.draw()
-            frameHeight, frameWidth = np.asarray(canvas.buffer_rgba()).shape[:2]
+            # Exact even pixel size for the encoder: Agg truncates figsize * dpi, so
+            # a 9.12 in figure can render 911 px wide; frames are padded/cropped to this.
+            frameWidth = int(round(figW * dpi / 2)) * 2
+            frameHeight = int(round(figH * dpi / 2)) * 2
 
             def makeFrames():
                 for index in range(frameCount):
@@ -554,7 +627,9 @@ class Grapher:
                             self.plotExtendedLines(ax, runupIndex, index, runupLabel)
                         frameArtists = [artist for artist in ax.get_children() if artist not in before]
                     canvas.draw()
-                    frame = np.asarray(canvas.buffer_rgba())[:, :, :3].copy()
+                    rendered = np.asarray(canvas.buffer_rgba())[:frameHeight, :frameWidth, :3]
+                    frame = np.full((frameHeight, frameWidth, 3), 255, dtype=np.uint8)
+                    frame[:rendered.shape[0], :rendered.shape[1]] = rendered
                     for artist in frameArtists:
                         artist.remove()
                     if(index % 50 == 0):
