@@ -369,6 +369,84 @@ class MeshRasterizer:
                          interpolation="nearest", **kwargs)
 
 
+def waterStatistics(modelTimes, modelValues, obsTimes, obsValues, maxGapSeconds=3600):
+    """Model-vs-observation error statistics at the model output times.
+
+    The observation is linearly interpolated to each model time between its two
+    neighbouring readings; times outside the record, across a gap longer than
+    maxGapSeconds, or where either value is missing or dry (-99999) are skipped.
+    Returns {"n", "bias", "mae", "rmse", "r"} with bias = mean(model - observed),
+    or None when nothing pairs.
+    """
+    def seconds(times):
+        return np.array([t.timestamp() if hasattr(t, "timestamp") else float(t) for t in times], dtype=np.float64)
+
+    def clean(values):
+        values = np.array([np.nan if v is None else v for v in values], dtype=np.float64)
+        values[values < -9000] = np.nan
+        return values
+
+    if len(modelTimes) == 0 or len(obsTimes) < 2:
+        return None
+    modelSeconds, model = seconds(modelTimes), clean(modelValues)
+    obsSeconds, obs = seconds(obsTimes), clean(obsValues)
+    keep = np.isfinite(obs)
+    obsSeconds, obs = obsSeconds[keep], obs[keep]
+    order = np.argsort(obsSeconds)
+    obsSeconds, obs = obsSeconds[order], obs[order]
+    if len(obsSeconds) < 2:
+        return None
+    # obsSeconds[before] <= model time < obsSeconds[after]; a time on the last reading uses it directly
+    after = np.searchsorted(obsSeconds, modelSeconds, side="right")
+    inside = (after > 0) & ((after < len(obsSeconds)) | (modelSeconds == obsSeconds[-1]))
+    after = np.clip(after, 1, len(obsSeconds) - 1)
+    before = after - 1
+    gap = obsSeconds[after] - obsSeconds[before]
+    exact = (obsSeconds[before] == modelSeconds) | (obsSeconds[after] == modelSeconds)
+    inside &= (gap <= maxGapSeconds) | exact
+    weight = np.where(gap > 0, (modelSeconds - obsSeconds[before]) / np.where(gap > 0, gap, 1), 0)
+    obsAtModel = obs[before] + weight * (obs[after] - obs[before])
+    paired = inside & np.isfinite(model) & np.isfinite(obsAtModel)
+    if not paired.any():
+        return None
+    error = model[paired] - obsAtModel[paired]
+    n = int(paired.sum())
+    r = float(np.corrcoef(model[paired], obsAtModel[paired])[0, 1]) if n > 2 else float("nan")
+    return {"n": n, "bias": float(error.mean()), "mae": float(np.abs(error).mean()),
+            "rmse": float(np.sqrt((error ** 2).mean())), "r": r}
+
+
+def drawStatisticsTable(ax, rows, observedLabel):
+    """Draw a "Full-period statistics" table on an empty axes.
+
+    rows are (label, color, stats) with stats from waterStatistics.
+    """
+    ax.axis("off")
+    # Compact block on the left, like a journal table, rather than spread over the full width
+    columns = [("Model", 0.0, "left"), ("n", 0.26, "right"), ("Bias", 0.35, "right"),
+               ("MAE", 0.43, "right"), ("RMSE", 0.51, "right"), ("r", 0.58, "right")]
+    tableRight = columns[-1][1]
+    lineHeight = 1.0 / (len(rows) + 2.6)
+    y = 1.0
+    ax.text(0.0, y, "Full-period statistics vs " + observedLabel, transform=ax.transAxes, ha="left", va="top",
+            fontsize=10.5, fontweight="bold", color="0.15")
+    y -= lineHeight
+    for name, x, align in columns:
+        ax.text(x, y, name, transform=ax.transAxes, ha=align, va="top", fontsize=9.5, color="0.35")
+    ax.plot([0.0, tableRight], [y - 0.8 * lineHeight] * 2, transform=ax.transAxes, color="0.75", linewidth=0.6)
+    for label, color, stats in rows:
+        y -= lineHeight
+        values = [str(stats["n"]), f"{stats['bias']:+.3f}", f"{stats['mae']:.3f}", f"{stats['rmse']:.3f}",
+                  "–" if not np.isfinite(stats["r"]) else f"{stats['r']:.2f}"]
+        ax.text(0.0, y - 0.2 * lineHeight, label, transform=ax.transAxes, ha="left", va="top", fontsize=10,
+                fontweight="bold", color=color)
+        for (name, x, align), value in zip(columns[1:], values):
+            ax.text(x, y - 0.2 * lineHeight, value, transform=ax.transAxes, ha=align, va="top", fontsize=10,
+                    color="0.15")
+    ax.text(tableRight, 0.0, "Errors in m; bias = model − observed", transform=ax.transAxes, ha="right", va="bottom",
+            fontsize=8.5, color="0.45")
+
+
 def compactDateRange(start, end):
     """Format a date span as "Sep 13–20, 2026", widening as months/years differ."""
     if start.year != end.year:
@@ -2399,18 +2477,38 @@ class Grapher:
                 plt.ylabel("rain (mm)")
                 plt.savefig(graph_directory + stationName + '_rain_accumulation.png')
                 plt.close()
+        statisticsCsvRows = []
         for index in range(numberOfWaterDatapoints):
             if(len(self.datapointsWaters) > 0):
                 # Publication style figure: compact layout, title and a small
                 # forcing/date subtitle in place of the global banner
-                fig, ax = plt.subplots(figsize=(11, 5.5), layout="constrained")
+                # Model series, each with its statistics against the observations
+                modelSeries = []
+                if(self.stillwaterExists):
+                    modelSeries.append(("ADCIRC Stillwater", self.stillwaterTimes, self.datapointsStillwaters[index], ":"))
+                if(self.tidewaterExists):
+                    modelSeries.append(("ADCIRC Tide Only", self.tidewaterTimes, self.datapointsTidewaters[index], "-."))
+                modelSeries.append(("ADCIRC", self.waterTimes, self.datapointsWaters[index], "-"))
+                seriesStatistics = []
+                if(self.tideExists):
+                    for label, times, values, style in modelSeries:
+                        seriesStatistics.append(waterStatistics(times, values, self.tideDatapointsTimes[index],
+                                                                self.tideDatapointsWaters[index]))
+                statisticsRows = sum(stats is not None for stats in seriesStatistics)
+                if statisticsRows:
+                    tableHeight = 0.3 * statisticsRows + 0.85
+                    fig, (ax, statisticsAx) = plt.subplots(2, 1, figsize=(11, 5.5 + tableHeight), layout="constrained",
+                                                           height_ratios=[5.5, tableHeight])
+                else:
+                    fig, ax = plt.subplots(figsize=(11, 5.5), layout="constrained")
                 fig.richampBannerDrawn = True
                 lineWidth = 2.0
-                if(self.stillwaterExists):
-                    ax.plot(self.stillwaterTimes, self.datapointsStillwaters[index], label="ADCIRC Stillwater", linestyle=":", linewidth=lineWidth)
-                if(self.tidewaterExists):
-                    ax.plot(self.tidewaterTimes, self.datapointsTidewaters[index], label="ADCIRC Tide Only", linestyle="-.", linewidth=lineWidth)
-                ax.plot(self.waterTimes, self.datapointsWaters[index], label="ADCIRC", color="C0", linestyle="-", linewidth=lineWidth)
+                seriesColors = []
+                for label, times, values, style in modelSeries:
+                    # ADCIRC keeps C0 and the observations C1; the variants get their own colors
+                    color = {"ADCIRC": "C0", "ADCIRC Stillwater": "C2", "ADCIRC Tide Only": "C4"}[label]
+                    line, = ax.plot(times, values, label=label, color=color, linestyle=style, linewidth=lineWidth)
+                    seriesColors.append(line.get_color())
                 if(self.tideExists):
                     ax.plot(self.tideDatapointsTimes[index], self.tideDatapointsWaters[index], label=self.obsWaterLabel, color="C1", linestyle="--", linewidth=lineWidth)
 #                     ax.plot(self.tideDatapointsPredictionTimes[index], self.tideDatapointsPredictionWaters[index], label="Tides")
@@ -2441,6 +2539,14 @@ class Grapher:
                 ax.set_facecolor("white")
                 ax.legend(loc="best", fontsize=10, frameon=True, framealpha=0.9, edgecolor="0.8",
                           ncol=2, handlelength=2.6, borderpad=0.4, columnspacing=1.2)
+                if statisticsRows:
+                    tableRows = []
+                    for (label, times, values, style), color, stats in zip(modelSeries, seriesColors, seriesStatistics):
+                        if stats is not None:
+                            tableRows.append((label, color, stats))
+                            statisticsCsvRows.append([stationName, stationId, label, stats["n"], stats["bias"],
+                                                      stats["mae"], stats["rmse"], stats["r"]])
+                    drawStatisticsTable(statisticsAx, tableRows, self.obsWaterLabel)
                 fig.savefig(graph_directory + stationName + '_water.png', dpi=200, facecolor="white", bbox_inches='tight', pad_inches=0.05)
                 plt.close()
                 
@@ -2456,6 +2562,14 @@ class Grapher:
                     plt.ylabel("depth (meters)")
                     plt.savefig(graph_directory + stationName + '_station_water.png')
                     plt.close()
+        if statisticsCsvRows:
+            # The same numbers as the tables under the station plots, all stations in one file
+            import csv
+            with open(graph_directory + "water_statistics.csv", "w", newline="") as statisticsFile:
+                writer = csv.writer(statisticsFile)
+                writer.writerow(["station", "station_id", "model", "n", "bias_m", "mae_m", "rmse_m", "r"])
+                for row in statisticsCsvRows:
+                    writer.writerow(row[:4] + [f"{value:.4f}" for value in row[4:]])
 #         No loop because no timeseries
         if(len(self.datapointsElevation) > 0):
             fig, ax = plt.subplots(figsize=(16,13))
