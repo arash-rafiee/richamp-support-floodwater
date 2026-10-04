@@ -517,12 +517,12 @@ def main():
     elif(backgroundChoice == "BLOCK_ISLAND_SOUND_OUTLINE"):
         backgroundMap = BLOCK_ISLAND_SOUND_OUTLINE_MAP     
         backgroundAxis = BLOCK_ISLAND_SOUND_AXIS 
-    elif(backgroundChoice == "GULF_YUTACAN"):
-        backgroundMap = GULF_YUTACAN_MAP     
-        backgroundAxis = GULF_YUTACAN_AXIS  
-    elif(backgroundChoice == "GULF_YUTACAN_OUTLINE"):
-        backgroundMap = GULF_YUTACAN_OUTLINE_MAP     
-        backgroundAxis = GULF_YUTACAN_AXIS 
+    elif(backgroundChoice in ("GULF_YUCATAN", "GULF_YUTACAN")):   # old misspelling still accepted
+        backgroundMap = GULF_YUCATAN_MAP
+        backgroundAxis = GULF_YUCATAN_AXIS
+    elif(backgroundChoice in ("GULF_YUCATAN_OUTLINE", "GULF_YUTACAN_OUTLINE")):
+        backgroundMap = GULF_YUCATAN_OUTLINE_MAP
+        backgroundAxis = GULF_YUCATAN_AXIS
     elif(backgroundChoice == "FLORIDA"):
         backgroundMap = FLORIDA_MAP     
         backgroundAxis = FLORIDA_AXIS  

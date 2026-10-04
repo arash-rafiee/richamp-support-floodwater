@@ -162,6 +162,7 @@ WATER_VIDEO_PLACES = [
     ("MA", -71.2300, 41.9300, "region", "center"),
     ("CT", -71.8550, 41.7000, "region", "center"),
 ]
+WATER_VIDEO_PLACES_MAX_DEGREES = 2.5  # place labels only on maps narrower than this (they pile up on basin maps)
 WATER_VIDEO_SCALE_BAR_KM = None      # None picks a round length for the extent; 0 hides it
 
 
@@ -651,8 +652,12 @@ class Grapher:
             if WATER_VIDEO_STATE_BORDERS and os.path.exists(bordersFile):
                 # Dashed state borders over a white underlay, drawn once
                 with open(bordersFile) as file:
-                    borderLines = json.load(file)["lines"]
-                for line in borderLines:
+                    borders = json.load(file)
+                # Only maps inside the area the file was made for; outside it the
+                # borders are incomplete and show as stray pieces
+                boxWest, boxSouth, boxEast, boxNorth = borders.get("box", [-180, -90, 180, 90])
+                insideBox = boxWest <= west and east <= boxEast and boxSouth <= south and north <= boxNorth
+                for line in (borders["lines"] if insideBox else []):
                     line = np.asarray(line)
                     if (line[:, 0].max() < west or line[:, 0].min() > east
                             or line[:, 1].max() < south or line[:, 1].min() > north):
@@ -701,7 +706,8 @@ class Grapher:
             halo = [patheffects.withStroke(linewidth=3, foreground="white")]
 
             # Reference places, drawn once
-            for name, lon, lat, kind, align in WATER_VIDEO_PLACES:
+            places = WATER_VIDEO_PLACES if east - west <= WATER_VIDEO_PLACES_MAX_DEGREES else []
+            for name, lon, lat, kind, align in places:
                 if not (west <= lon <= east and south <= lat <= north):
                     continue
                 if kind == "city":

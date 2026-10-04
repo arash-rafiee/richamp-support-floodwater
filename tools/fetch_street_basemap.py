@@ -111,7 +111,7 @@ def writeStateBorders(output, box):
                 nextVertex = options[0]
             lines.append([list(vertex) for vertex in line])
     with open(output, "w") as file:
-        json.dump({"source": "US Census TIGERweb state boundaries", "lines": lines}, file)
+        json.dump({"source": "US Census TIGERweb state boundaries", "box": list(box), "lines": lines}, file)
     print("Wrote", output, len(lines), "border lines,", sum(len(line) for line in lines), "points", flush=True)
 
 
