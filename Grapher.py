@@ -236,6 +236,8 @@ WATER_VIDEO_CMAP_TRIM = 0.12         # fraction of the pale middle removed each 
 WATER_VIDEO_DATUM = "NAVD88"         # RICHAMP zeta is m NAVD88; "" leaves the datum out of the label
 WATER_VIDEO_TITLE = "ADCIRC Water-Surface Elevation"   # "" hides it
 WATER_VIDEO_TIME_FORMAT = "%Y-%m-%d %H:%M UTC"
+WATER_VIDEO_TIME_COLOR = "#c40000"   # the timestamp is the part that changes, so it is red
+WATER_VIDEO_HEADER_BOX_ALPHA = 0.75  # dimmed white box behind title and time; 0 drops the box
 # Extra lines under the timestamp, off by default, e.g.
 # ["GFS 12Z Forecast", "Forecast initialized: 2026-09-24 12Z"]
 WATER_VIDEO_ANNOTATIONS = []
@@ -253,7 +255,7 @@ WATER_VIDEO_STATE_BORDERS = "StateBorders.json"   # from tools/fetch_street_base
 WATER_VIDEO_BASEMAP = False          # True draws the --backgroundChoice photo under the field
 WATER_VIDEO_BASEMAP_ALPHA = 0.35     # how strongly the faded photo shows
 WATER_VIDEO_FONT = "DejaVu Sans"
-WATER_VIDEO_FONT_SIZES = {"title": 13, "time": 20, "annotation": 12,
+WATER_VIDEO_FONT_SIZES = {"title": 15, "time": 28, "annotation": 13,
                           "cbar_label": 14, "cbar_ticks": 11, "ticks": 11, "legend": 11, "station": 9,
                           "city": 11, "water": 11, "region": 13, "scale": 10}
 # Reference labels drawn on the map (only those inside the extent show).
@@ -873,22 +875,43 @@ class Grapher:
                             color="#222222", path_effects=halo, zorder=5)
 
             # Title, the one timestamp and optional annotations, stacked in the
-            # upper-left corner of the map
-            cursor = -8
+            # upper-left corner of the map on a dimmed white box so they read
+            # over the street map; the red timestamp is what changes each frame
+            from matplotlib.patches import FancyBboxPatch
+            from matplotlib.transforms import Bbox
+            headerEffects = [] if WATER_VIDEO_HEADER_BOX_ALPHA > 0 else halo
+            headerTexts = []
+            cursor = -12
             if WATER_VIDEO_TITLE:
-                ax.annotate(self.titlePrefix + WATER_VIDEO_TITLE, (0, 1), xycoords="axes fraction", xytext=(10, cursor),
-                            textcoords="offset points", ha="left", va="top", fontsize=fontSizes["title"],
-                            color="#333333", path_effects=halo, zorder=6)
-                cursor -= fontSizes["title"] * 1.5
-            timeText = ax.annotate("", (0, 1), xycoords="axes fraction", xytext=(10, cursor), textcoords="offset points",
-                                   ha="left", va="top", fontsize=fontSizes["time"], color="#111111",
-                                   path_effects=halo, zorder=6)
-            cursor -= fontSizes["time"] * 1.4
+                headerTexts.append(ax.annotate(self.titlePrefix + WATER_VIDEO_TITLE, (0, 1), xycoords="axes fraction",
+                                               xytext=(14, cursor), textcoords="offset points", ha="left", va="top",
+                                               fontsize=fontSizes["title"], color="#222222",
+                                               path_effects=headerEffects, zorder=7))
+                cursor -= fontSizes["title"] * 1.45
+            # Starts on the first time so the box below is measured with real text
+            timeText = ax.annotate(datetime.fromtimestamp(self.mapWaterTimes[0], timezone.utc).strftime(WATER_VIDEO_TIME_FORMAT),
+                                   (0, 1), xycoords="axes fraction", xytext=(14, cursor), textcoords="offset points",
+                                   ha="left", va="top", fontsize=fontSizes["time"], color=WATER_VIDEO_TIME_COLOR,
+                                   path_effects=headerEffects, zorder=7)
+            headerTexts.append(timeText)
+            cursor -= fontSizes["time"] * 1.35
             for annotation in WATER_VIDEO_ANNOTATIONS:
-                ax.annotate(annotation, (0, 1), xycoords="axes fraction", xytext=(10, cursor), textcoords="offset points",
-                            ha="left", va="top", fontsize=fontSizes["annotation"], color="#333333",
-                            path_effects=halo, zorder=6)
+                headerTexts.append(ax.annotate(annotation, (0, 1), xycoords="axes fraction", xytext=(14, cursor),
+                                               textcoords="offset points", ha="left", va="top",
+                                               fontsize=fontSizes["annotation"], color="#333333",
+                                               path_effects=headerEffects, zorder=7))
                 cursor -= fontSizes["annotation"] * 1.5
+            if WATER_VIDEO_HEADER_BOX_ALPHA > 0:
+                # Box around the measured text (the time format has a fixed width), drawn once
+                canvas.draw()
+                renderer = canvas.get_renderer()
+                textBox = Bbox.union([text.get_window_extent(renderer) for text in headerTexts]).padded(10)
+                (boxX0, boxY0), (boxX1, boxY1) = ax.transAxes.inverted().transform(
+                    [[textBox.x0, textBox.y0], [textBox.x1 + 6, textBox.y1]])
+                ax.add_patch(FancyBboxPatch((boxX0, boxY0), boxX1 - boxX0, boxY1 - boxY0,
+                                            boxstyle="round,pad=0,rounding_size=0.012", transform=ax.transAxes,
+                                            facecolor="white", alpha=WATER_VIDEO_HEADER_BOX_ALPHA,
+                                            edgecolor="#9a9a9a", linewidth=0.7, zorder=6))
             if(self.meshExists or self.obsExists):
                 ax.legend(loc="lower right", framealpha=0.85, edgecolor="none", fontsize=fontSizes["legend"],
                           handletextpad=0.4)
