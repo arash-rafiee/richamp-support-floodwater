@@ -118,7 +118,7 @@ WATER_VIDEO_AUTO_ROUND = 0.25
 WATER_VIDEO_TICK_STEP = None         # None picks 0.1/0.25/0.5/1 m from the range
 WATER_VIDEO_CMAP = "RdBu_r"
 WATER_VIDEO_CMAP_TRIM = 0.12         # fraction of the pale middle removed each side of 0; 0 keeps it
-WATER_VIDEO_DATUM = ""               # e.g. "NAVD88" -> "Water-Surface Elevation (m NAVD88)"
+WATER_VIDEO_DATUM = "NAVD88"         # RICHAMP zeta is m NAVD88; "" leaves the datum out of the label
 WATER_VIDEO_TITLE = "ADCIRC Water-Surface Elevation"   # "" hides it
 WATER_VIDEO_TIME_FORMAT = "%Y-%m-%d %H:%M UTC"
 # Extra lines under the timestamp, off by default, e.g.
@@ -128,6 +128,13 @@ WATER_VIDEO_FIELD_ALPHA = 0.95       # opacity of the ADCIRC field
 WATER_VIDEO_LAND_COLOR = "#c4c4c4"   # dry land / outside the mesh; mid gray stays gray if a player brightens video
 WATER_VIDEO_COASTLINE = True         # thin line around the always-wet area
 WATER_VIDEO_COASTLINE_COLOR = "#555555"
+# Grayscale street basemap (state lines, roads, gray land) from
+# tools/fetch_street_basemap.py, used when <background>StreetGray.png exists
+WATER_VIDEO_STREET_BASEMAP = True
+WATER_VIDEO_STREET_SHADE = 0.8       # multiplies the basemap brightness; lower is darker gray land
+WATER_VIDEO_STREET_CREDIT = ("Basemap: Esri World Street Map, grayscale "
+                             "(Esri, HERE, Garmin, OpenStreetMap contributors, GIS user community)")
+WATER_VIDEO_STATE_BORDERS = "StateBorders.json"   # from tools/fetch_street_basemap.py --borders; "" hides them
 WATER_VIDEO_BASEMAP = False          # True draws the --backgroundChoice photo under the field
 WATER_VIDEO_BASEMAP_ALPHA = 0.35     # how strongly the faded photo shows
 WATER_VIDEO_FONT = "DejaVu Sans"
@@ -521,7 +528,22 @@ class Grapher:
             ax = fig.add_axes([mapLeft / figW, mapBottom / figH, mapW / figW, mapH / figH])
             ax.set_facecolor(WATER_VIDEO_LAND_COLOR)
 
-            if WATER_VIDEO_BASEMAP and img is not None:
+            streetMap = None
+            if WATER_VIDEO_STREET_BASEMAP and self.backgroundMap:
+                streetFile = os.path.splitext(self.backgroundMap)[0] + "StreetGray.png"
+                if os.path.exists(streetFile):
+                    streetMap = mpimg.imread(streetFile)
+                    if streetMap.ndim == 3:
+                        streetMap = streetMap[..., :3].mean(axis=2)
+                    if streetMap.max() > 1.0:
+                        streetMap = streetMap / 255.0
+                    # Row 0 is the north edge; the file covers the --backgroundChoice axis exactly
+                    bgWest, bgEast, bgNorth, bgSouth = self.backgroundAxis
+                    ax.imshow(streetMap * WATER_VIDEO_STREET_SHADE, extent=(bgWest, bgEast, bgSouth, bgNorth),
+                              origin="upper", cmap="gray", vmin=0, vmax=1, interpolation="antialiased", zorder=0)
+                else:
+                    print("No " + streetFile + "; run tools/fetch_street_basemap.py for a street basemap", flush=True)
+            if streetMap is None and WATER_VIDEO_BASEMAP and img is not None:
                 # Desaturated and lightened toward white so it gives context without competing
                 photo = np.asarray(img, dtype=np.float32)[..., :3]
                 if photo.max() > 1.0:
@@ -546,6 +568,19 @@ class Grapher:
                 if np.isfinite(wetFraction).any() and np.nanmax(wetFraction) > 0.5 > np.nanmin(wetFraction):
                     ax.contour(gridX, gridY, wetFraction, levels=[0.5], colors=WATER_VIDEO_COASTLINE_COLOR,
                                linewidths=0.6, zorder=2)
+
+            bordersFile = os.path.join(os.path.dirname(os.path.abspath(__file__)), WATER_VIDEO_STATE_BORDERS)
+            if WATER_VIDEO_STATE_BORDERS and os.path.exists(bordersFile):
+                # Dashed state borders over a white underlay, drawn once
+                with open(bordersFile) as file:
+                    borderLines = json.load(file)["lines"]
+                for line in borderLines:
+                    line = np.asarray(line)
+                    if (line[:, 0].max() < west or line[:, 0].min() > east
+                            or line[:, 1].max() < south or line[:, 1].min() > north):
+                        continue
+                    ax.plot(line[:, 0], line[:, 1], color="white", linewidth=2.6, alpha=0.8, zorder=2.5)
+                    ax.plot(line[:, 0], line[:, 1], color="#333333", linewidth=1.2, dashes=(5, 2.5), zorder=2.6)
 
             if(self.meshExists):
                 ax.scatter(self.assetLongitudes, self.assetLatitudes, label="Assets", zorder=3, marker="o", s=30,
@@ -604,6 +639,12 @@ class Grapher:
                 else:
                     ax.text(lon, lat, name, ha=align, va="center", fontsize=fontSizes["region"], color="#666666",
                             path_effects=halo, zorder=5, clip_on=True)
+
+            if streetMap is not None and WATER_VIDEO_STREET_CREDIT:
+                # Required attribution, small in the lower-right corner of the map
+                ax.annotate(WATER_VIDEO_STREET_CREDIT, (1, 0), xycoords="axes fraction", xytext=(-4, 3),
+                            textcoords="offset points", ha="right", va="bottom", fontsize=6, color="#333333",
+                            path_effects=halo, zorder=6)
 
             barKm = WATER_VIDEO_SCALE_BAR_KM
             if barKm is None:
