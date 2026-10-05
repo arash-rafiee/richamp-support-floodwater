@@ -46,10 +46,14 @@ def safe_urlretrieve(url, filename, timeout=10, max_retries=3):
     return False  # If all retries fail
 
 
-def download_coops_water_level_csv(stationId, startDateObject, endDateObject, file_path, chunk_days=30):
+def download_coops_water_level_csv(stationId, startDateObject, endDateObject, file_path, chunk_days=30, datum="NAVD", navdOffset=0.0):
     """Downloads observed + predicted water levels from the NOAA CO-OPS Data API
     and writes them to file_path using the Date,Time (GMT),Predicted (m),Preliminary (m),Verified (m)
-    format that the .csv parsing branch below expects."""
+    format that the .csv parsing branch below expects.
+
+    Stations without a published NAVD88 datum (e.g. 8452944 Conimicut Light) can be
+    requested in another datum such as MSL; navdOffset (meters, datum minus NAVD88)
+    is then added to every level to bring it to NAVD88 like the ADCIRC output."""
     base_url = "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter"
 
     chunkStart = startDateObject
@@ -59,7 +63,7 @@ def download_coops_water_level_csv(stationId, startDateObject, endDateObject, fi
         chunkEnd = min(chunkStart + timedelta(days=chunk_days), endDateObject)
         begin = chunkStart.strftime("%Y%m%d")
         end = chunkEnd.strftime("%Y%m%d")
-        common = f"station={stationId}&begin_date={begin}&end_date={end}&datum=NAVD&time_zone=gmt&units=metric&format=csv&application=RICHAMP"
+        common = f"station={stationId}&begin_date={begin}&end_date={end}&datum={datum}&time_zone=gmt&units=metric&format=csv&application=RICHAMP"
 
         try:
             predictions = pd.read_csv(f"{base_url}?{common}&product=predictions")
@@ -87,6 +91,8 @@ def download_coops_water_level_csv(stationId, startDateObject, endDateObject, fi
 
     predictionsDf["Date Time"] = pd.to_datetime(predictionsDf["Date Time"])
     waterLevelDf["Date Time"] = pd.to_datetime(waterLevelDf["Date Time"])
+    predictionsDf["Prediction"] = pd.to_numeric(predictionsDf["Prediction"], errors="coerce") + navdOffset
+    waterLevelDf["Water Level"] = pd.to_numeric(waterLevelDf["Water Level"], errors="coerce") + navdOffset
 
     merged = pd.merge(predictionsDf, waterLevelDf, on="Date Time", how="outer").sort_values("Date Time")
 
@@ -210,7 +216,9 @@ class GetBuoyWater:
                 # Download fresh observed + predicted water levels from NOAA CO-OPS
                 # for the period covered by the ADCIRC run (startDateObject/endDateObject)
                 try:
-                    download_coops_water_level_csv(stationId, startDateObject, endDateObject, file_path)
+                    download_coops_water_level_csv(stationId, startDateObject, endDateObject, file_path,
+                                                   datum=stationDict.get("datum", "NAVD"),
+                                                   navdOffset=float(stationDict.get("navdOffset", 0.0)))
                 except Exception as e:
                     print(f"Failed to download CO-OPS data for station {stationId}, falling back to existing file if present: {e}")
 

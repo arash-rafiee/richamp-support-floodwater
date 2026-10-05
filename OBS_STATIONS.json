@@ -290,7 +290,9 @@
     },
     "102": {
       "id": "8452944",
-      "source": "NOS",
+      "source": "CO-OPS_8452944_met.csv",
+      "datum": "MSL",
+      "navdOffset": "-0.09",
       "name": "Conimicut Light, RI",
       "latitude": "41.71666667",
       "longitude": "-71.34333333",
