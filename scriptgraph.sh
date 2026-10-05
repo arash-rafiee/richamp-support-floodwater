@@ -56,6 +56,10 @@
 #   --unit imperial \
 # To plot NOAA tide predictions instead of the observed water levels, add:
 #   --obsPredicted true \
+# To add NOAA's STOFS-2D-Global forecast as another line on the station water graphs
+# (downloaded once into --tempDir from NOAA's AWS archive), add one of:
+#   --stofs auto \          (the STOFS cycle at the start of --water)
+#   --stofs 2026092412 \    (a specific cycle, YYYYMMDDHH with HH = 00, 06, 12 or 18)
 # To also draw map frames over --backgroundChoice and save them as an .avi video
 # (water is .mp4 instead when an ffmpeg program is already on the PATH), add:
 #   --maps true \
@@ -65,5 +69,6 @@ python generateGraphs.py \
   --obsExists true \
   --waterExists true \
   --water /scratch4/workspace/arash_rafiee_uri_edu-richamp/ecflow_output/ricv1/archive/20260127/hour_12/adcirc/analysis/fort.63.nc \
+  --stofs auto \
   --tempDir /scratch4/workspace/arash_rafiee_uri_edu-richamp/post_temp/ \
   --backgroundChoice RHODE_ISLAND_CHAMP

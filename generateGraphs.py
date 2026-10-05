@@ -3,6 +3,7 @@ from Grapher import Grapher, setUnitSystem
 from DiffGrapher import DiffGrapher
 from GetBuoyWind import GetBuoyWind
 from GetBuoyWater import GetBuoyWater
+from GetStofsWater import GetStofsWater
 from GetBuoyWaves import GetBuoyWaves
 from GetObsRain import GetObsRain
 from GetObsElevation import GetObsElevation
@@ -365,6 +366,11 @@ def main():
         help="Also draw map frames of water/velocity/waves/wind/rain over --backgroundChoice and save them as an .avi (water: .mp4 when an ffmpeg program is already available)"
     )
     p.add_argument(
+        "--stofs", type=str,
+        help="Add the NOAA STOFS-2D-Global forecast to the water graphs: a cycle as YYYYMMDDHH (e.g. 2026092412), "
+             "auto for the cycle at the start of --water, or a downloaded stofs_2d_glo.tHHz.points.cwl.nc file"
+    )
+    p.add_argument(
         "--obsPredicted", type=bool,
         help="Plot NOAA tide predictions in place of the observed (verified/preliminary) water levels"
     )
@@ -676,6 +682,11 @@ def main():
 #         waterEndDateObject = datetime.datetime(year=2022, month=12, day=25, hour=0, tzinfo=datetime.timezone.utc)
         dataToGraph["WATER"] = ADCIRC_WATER_DATA_FILE
 #         dataToGraph["DIFF"] = ADCIRC_DIFF_WATER_DATA_FILE
+        if(args.stofs):
+            STOFS_WATER_DATA_FILE = water_temp_directory + "stofs_water_data_file" + ".json"
+            GetStofsWater(STATIONS_FILE=STATIONS_FILE, STOFS_WATER_DATA_FILE=STOFS_WATER_DATA_FILE, stofs=args.stofs,
+                          startDateObject=waterStartDateObject, endDateObject=waterEndDateObject)
+            dataToGraph["STOFS"] = STOFS_WATER_DATA_FILE
 
     print("args.stillwaterExists", args.stillwaterExists, flush=True)
     if(args.stillwaterExists):

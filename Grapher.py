@@ -1031,6 +1031,7 @@ class Grapher:
         self.waterExists = False
         self.stillwaterExists = False
         self.tidewaterExists = False
+        self.stofsExists = False
         self.etaExists = False
         self.meshExists = False
         self.runupExists = False
@@ -1074,6 +1075,8 @@ class Grapher:
             self.stillwaterExists = True
         if("TIDEWATER" in dataToGraph):
             self.tidewaterExists = True
+        if("STOFS" in dataToGraph):
+            self.stofsExists = True
         if("ETA" in dataToGraph):
             self.etaExists = True
         if("MESH" in dataToGraph):
@@ -1171,6 +1174,8 @@ class Grapher:
         
         self.stillwaterTimes = []
         self.datapointsStillwaters = []
+        # NOAA STOFS-2D-Global (times, waters) per water station; empty where STOFS has no point
+        self.stofsDatapoints = []
 
         self.tidewaterTimes = []
         self.datapointsTidewaters = []
@@ -1618,6 +1623,10 @@ class Grapher:
             if(self.stillwaterExists):
                 with open(dataToGraph["STILLWATER"]) as outfile:
                     stillwaterDataset = json.load(outfile)
+
+            if(self.stofsExists):
+                with open(dataToGraph["STOFS"]) as outfile:
+                    stofsDataset = json.load(outfile)
                     
             if(self.tidewaterExists):
                 with open(dataToGraph["TIDEWATER"]) as outfile:
@@ -1662,6 +1671,10 @@ class Grapher:
                             stationElevation = meshDataset[stationKey]["elevation"]
                             datapointWaters = np.array(datapointWaters) + (stationElevation * -1)
                         self.datapointsWaters.append(datapointWaters)
+                        if(self.stofsExists):
+                            stofsStation = stofsDataset.get(stationKey, {"times": [], "water": []})
+                            self.stofsDatapoints.append(([self.unixTimeToDeltaHours(time, self.waterStartDate) for time in stofsStation["times"]],
+                                                         stofsStation["water"]))
                         if(self.stillwaterExists):
                             datapointStillwaters = []
                             for index in range(len(stillwaterDataset[stationKey]["times"])):
@@ -2643,6 +2656,8 @@ class Grapher:
                 if(self.tidewaterExists):
                     modelSeries.append(("ADCIRC Tide Only", self.tidewaterTimes, self.datapointsTidewaters[index], "-."))
                 modelSeries.append(("ADCIRC", self.waterTimes, self.datapointsWaters[index], "-"))
+                if(self.stofsExists and len(self.stofsDatapoints[index][0]) > 0):
+                    modelSeries.append(("NOAA STOFS", self.stofsDatapoints[index][0], self.stofsDatapoints[index][1], "-"))
                 seriesStatistics = []
                 if(self.tideExists):
                     for label, times, values, style in modelSeries:
@@ -2660,7 +2675,7 @@ class Grapher:
                 seriesColors = []
                 for label, times, values, style in modelSeries:
                     # ADCIRC keeps C0 and the observations C1; the variants get their own colors
-                    color = {"ADCIRC": "C0", "ADCIRC Stillwater": "C2", "ADCIRC Tide Only": "C4"}[label]
+                    color = {"ADCIRC": "C0", "ADCIRC Stillwater": "C2", "ADCIRC Tide Only": "C4", "NOAA STOFS": "C3"}[label]
                     line, = ax.plot(times, values, label=label, color=color, linestyle=style, linewidth=lineWidth)
                     seriesColors.append(line.get_color())
                 if(self.tideExists):
