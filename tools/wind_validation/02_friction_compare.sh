@@ -11,9 +11,9 @@
 #
 # Step 2 of the land-friction wind validation (step 1: 01_download_wind.sh):
 #   A  land friction: scale_and_subset.py (unchanged, operational settings) on each downloaded .wnd
-#   B  observations: fetch, QC, adjust to 10 m (wind_data pipeline in tools/wind_validation/bundle)
+#   B  observations: fetch, QC, adjust to 10 m (wind_obs.py)
 #   C  model wind at every station, with and without land friction
-#   D  statistics and figures (format of the bundle's gfs-run-vs-obs skill)
+#   D  statistics and figures (format of the gfs-run-vs-obs skill)
 #
 # Submit from the repository root:
 #   sbatch tools/wind_validation/02_friction_compare.sh
@@ -29,7 +29,6 @@ START=${START:-"2026-09-24 12:00"}               # UTC, same as 01_download_wind
 END=${END:-"2026-09-29 12:00"}                   # UTC, same as 01_download_wind.sh
 WORK_ROOT=${WORK_ROOT:-/scratch4/workspace/${USER:-$(id -un)}-richamp/wind_validation}
 REPO=${REPO:-${SLURM_SUBMIT_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}}
-BUNDLE_DIR=${BUNDLE_DIR:-$REPO/tools/wind_validation/bundle}   # wind_data code (vendored from wind_comparison_bundle.zip)
 STATIONS_FILE=${STATIONS_FILE:-$REPO/tools/wind_validation/stations_ri_ma_south_coast.json}
 Z0_PICKLE=${Z0_PICKLE:-$REPO/z0_interp}          # directional z0 interpolant, without .pickle (as -z0name)
 THREADS=${THREADS:-3}                            # scale_and_subset threads; -c above = THREADS + 1 (-wasync)
@@ -44,11 +43,9 @@ DL_DIR=$WORK_DIR/download
 FRIC_DIR=$WORK_DIR/friction
 OBS_DIR=$WORK_DIR/obs
 ST_DIR=$WORK_DIR/stations
-OBS_RUN_DIR=$OBS_DIR/processed/hurricane/periods/$TAG
 SUFFIX=$([[ $SHOW_RAW == true ]] && echo with_raw || echo friction_only)
 RESULTS=$WORK_DIR/results/$SUFFIX
 TOOLS=$REPO/tools/wind_validation
-export WIND_DATA_DIR=$OBS_DIR   # bundle data (observations, basemap cache) go to scratch, never into the repo
 
 log() { echo "[$(date +'%Y-%m-%d %H:%M:%S')] $*"; }
 die() { echo "ERROR: $*" >&2; exit 1; }
@@ -75,12 +72,9 @@ log "repo=$REPO  work=$WORK_DIR  python=$(command -v python)"
 [[ -f $REPO/gfs-roughness.nc ]] || die "missing $REPO/gfs-roughness.nc"
 [[ -f $Z0_PICKLE.pickle ]] || die "missing $Z0_PICKLE.pickle (directional z0 interpolant; set Z0_PICKLE)"
 [[ -f $STATIONS_FILE ]] || die "missing $STATIONS_FILE"
-for f in src/wind_data scripts/hurricane_eval.py config/melissa.toml; do
-    [[ -e $BUNDLE_DIR/$f ]] || die "$BUNDLE_DIR/$f not found (tools/wind_validation/bundle is part of the repository; git pull?)"
-done
 python - <<'EOF' || die "the python environment lacks packages listed above"
 import importlib, sys
-missing = [m for m in ("netCDF4", "numpy", "scipy", "pandas", "pyproj", "matplotlib", "xarray", "requests", "tomllib")
+missing = [m for m in ("netCDF4", "numpy", "scipy", "pandas", "pyproj", "matplotlib", "requests")
            if importlib.util.find_spec(m) is None]
 if missing:
     print("missing python packages:", ", ".join(missing))
@@ -112,12 +106,12 @@ for p in $LIST; do
 done
 
 # ------------------------------------------------------------------ B: observations
-if [[ -f $OBS_RUN_DIR/observations_final.csv.gz && $OVERWRITE != true ]]; then
-    log "B observations already processed ($OBS_RUN_DIR)"
+if [[ -f $OBS_DIR/observations.csv.gz && $OVERWRITE != true ]]; then
+    log "B observations already processed ($OBS_DIR)"
 else
     log "B observations: fetch, QC, 10-m adjustment"
-    python "$TOOLS/richamp_wind_vs_obs.py" observations --bundle "$BUNDLE_DIR" --stations-file "$STATIONS_FILE" \
-        --start "$START" --end "$END" --obs-dir "$OBS_DIR" --run-name "$TAG"
+    python "$TOOLS/richamp_wind_vs_obs.py" observations --stations-file "$STATIONS_FILE" \
+        --start "$START" --end "$END" --obs-dir "$OBS_DIR"
 fi
 
 # ------------------------------------------------------------------ C: model wind at the stations
@@ -128,7 +122,7 @@ for p in $LIST; do
         log "C $p: station wind already extracted ($csv)"
     else
         log "C $p: model wind at the stations"
-        python "$TOOLS/extract_station_wind.py" --stations-csv "$OBS_RUN_DIR/stations.csv" --product "$p" \
+        python "$TOOLS/extract_station_wind.py" --stations-csv "$OBS_DIR/stations.csv" --product "$p" \
             --wnd "${WND[$p]}" --richamp "$FRIC_DIR/RICHAMP_wind_$p.nc" \
             --hr-roughness "$REPO/NLCD_z0_RICHAMP_Reg_Grid.nc" -o "$csv"
     fi
@@ -140,8 +134,8 @@ log "D statistics and figures -> $RESULTS"
 EXTRA=()
 [[ $SHOW_RAW == true ]] && EXTRA+=(--show-raw)
 [[ $ZOOM == true ]] || EXTRA+=(--no-zoom)
-python "$TOOLS/richamp_wind_vs_obs.py" compare --bundle "$BUNDLE_DIR" --stations-file "$STATIONS_FILE" \
-    --start "$START" --end "$END" --obs-run-dir "$OBS_RUN_DIR" --station-wind "${SW_ARGS[@]}" --out "$RESULTS" \
+python "$TOOLS/richamp_wind_vs_obs.py" compare --stations-file "$STATIONS_FILE" \
+    --start "$START" --end "$END" --obs-dir "$OBS_DIR" --station-wind "${SW_ARGS[@]}" --out "$RESULTS" \
     --source-note "gdas=MetGet --multiple-forecasts" "gfs=MetGet --analysis" ${EXTRA[@]+"${EXTRA[@]}"}
 
 cat > "$RESULTS/run_info.txt" <<EOF
@@ -153,7 +147,6 @@ land friction   scale_and_subset.py -sl up-down -hr NLCD_z0_RICHAMP_Reg_Grid.nc 
                 -z0name $Z0_PICKLE -r 3000 -sigma 1000
 show raw        $SHOW_RAW
 stations        $STATIONS_FILE
-observations    $OBS_RUN_DIR
-bundle          $BUNDLE_DIR
+observations    $OBS_DIR
 EOF
 log "done. Figures and tables: $RESULTS"

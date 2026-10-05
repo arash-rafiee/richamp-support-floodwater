@@ -3,9 +3,9 @@
 Puts MetGet GDAS and GFS 10-m winds through the RICHAMP land-friction step
 (`scale_and_subset.py`, unchanged), interpolates them to observation stations and
 compares them with observed wind (adjusted to 10 m, 1-h means). The figures use the format of the
-`gfs-run-vs-obs` skill from `wind_comparison_bundle.zip`. Everything runs on Unity in the
-`floodwater` env. Nothing needs installing, and everything is in this repository: the observation, QC
-and plotting code from `wind_comparison_bundle.zip` is in [`bundle/`](bundle/README.md), unchanged.
+`gfs-run-vs-obs` skill from `wind_comparison_bundle.zip`, and the observation processing follows the
+same rules, so the statistics match it. Everything runs on Unity in the `floodwater` env; nothing needs
+installing.
 
 | Label | Source |
 |---|---|
@@ -43,7 +43,7 @@ PRODUCTS=gdas START="2026-10-01 00:00" END="2026-10-03 00:00" SHOW_RAW=false sba
 | `SHOW_RAW` | 2 | `true`: also draw the raw (no land friction) winds as thin dashed lines and add "GDAS raw"/"GFS raw" rows to the tables and bars |
 | `ZOOM` | 2 | `true`: also the two-panel zoom figure per station |
 | `STATIONS_FILE` | 2 | station preset (default `stations_ri_ma_south_coast.json`) |
-| `Z0_PICKLE`, `WORK_ROOT`, `THREADS`, `OVERWRITE` | 2 | paths and run control (`BUNDLE_DIR` defaults to `bundle/`) |
+| `Z0_PICKLE`, `WORK_ROOT`, `THREADS`, `OVERWRITE` | 2 | paths and run control |
 
 Finished steps are reused: resubmitting script 2 with only `SHOW_RAW` changed redraws the figures in
 a few minutes. `OVERWRITE=true` redoes everything.
@@ -53,7 +53,7 @@ a few minutes. `OVERWRITE=true` redoes everything.
 | Step | Tool | Output (under `$WORK_ROOT/<start>-<end>/`) |
 |---|---|---|
 | A land friction | `scale_and_subset.py -sl up-down -wfmt owi-ascii -wr gfs-roughness.nc -z0name z0_interp -r 3000 -sigma 1000` | `friction/RICHAMP_wind_{gdas,gfs}.nc` |
-| B observations | `bundle/` pipeline (`hurricane_eval.py` stages track → stations → observations → adjust): NDBC/C-MAN, CO-OPS, GHCNh; QC; neutral log-law adjustment to 10 m | `obs/processed/hurricane/periods/<start>-<end>/` |
+| B observations | `wind_obs.py` (via `richamp_wind_vs_obs.py observations`): NDBC/C-MAN, CO-OPS, GHCNh; QC; neutral log-law adjustment to 10 m | `obs/` (`raw/` downloads, `stations.csv`, `observations.csv.gz`, `obs_availability.csv`) |
 | C model at stations | `extract_station_wind.py`: bilinear u/v from the RICHAMP file (land friction) and from the `.wnd` (raw); local NLCD z0 | `stations/station_wind_{gdas,gfs}.csv` |
 | D statistics, figures | `richamp_wind_vs_obs.py compare` | `results/{with_raw,friction_only}/` |
 
@@ -67,6 +67,18 @@ Results folder:
 | `overview_timeseries.png`, `station_map.png` | all stations; map with the RICHAMP grid outlined (map needs cartopy) |
 | `hourly_matched.csv`, `stats_by_station.csv`, `stats_by_station_day.csv`, `stats_by_region_day.csv`, `stats_by_type.csv`, `stats_by_type_day.csv` | the numbers; columns `<product>_*` = land friction, `<product>_raw_*` = raw |
 | `run_info.txt` | settings of the run |
+
+## Files
+
+| File | Purpose |
+|---|---|
+| `01_download_wind.sh` | sbatch 1: MetGet download and checks |
+| `02_friction_compare.sh` | sbatch 2: steps A–D |
+| `wind_obs.py` | station metadata, observation download, QC, 10-m adjustment, 1-h averaging |
+| `extract_station_wind.py` | model wind at the stations, with and without land friction |
+| `richamp_wind_vs_obs.py` | `observations` and `compare` subcommands: statistics and figures |
+| `plot_style.py` | figure style of the gfs-run-vs-obs skill |
+| `stations_ri_ma_south_coast.json` | station preset |
 
 Statistics: n, bias, MAE, RMSE, r (model − observed, m/s) and direction bias/MAE (pairs with both
 speeds ≥ 1 m/s), against 1-h observation means centred on each hour.
