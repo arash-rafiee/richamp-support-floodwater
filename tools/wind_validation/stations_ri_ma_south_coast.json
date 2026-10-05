@@ -1,0 +1,25 @@
+{
+  "description": "Narragansett Bay, south of Rhode Island, and south of Massachusetts. Checked for 2026: NDBC 44097 (Block Island) and 44085 (Buzzards Bay) are waveriders with no wind; 44017 (Montauk) has no 2026 files; CO-OPS 8455083 (Point Judith), 8459338 (Block Island), 8454049 (Quonset) and 8447930 (Woods Hole) have no wind sensor or no data; 8447386 (Fall River) has no data (use 8447387 Borden Flats). GHCNh USW00014794 (Westerly, KWST) often fails to download from NCEI (IncompleteRead); it is kept, and dropped automatically if it fails.",
+  "regions": {
+    "Narragansett Bay": [
+      {"key": "coops:8454000", "name": "Providence, RI"},
+      {"key": "coops:8452944", "name": "Conimicut Light, RI"},
+      {"key": "coops:8447387", "name": "Borden Flats Light, Fall River, MA"},
+      {"key": "coops:8452951", "name": "Potter Cove, Prudence Island, RI"},
+      {"key": "coops:8454123", "name": "Port of Davisville, RI"},
+      {"key": "coops:8452660", "name": "Newport, RI"}
+    ],
+    "South of Rhode Island": [
+      {"key": "ghcnh:USW00014794", "name": "Westerly Airport, RI (KWST)"},
+      {"key": "ghcnh:USW00094793", "name": "Block Island Airport, RI (KBID)"}
+    ],
+    "South of Massachusetts": [
+      {"key": "ndbc:BUZM3", "name": "Buzzards Bay Tower, MA (BUZM3)"},
+      {"key": "ghcnh:USW00094724", "name": "Martha's Vineyard Airport, MA (KMVY)"},
+      {"key": "ndbc:44020", "name": "Nantucket Sound Buoy, MA (44020)"},
+      {"key": "coops:8449130", "name": "Nantucket Island, MA"},
+      {"key": "ghcnh:USW00014756", "name": "Nantucket Airport, MA (KACK)"},
+      {"key": "ndbc:44008", "name": "Buoy 44008, 54 NM SE of Nantucket, MA"}
+    ]
+  }
+}

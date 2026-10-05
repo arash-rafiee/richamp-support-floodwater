@@ -1,0 +1,235 @@
+# Hurricane Melissa (AL132025): GFS and GDAS 10-m winds against observations.
+#
+# Used by scripts/hurricane_eval.py and wind_data.hurricane. Independent of
+# config/settings.toml (GFS vs GDAS) and config.yaml (ADCIRC pipeline).
+#
+# Relative paths are resolved against the project root (the parent of this
+# config/ folder). WIND_DATA_DIR, if set, overrides paths.data_dir.
+#
+# Every choice below that is not read from an authoritative record is marked
+# CHOICE, with the reason.
+
+[paths]
+data_dir = "data"                    # raw/ and processed/ go under here
+results_dir = "outputs/hurricane"    # figures, tables, report
+
+# ---------------------------------------------------------------------------
+# Storm identity. Verified against NHC on 2026-09-30:
+#   HURDAT2 hurdat2-1851-2025-092326.txt (Atlantic, released 2026-09-23):
+#     AL132025 MELISSA, 49 fixes, 2025-10-21 06Z (TS) .. 2025-11-01 06Z (EX).
+#   ATCF best track bal132025.dat (NHC archive): same fixes, same values.
+#   Other Atlantic storms named Melissa: AL142007, AL142013, AL142019; none
+#   reached hurricane strength (peaks 35, 55, 55 kt). No conflict found.
+# The pipeline re-parses both sources and stops if they disagree beyond the
+# tolerances in [track.crosscheck].
+# ---------------------------------------------------------------------------
+[storm]
+id = "AL132025"
+name = "MELISSA"
+basin = "AL"                         # North Atlantic
+expected_first_fix = "2025-10-21T06:00"
+expected_last_fix = "2025-11-01T06:00"
+
+[track]
+hurdat2_url = "https://www.nhc.noaa.gov/data/hurdat/hurdat2-1851-2025-092326.txt"
+atcf_url = "https://ftp.nhc.noaa.gov/atcf/archive/2025/bal132025.dat.gz"
+# Minutes between interpolated track points used for closest approach.
+cpa_resolution_minutes = 10
+
+[track.crosscheck]
+# HURDAT2 is the primary (post-season, quality-controlled) record. ATCF is
+# checked against it at every common fix time.
+max_position_diff_deg = 0.11         # both round to 0.1 deg
+max_vmax_diff_kt = 0
+max_pressure_diff_hpa = 0
+on_conflict = "stop"                 # "stop" or "warn"
+
+# ---------------------------------------------------------------------------
+# Analysis period. CHOICE (confirmed by the user): the full best track,
+# including the extratropical phase, plus 24 h either side:
+#   2025-10-20 06Z .. 2025-11-02 06Z UTC.
+# Status is kept on every record, so the EX phase can be separated.
+# ---------------------------------------------------------------------------
+[period]
+buffer_before_hours = 24
+buffer_after_hours = 24
+
+# ---------------------------------------------------------------------------
+# Domain: bounding box of the best track grown by margin_deg. CHOICE: 7 deg
+# comfortably holds every station within station_radius_km of the track
+# (500 km is about 4.5 deg of latitude, 6.4 deg of longitude at 45N).
+# Set explicit bounds instead to override. Longitudes in [-180, 180); boxes
+# crossing the dateline are not supported.
+# ---------------------------------------------------------------------------
+[domain]
+margin_deg = 7.0
+# The domain then grows to cover every selected station plus this margin,
+# so requested stations far from the track still get model values.
+station_margin_deg = 1.0
+# lat_min = 7.0
+# lat_max = 54.0
+# lon_min = -86.0
+# lon_max = -44.0
+
+# ---------------------------------------------------------------------------
+# Stations
+# ---------------------------------------------------------------------------
+[stations]
+# Selected dynamically: minimum geodesic distance to the interpolated best
+# track, over the track's lifetime, at or below this radius.
+radius_km = 500.0
+sources = ["ndbc", "coops", "ghcnh"]
+# Manual additions ("source:id") are always kept, whatever their distance;
+# exclusions are always dropped. The NDBC list below was requested by the
+# user (2026-09-30); stations beyond radius_km are reported separately as
+# station_set = "beyond radius (requested)" and never pooled silently.
+include = [
+  # Atlantic / U.S. East Coast
+  "ndbc:41001", "ndbc:41002", "ndbc:41004", "ndbc:41008", "ndbc:41009", "ndbc:41010",
+  "ndbc:41013", "ndbc:41025", "ndbc:41036", "ndbc:41040", "ndbc:41041", "ndbc:41043",
+  "ndbc:41044", "ndbc:41046", "ndbc:41047", "ndbc:41049",
+  # Gulf of Mexico
+  "ndbc:42001", "ndbc:42002", "ndbc:42003", "ndbc:42012", "ndbc:42019", "ndbc:42020",
+  "ndbc:42035", "ndbc:42036", "ndbc:42039", "ndbc:42040", "ndbc:42055",
+  # Caribbean
+  "ndbc:42056", "ndbc:42057", "ndbc:42058", "ndbc:42059", "ndbc:42060",
+  # Mid / North Atlantic and U.S. Northeast
+  "ndbc:44007", "ndbc:44008", "ndbc:44009", "ndbc:44011", "ndbc:44013", "ndbc:44014",
+  "ndbc:44020", "ndbc:44025", "ndbc:44027", "ndbc:44029", "ndbc:44030", "ndbc:44032",
+  "ndbc:44033", "ndbc:44034", "ndbc:44041", "ndbc:44042", "ndbc:44056", "ndbc:44058",
+  "ndbc:44062", "ndbc:44063", "ndbc:44064", "ndbc:44065", "ndbc:44072", "ndbc:44073",
+  "ndbc:44078", "ndbc:44079", "ndbc:44080", "ndbc:44084", "ndbc:44085", "ndbc:44086",
+  "ndbc:44087", "ndbc:44088", "ndbc:44097", "ndbc:44098", "ndbc:44099", "ndbc:44100",
+]
+exclude = []
+# Two stations from different sources within this distance are treated as
+# the same instrument; only the higher-priority one is used in metrics.
+colocated_km = 1.0
+source_priority = ["ndbc", "coops", "ghcnh"]
+
+[stations.class_overrides]
+# "source:id" = "offshore" | "coastal" | "land"
+# Defaults: NDBC buoys -> offshore; NDBC C-MAN/fixed/other and CO-OPS ->
+# coastal; GHCNh -> land.
+
+[sources.ndbc]
+station_table_url = "https://www.ndbc.noaa.gov/data/stations/station_table.txt"
+historical_index_url = "https://www.ndbc.noaa.gov/data/historical/stdmet/"
+station_page_url = "https://www.ndbc.noaa.gov/station_page.php?station={id}"
+
+[sources.coops]
+stations_url = "https://api.tidesandcurrents.noaa.gov/mdapi/prod/webapi/stations.json?type=met"
+sensors_url = "https://api.tidesandcurrents.noaa.gov/mdapi/prod/webapi/stations/{id}/sensors.json"
+data_url = "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter"
+chunk_days = 30                      # the API caps 6-minute requests at 31 days
+
+[sources.ghcnh]
+station_list_url = "https://www.ncei.noaa.gov/oa/global-historical-climatology-network/hourly/doc/ghcnh-station-list.csv"
+data_url = "https://www.ncei.noaa.gov/oa/global-historical-climatology-network/hourly/access/by-year/{year}/psv/GHCNh_{id}_{year}.psv"
+
+[download]
+timeout_connect_s = 10.0
+timeout_read_s = 180.0
+max_attempts = 6
+backoff_s = 2.0                      # doubles on every retry
+min_request_interval_s = 0.25        # per host, keeps us polite
+
+# ---------------------------------------------------------------------------
+# Height adjustment: neutral log law,
+#   U(z_target) = U(z_sensor) * ln(z_target / z0) / ln(z_sensor / z0)
+# applied to sustained speed only, never to gusts.
+# ---------------------------------------------------------------------------
+[height]
+target_m = 10.0
+# Sensor height above the surface the log law refers to. CHOICE (confirmed by
+# the user):
+#   offshore (buoys): anemometer height above site; site is sea level.
+#   coastal (C-MAN, CO-OPS): site elevation above MSL + anemometer height
+#     above site = height above the water surface.
+#   land: no authoritative anemometer height exists in GHCNh, so land
+#     records are NOT adjusted; they are flagged "height_unknown" and used
+#     only in the unadjusted sensitivity analysis.
+coastal_height_rule = "site_plus_sensor"   # or "sensor_only"
+
+[height.z0_m]
+# Aerodynamic roughness length. Defaults are the Davenport-Wieringa terrain
+# classes tabulated in WMO-No. 8 (CIMO Guide), Vol. I, Ch. 5, Annex:
+# "sea, loose sand, snow" 0.0002 m; "smooth" (featureless land, mixed
+# water/land) 0.005 m; "open" (flat grass, few obstacles) 0.03 m.
+offshore = 0.0002
+coastal = 0.005
+land = 0.03
+
+[height.z0_overrides]
+# "source:id" = z0 in metres
+
+[height.sensor_height_overrides]
+# "source:id" = height in metres above the surface the log law refers to.
+# Only for heights documented elsewhere; record the reference in a comment.
+
+# ---------------------------------------------------------------------------
+# Models. 0.25 deg pgrb2 from the NOAA Open Data bucket on AWS. Only the
+# UGRD/VGRD 10 m and PRMSL records are fetched (HTTP byte ranges from the
+# .idx), so each file is about 3 MB instead of ~500 MB. AWS has no spatial
+# subsetting, so the records are global; the domain crop happens locally.
+#
+# CHOICE (requested by the user): hourly valid times for both models.
+# Analyses exist only at the 00/06/12/18Z cycles, so each series is defined
+# by a *lead window* of 6 consecutive forecast hours starting at the given
+# lead: every hourly valid time is taken from the one cycle whose lead
+# falls in the window (init = latest cycle at or before valid - start).
+#   GDAS window 0: f000 (final analysis) at the cycles, f001-f005 between.
+#   GFS windows: f000-005, f006-011, f012-017, f024-029, f048-053,
+#     f072-077, f096-101, f115-120. GFS is hourly only to 120 h, so the
+#     last window is 115-120 rather than 120-125.
+# Every value keeps its init time, exact lead and valid time; windows never
+# mix runs within one valid time. With valid_step_hours = 6 each window
+# holds just its one lead that falls on a synoptic time (the start lead when
+# it is a multiple of 6; f120 for the 115-120 window).
+# ---------------------------------------------------------------------------
+[models]
+resolution = "0p25"
+cycles = [0, 6, 12, 18]
+valid_step_hours = 1
+gfs_lead_windows = [0, 6, 12, 24, 48, 72, 96, 115]
+gdas_lead_windows = [0]
+fields = ["UGRD:10 m above ground", "VGRD:10 m above ground", "PRMSL:mean sea level"]
+# The single "GFS" series in time-series plots and the composite row in the
+# tables use, per valid time, the shortest available lead >= this value
+# (f000-f005 includes the GFS analysis and is not a pure forecast).
+composite_min_lead = 6
+# Parallel downloads from AWS (S3 handles this easily); reading and cropping
+# stay sequential because netCDF/HDF5 is not thread-safe.
+download_workers = 8
+min_request_interval_s = 0.0
+
+# ---------------------------------------------------------------------------
+# Collocation
+# ---------------------------------------------------------------------------
+[collocation]
+# Observations are first averaged over obs_average_minutes centred on each
+# model valid time (CHOICE, requested by the user 2026-10-02: 1-h means,
+# speed adjusted to 10 m before averaging; the gust is the window maximum).
+# A window needs obs_average_min_coverage of its expected samples (from the
+# station's own sampling interval). 0 = use the single nearest observation.
+obs_average_minutes = 60
+obs_average_min_coverage = 0.5
+# The (averaged) observation nearest each model valid time, within this tolerance.
+time_tolerance_minutes = 30
+interpolation = "bilinear"           # or "nearest"
+# Direction statistics use pairs where both speeds are at least this (m/s).
+min_speed_for_direction = 1.0
+
+# ---------------------------------------------------------------------------
+# Storm-relative analysis
+# ---------------------------------------------------------------------------
+[storm_relative]
+# Distance bands from the storm centre (km). These are NOT radius-of-
+# maximum-wind multiples; r / RMW is reported separately from HURDAT2's RMW.
+radial_bands_km = [0, 50, 100, 200, 500]
+# |t - t_closest_approach| <= this counts as "during" closest approach.
+cpa_window_hours = 3.0
+
+[evaluation]
+min_samples = 10                     # groups smaller than this are not scored
+speed_quantiles = [0.1, 0.5, 0.9, 0.99]
