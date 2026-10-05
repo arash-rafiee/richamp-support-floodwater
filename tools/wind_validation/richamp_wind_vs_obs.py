@@ -104,7 +104,7 @@ def ts_legend(fig, obs_height: str, minutes: int, products, friction: bool, raw:
     entries = [(ps.TS_STYLE["obs_raw"], f"Observed ({obs_height}, unaveraged)"),
                (ps.TS_STYLE["obs"], f"Observed ({obs_height}, {mean} mean)")]
     if friction:
-        entries += [(ps.TS_STYLE[p], NAMES[p]) for p in products]
+        entries += [(ps.TS_STYLE[p], f"{NAMES[p]} (with land friction)") for p in products]
     if raw:
         entries += [(TS_RAW[p], f"{NAMES[p]} raw (no land friction)") for p in products]
     handles = [Line2D([], [], **{k: v for k, v in st.items() if k != "zorder"}, label=lab) for st, lab in entries]
@@ -166,7 +166,7 @@ def fig_station_timeseries(s, name, o, oh, h, start, end, products, show_raw, ou
         subtitle += f" · {OUTSIDE_NOTE}"
     ob = oh.set_index("time")[obs_col]
     sc = {}
-    rows = ([(NAMES[p], f"{p}_speed") for p in products] if inside else []) + \
+    rows = ([(f"{NAMES[p]} modified", f"{p}_speed") for p in products] if inside else []) + \
            ([(f"{NAMES[p]} raw", f"{p}_raw_speed") for p in products] if draw_raw else [])
     for nm, col in rows:
         j = pd.concat([h.set_index("valid")[col].rename("m"), ob.rename("o")], axis=1, join="inner").dropna()

@@ -141,7 +141,7 @@ def stats_table(ax, scores: pd.DataFrame) -> None:
     cols = [("n", lambda r: f"{int(r['n'])}", -196), ("Bias", lambda r: f"{r['bias']:+.2f}", -144),
             ("MAE", lambda r: f"{r['mae']:.2f}", -96), ("RMSE", lambda r: f"{r['rmse']:.2f}", -48),
             ("r", lambda r: f"{r['correlation']:.2f}", 0)]
-    x_name = -300 if any(" " in n for n in scores.index) else -272  # room for 'GDAS raw'
+    x_name = -max(272, 225 + 7.8 * max(len(n) for n in scores.index))  # bold names: ~7.5 pt per character
     step = size * 1.45
 
     def put(text, x, y, ha="right", **kw):
