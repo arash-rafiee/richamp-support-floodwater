@@ -39,3 +39,9 @@ gdas/work/
 gdas/output/
 gdas/**/*.grib2
 gdas/**/*.grb2
+
+# ADCIRC mesh (large, local only)
+/fort.14
+
+# River boundary reverse-engineering analysis (local outputs and USGS downloads)
+/river_boundary_reverse_engineering/
