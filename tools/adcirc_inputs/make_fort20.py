@@ -13,9 +13,19 @@ a boundary gets the same value, positive = into the domain.
 File layout written:
     line 1           FTIMINC (s), the spacing of the records (--dt)
     then per record  one value per flux node, in fort.14 boundary order
-Record 0 is at --start, which must be the COLD START time (fort.15 base_date).
-ADCIRC skips forward through the records on a hot start, so one file made for
-the whole cold + hot start period serves both runs.
+Record 0 is at the COLD START time. ADCIRC skips forward through the records on
+a hot start, so one file made for the whole cold + hot start period serves
+both runs.
+
+Start and end dates (read from fort.15 unless --start/--end are given):
+    start = base_date   the metadata block at the end of fort.15
+                        (the 10th line after the ITITER line, e.g. 2022-12-01 00:00:00);
+                        STATIM must be 0, i.e. the run starts at base_date
+    end   = base_date + RNDAY
+Give the HOT-START fort.15 (--fort15): it has the same base_date and the
+RNDAY of the whole period (e.g. 29 d), so the file also covers the hot start.
+The cold-start fort.15 (e.g. RNDAY 19) would give a file that ends too early.
+--start / --end override the fort.15 values, e.g. when base_date is missing.
 
 How the width is found (all from fort.14, nothing is measured by hand):
     A river boundary is a short line of nodes running across the channel, bank
@@ -44,8 +54,15 @@ internet) works offline with --offline. If a gauge has no 15-minute data the
 daily mean is used instead (placed at local noon) and a warning is printed.
 
 Examples (Unity):
+    # fort.14 and fort.15 of the hot-start run folder; dates from its fort.15
+    python tools/adcirc_inputs/make_fort20.py --run-dir /path/to/hotstart_run --out fort.20
+
+    # mesh and control file in different places
+    python tools/adcirc_inputs/make_fort20.py --fort14 mesh/fort.14 --fort15 hot/fort.15
+
+    # no fort.15 (or no base_date in it): give the dates yourself
     python tools/adcirc_inputs/make_fort20.py --fort14 fort.14 \\
-        --start 2022-12-01T00:00 --end 2022-12-30T00:00 --dt 900 --out fort.20
+        --start 2022-12-01T00:00 --end 2022-12-30T00:00
 
     # download on the login node, then run offline anywhere
     python tools/adcirc_inputs/make_fort20.py ... --cache usgs_cache
@@ -65,6 +82,7 @@ import itertools
 import json
 import math
 import os
+import re
 import sys
 import time
 import urllib.request
@@ -108,6 +126,66 @@ def haversine_m(lon1, lat1, lon2, lat2):
     a = (math.sin((p2 - p1) / 2) ** 2
          + math.cos(p1) * math.cos(p2) * math.sin(math.radians(lon2 - lon1) / 2) ** 2)
     return 2 * EARTH_RADIUS_M * math.asin(math.sqrt(a))
+
+
+def read_fort15(path):
+    """base_date, STATIM, RNDAY, IHOT and NFFR from a fort.15 (None if absent).
+
+    Numeric values are found by their usual trailing comments (! RNDAY ...);
+    base_date is the last line after the ITITER line that is a date/time.
+    """
+    with open(path, "r", errors="replace") as f:
+        raw = [l.rstrip("\r\n") for l in f]
+
+    def labelled(label, cast):
+        pat = re.compile(r"!\s*" + label + r"\b", re.IGNORECASE)
+        for l in raw:
+            if pat.search(l):
+                return cast(l.split("!")[0].split()[0])
+        return None
+
+    out = {k: labelled(k, c) for k, c in
+           (("IHOT", int), ("STATIM", float), ("RNDAY", float), ("NFFR", int))}
+    out["base_date"] = None
+    ititer = [i for i, l in enumerate(raw) if re.search(r"!\s*ITITER\b", l, re.IGNORECASE)]
+    date_re = re.compile(r"^\s*(\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}(:\d{2})?)\s*$")
+    for l in raw[ititer[0] + 1:] if ititer else []:
+        m = date_re.match(l)
+        if m:
+            out["base_date"] = pd.Timestamp(m.group(1))
+    return out
+
+
+def run_period(args):
+    """(start, end) in UTC from --start/--end, else from fort.15."""
+    f15 = read_fort15(args.fort15) if args.fort15 else None
+    if f15:
+        print(f"fort.15 {args.fort15}: base_date {f15['base_date']}, IHOT {f15['IHOT']}, "
+              f"STATIM {f15['STATIM']}, RNDAY {f15['RNDAY']}, NFFR {f15['NFFR']}")
+        if f15["NFFR"] not in (0, -1):
+            print(f"  WARNING NFFR = {f15['NFFR']}: ADCIRC reads fort.20 as non-periodic flux "
+                  "only with NFFR 0 (or -1)", file=sys.stderr)
+        if f15["IHOT"] == 0 and not args.end:
+            print("  NOTE this is a cold-start fort.15: the file ends at its RNDAY. For a cold + "
+                  "hot start pair give the hot-start fort.15 (or --end).", file=sys.stderr)
+    start = pd.Timestamp(args.start) if args.start else None
+    end = pd.Timestamp(args.end) if args.end else None
+    if start is None:
+        if not f15 or f15["base_date"] is None:
+            raise SystemExit("no start date: fort.15 has no base_date line after ITITER "
+                             "(or no --fort15/--run-dir); give --start")
+        if f15["STATIM"] not in (None, 0.0):
+            raise SystemExit(f"STATIM = {f15['STATIM']} in fort.15; record 0 of fort.20 must be "
+                             "the cold-start time, give --start explicitly")
+        start = f15["base_date"]
+    if end is None:
+        if not f15 or f15["RNDAY"] is None:
+            raise SystemExit("no end date: no RNDAY found in fort.15; give --end")
+        base = f15["base_date"] if f15["base_date"] is not None else start
+        end = base + pd.Timedelta(days=f15["RNDAY"])
+    print(f"period: {start} -> {end} UTC (start from {'--start' if args.start else 'fort.15'}, "
+          f"end from {'--end' if args.end else 'fort.15'})")
+    return start, end
 
 
 def read_fort14_boundaries(path):
@@ -249,9 +327,11 @@ def on_times(s, times):
 def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[1],
                                  formatter_class=argparse.RawDescriptionHelpFormatter, epilog=__doc__)
-    ap.add_argument("--fort14", required=True)
-    ap.add_argument("--start", help="cold start time, UTC, e.g. 2022-12-01T00:00")
-    ap.add_argument("--end", help="end of the last run (cold start + RNDAY), UTC")
+    ap.add_argument("--run-dir", help="folder with fort.14 and fort.15 (the hot-start run)")
+    ap.add_argument("--fort14", help="mesh (default: <run-dir>/fort.14)")
+    ap.add_argument("--fort15", help="control file for the dates (default: <run-dir>/fort.15)")
+    ap.add_argument("--start", help="override: cold start time, UTC, e.g. 2022-12-01T00:00")
+    ap.add_argument("--end", help="override: end of the last run, UTC")
     ap.add_argument("--dt", type=float, default=900.0, help="record spacing FTIMINC in s (default 900)")
     ap.add_argument("--pad", type=int, default=1, help="extra records after --end (default 1)")
     ap.add_argument("--width", choices=["length", "tributary"], default="length")
@@ -261,6 +341,15 @@ def main():
     ap.add_argument("--offline", action="store_true", help="use only cached USGS files")
     ap.add_argument("--list", action="store_true", help="list flux boundaries and exit")
     args = ap.parse_args()
+    if args.run_dir:
+        args.fort14 = args.fort14 or os.path.join(args.run_dir, "fort.14")
+        if not args.fort15 and os.path.exists(os.path.join(args.run_dir, "fort.15")):
+            args.fort15 = os.path.join(args.run_dir, "fort.15")
+    if not args.fort14:
+        raise SystemExit("give --run-dir or --fort14")
+    for p in (args.fort14, args.fort15):
+        if p and not os.path.exists(p):
+            raise SystemExit(f"not found: {p}")
 
     rivers = RIVERS
     if args.rivers:
@@ -284,12 +373,9 @@ def main():
         raise SystemExit("flux boundaries without a river entry (add them to --rivers): "
                          + ", ".join(f"seg {b['segment']} at ({b['lon']:.4f}, {b['lat']:.4f})"
                                      for b in unmatched))
-    if not (args.start and args.end):
-        raise SystemExit("--start and --end are required")
-
-    t0, t1 = pd.Timestamp(args.start), pd.Timestamp(args.end)
+    t0, t1 = run_period(args)
     if t1 <= t0:
-        raise SystemExit("--end must be after --start")
+        raise SystemExit(f"end {t1} is not after start {t0}")
     nrec = int(math.ceil((t1 - t0).total_seconds() / args.dt)) + 1 + args.pad
     times = t0 + pd.to_timedelta(np.arange(nrec) * args.dt, unit="s")
     # one day of margin so interpolation at the ends uses real data
@@ -329,7 +415,16 @@ def main():
                 f.write(f"{q[k]:.6f}\n" * n)
     csv = os.path.splitext(args.out)[0] + "_discharge.csv"
     table.to_csv(csv, float_format="%.4f")
-    print(f"wrote {args.out} ({nrec} records, FTIMINC {args.dt:g} s) and {csv}")
+
+    # read the file back: FTIMINC on line 1, then exactly nrec x nflux values
+    with open(args.out) as f:
+        ftiminc = float(f.readline())
+        nvals = sum(1 for _ in f)
+    if ftiminc != args.dt or nvals != nrec * nflux:
+        raise SystemExit(f"check failed: FTIMINC {ftiminc} (want {args.dt}), "
+                         f"{nvals} values (want {nrec} x {nflux})")
+    print(f"wrote {args.out} ({nrec} records x {nflux} nodes, FTIMINC {args.dt:g} s, "
+          f"checked) and {csv}")
     print(f"fort.15: base_date must be {t0:%Y-%m-%d %H:%M:%S}, NFFR 0, "
           f"RNDAY <= {(times[-1] - t0).total_seconds() / 86400:g}")
 
