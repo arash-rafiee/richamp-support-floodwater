@@ -45,3 +45,7 @@ gdas/**/*.grb2
 
 # River boundary reverse-engineering analysis (local outputs and USGS downloads)
 /river_boundary_reverse_engineering/
+
+# make_fort20.sh outputs and USGS downloads
+tools/adcirc_inputs/output/
+tools/adcirc_inputs/usgs_cache/
