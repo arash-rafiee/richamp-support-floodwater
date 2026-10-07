@@ -49,3 +49,6 @@ gdas/**/*.grb2
 # make_fort20.sh outputs and USGS downloads
 tools/adcirc_inputs/output/
 tools/adcirc_inputs/usgs_cache/
+
+# local test runs and checks of the adcirc_inputs tools
+tools/adcirc_inputs/test/
