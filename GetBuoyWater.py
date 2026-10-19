@@ -269,8 +269,8 @@ class GetBuoyWater:
                 waterDict[key] = {}
                 waterDict[key]["times"] = unixTimes
                 waterDict[key]["water"] = waters
-                waterDict[key]["prediction_times"] = []  # Same timestamps for predictions
-                waterDict[key]["prediction_water"] = []
+                waterDict[key]["prediction_times"] = unixTimes  # Same timestamps for predictions
+                waterDict[key]["prediction_water"] = prediction_waters
 
             elif "USGS" in stationSource:
                 print("Pulling Data from USGS Station")

@@ -1018,7 +1018,8 @@ class Grapher:
     # Usage example:
     # plot_extended_lines(self, ax, runupIndex, index, runupLabel)
 
-    def __init__(self, dataToGraph={}, STATIONS_FILE="", backgroundMap="", backgroundAxis=[], titlePrefix="", stormBanner="", obsWaterLabel="NOAA Observed"):
+    def __init__(self, dataToGraph={}, STATIONS_FILE="", backgroundMap="", backgroundAxis=[], titlePrefix="", stormBanner="", obsWaterLabel="NOAA Observed",
+                 waterLabel="ADCIRC", tidewaterLabel="ADCIRC Tide Only", plotPredictions=False):
         print("Initializing grapher", flush=True)
         self.obsExists = False
         self.gaugeExists = False
@@ -1053,6 +1054,11 @@ class Grapher:
         self.titlePrefix=titlePrefix
         self.stormBanner=stormBanner
         self.obsWaterLabel=obsWaterLabel
+        # Legend names of the WATER and TIDEWATER series (the STOFS-only graphs rename them)
+        # and whether the NOAA tide predictions are drawn beside the observed levels
+        self.waterLabel=waterLabel
+        self.tidewaterLabel=tidewaterLabel
+        self.plotPredictions=plotPredictions
         installFigureBanner(stormBanner)
         
         if("OBS" in dataToGraph):
@@ -2654,8 +2660,8 @@ class Grapher:
                 if(self.stillwaterExists):
                     modelSeries.append(("ADCIRC Stillwater", self.stillwaterTimes, self.datapointsStillwaters[index], ":"))
                 if(self.tidewaterExists):
-                    modelSeries.append(("ADCIRC Tide Only", self.tidewaterTimes, self.datapointsTidewaters[index], "-."))
-                modelSeries.append(("ADCIRC", self.waterTimes, self.datapointsWaters[index], "-"))
+                    modelSeries.append((self.tidewaterLabel, self.tidewaterTimes, self.datapointsTidewaters[index], "-."))
+                modelSeries.append((self.waterLabel, self.waterTimes, self.datapointsWaters[index], "-"))
                 if(self.stofsExists and len(self.stofsDatapoints[index][0]) > 0):
                     modelSeries.append(("NOAA STOFS", self.stofsDatapoints[index][0], self.stofsDatapoints[index][1], "-"))
                 seriesStatistics = []
@@ -2675,12 +2681,13 @@ class Grapher:
                 seriesColors = []
                 for label, times, values, style in modelSeries:
                     # ADCIRC keeps C0 and the observations C1; the variants get their own colors
-                    color = {"ADCIRC": "C0", "ADCIRC Stillwater": "C2", "ADCIRC Tide Only": "C4", "NOAA STOFS": "C3"}[label]
+                    color = {"NOAA STOFS": "C3", "ADCIRC Stillwater": "C2", self.tidewaterLabel: "C4", self.waterLabel: "C0"}[label]
                     line, = ax.plot(times, values, label=label, color=color, linestyle=style, linewidth=lineWidth)
                     seriesColors.append(line.get_color())
                 if(self.tideExists):
                     ax.plot(self.tideDatapointsTimes[index], self.tideDatapointsWaters[index], label=self.obsWaterLabel, color="C1", linestyle="--", linewidth=lineWidth)
-#                     ax.plot(self.tideDatapointsPredictionTimes[index], self.tideDatapointsPredictionWaters[index], label="Tides")
+                    if(self.plotPredictions and index < len(self.tideDatapointsPredictionTimes) and len(self.tideDatapointsPredictionTimes[index]) > 0):
+                        ax.plot(self.tideDatapointsPredictionTimes[index], self.tideDatapointsPredictionWaters[index], label="NOAA Predicted Tide", color="0.45", linestyle=":", linewidth=lineWidth)
                 stationName = self.tideLabels[index]
                 stationId = self.tideIds[index] if index < len(self.tideIds) else ""
                 maxElevation = str(round(max(self.datapointsWaters[index]), 2))

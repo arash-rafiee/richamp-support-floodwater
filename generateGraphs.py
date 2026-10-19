@@ -10,6 +10,7 @@ from GetObsElevation import GetObsElevation
 from GetRunup import GetRunup
 import datetime
 import argparse
+import json
 import os
 
 NARRAGANSETT_MOUTH_MAP = "NarragansettMouth.png"
@@ -371,6 +372,23 @@ def main():
              "auto for the cycle at the start of --water, or a downloaded stofs_2d_glo.tHHz.points.cwl.nc file"
     )
     p.add_argument(
+        "--stofsExists", type=bool,
+        help="Graph NOAA's STOFS-2D-Global forecast on its own, without a fort.63, over --startDate..--endDate "
+             "(stitched from the daily cycles; --stofs may name one cycle or a downloaded file to use instead)"
+    )
+    p.add_argument(
+        "--stofsTideExists", type=bool,
+        help="With --stofsExists, also graph the STOFS tide-only run (the cycle's .points.htp.nc file)"
+    )
+    p.add_argument(
+        "--startDate", type=str,
+        help="With --stofsExists, start of the graphed window as YYYYMMDDHH UTC (default: now)"
+    )
+    p.add_argument(
+        "--endDate", type=str,
+        help="With --stofsExists, end of the graphed window as YYYYMMDDHH UTC (default: 180 hours after the start)"
+    )
+    p.add_argument(
         "--obsPredicted", type=bool,
         help="Plot NOAA tide predictions in place of the observed (verified/preliminary) water levels"
     )
@@ -395,6 +413,10 @@ def main():
         print("Graph units: " + setUnitSystem(args.unit), flush=True)
     except ValueError as error:
         p.error(str(error))
+    if args.stofsExists and args.waterExists:
+        p.error("--stofsExists graphs STOFS in place of the ADCIRC water series; use --waterExists (with --stofs) or --stofsExists, not both")
+    if args.stofsExists and args.maps:
+        p.error("--maps needs the ADCIRC mesh output and is not available with --stofsExists")
     args.epsg = 4326
     Reader.GENERATE_MAPS = bool(args.maps)
     print("Generating Wind Graphs!", flush=True)
@@ -702,6 +724,35 @@ def main():
         (tidewaterStartDateObject, tidewaterEndDateObject) = Fort63Reader(ADCIRC_WATER_FILE=ADCIRC_TIDEWATER_FILE, STATIONS_FILE=STATIONS_FILE, ADCIRC_WATER_DATA_FILE=ADCIRC_TIDEWATER_DATA_FILE, BACKGROUND_AXIS=backgroundAxis).generateWindDataForStations()
         dataToGraph["TIDEWATER"] = ADCIRC_TIDEWATER_DATA_FILE
 
+    print("args.stofsExists", args.stofsExists, flush=True)
+    if(args.stofsExists):
+        # STOFS-only run, no fort.63: NOAA's STOFS-2D-Global forecast takes the place of the ADCIRC
+        # water series over the --startDate..--endDate window. (A fort.63 run adds STOFS as an extra
+        # line through the --waterExists block above instead; that block is untouched by this one.)
+        toDate = lambda text: datetime.datetime.strptime(text, "%Y%m%d%H").replace(tzinfo=datetime.timezone.utc)
+        stofsStartDateObject = toDate(args.startDate) if args.startDate else datetime.datetime.now(datetime.timezone.utc).replace(minute=0, second=0, microsecond=0)
+        stofsEndDateObject = toDate(args.endDate) if args.endDate else None
+        stofsStitch = not args.stofs   # one named cycle or file is used as it is; otherwise the daily cycles are stitched
+        STOFS_WATER_DATA_FILE = water_temp_directory + "stofs_water_data_file" + ".json"
+        GetStofsWater(STATIONS_FILE=STATIONS_FILE, STOFS_WATER_DATA_FILE=STOFS_WATER_DATA_FILE, stofs=args.stofs or "auto",
+                      startDateObject=stofsStartDateObject, endDateObject=stofsEndDateObject, stitch=stofsStitch)
+        dataToGraph["WATER"] = STOFS_WATER_DATA_FILE
+        if(args.stofsTideExists):
+            STOFS_TIDE_DATA_FILE = water_temp_directory + "stofs_tide_data_file" + ".json"
+            GetStofsWater(STATIONS_FILE=STATIONS_FILE, STOFS_WATER_DATA_FILE=STOFS_TIDE_DATA_FILE, stofs=args.stofs or "auto",
+                          startDateObject=stofsStartDateObject, endDateObject=stofsEndDateObject, product="htp", stitch=stofsStitch)
+            dataToGraph["TIDEWATER"] = STOFS_TIDE_DATA_FILE
+        # The window actually written drives the NOAA fetch below and, unless a run.properties
+        # was named explicitly, the graph banner (one left behind by an ADCIRC run is ignored)
+        with open(STOFS_WATER_DATA_FILE) as stofsFile:
+            stofsTimes = [time for station in json.load(stofsFile).values() for time in station["times"]]
+        waterStartDateObject = datetime.datetime.fromtimestamp(min(stofsTimes), datetime.timezone.utc)
+        waterEndDateObject = datetime.datetime.fromtimestamp(max(stofsTimes), datetime.timezone.utc)
+        if not args.runProperties:
+            stormBanner = ("NOAA STOFS-2D-Global\n" + waterStartDateObject.strftime("%Y-%m-%d %H:%M") + " \u2013 "
+                           + waterEndDateObject.strftime("%Y-%m-%d %H:%M") + " UTC")
+        print("STOFS window", waterStartDateObject, waterEndDateObject, flush=True)
+
     print("args.velocityExists", args.velocityExists, flush=True)
     if(args.velocityExists):
         ADCIRC_VELOCITY_FILE = args.velocity
@@ -780,7 +831,7 @@ def main():
             GetObsRain(STATIONS_FILE=STATIONS_FILE, OBS_RAIN_DATA_FILE=OBS_RAIN_DATA_FILE, startDateObject=rainStartDateObject, endDateObject=rainEndDateObject)
             dataToGraph["GAUGE"] = OBS_RAIN_DATA_FILE
             
-        if(args.waterExists):
+        if(args.waterExists or args.stofsExists):
             print("Parsed start and end date from netCDF, ", waterStartDateObject, waterEndDateObject, flush=True)
             OBS_WATER_DATA_FILE = wind_temp_directory + "obs_water_data_file" + ".json"
             GetBuoyWater(STATIONS_FILE=STATIONS_FILE, OBS_WATER_DATA_FILE=OBS_WATER_DATA_FILE, startDateObject=waterStartDateObject, endDateObject=waterEndDateObject,
@@ -827,7 +878,10 @@ def main():
         backgroundAxis=backgroundAxis,
         titlePrefix=titlePrefix,
         stormBanner=stormBanner,
-        obsWaterLabel="NOAA Predicted Tide" if args.obsPredicted else "NOAA Observed").generateGraphs()
+        obsWaterLabel="NOAA Predicted Tide" if args.obsPredicted else "NOAA Observed",
+        waterLabel="NOAA STOFS" if args.stofsExists else "ADCIRC",
+        tidewaterLabel="STOFS Tide Only" if args.stofsExists else "ADCIRC Tide Only",
+        plotPredictions=bool(args.stofsExists and args.obsExists and not args.obsPredicted)).generateGraphs()
 
 if __name__ == "__main__":
     main()

@@ -64,6 +64,27 @@
 # (water is .mp4 instead when an ffmpeg program is already on the PATH), add:
 #   --maps true \
 #
+# Outside a hurricane run there is no fort.63; to graph NOAA's STOFS-2D-Global forecast
+# on its own at the stations (one graph per station, STOFS in place of ADCIRC), give the
+# window instead and the daily STOFS cycles are stitched to cover it:
+#   --stofsExists true \
+#   --startDate 2026101400 \      (YYYYMMDDHH UTC; default: now)
+#   --endDate 2026102400 \        (default: 180 hours after the start)
+# Add --stofsTideExists true for the STOFS tide-only line, --obsExists true for the NOAA
+# observed and predicted tide lines, and --stofs 2026101900 (or a downloaded points file)
+# to use one cycle as it is instead of stitching. --waterExists and --maps do not combine
+# with --stofsExists.
+#
+#python generateGraphs.py \
+#  --stations OBS_STATIONS.json \
+#  --stofsExists true \
+#  --stofsTideExists true \
+#  --startDate 2026101400 \
+#  --endDate 2026102400 \
+#  --obsExists true \
+#  --tempDir /scratch4/workspace/arash_rafiee_uri_edu-richamp/post_temp/ \
+#  --backgroundChoice RHODE_ISLAND_CHAMP
+#
 python generateGraphs.py \
   --stations OBS_STATIONS.json \
   --obsExists true \
