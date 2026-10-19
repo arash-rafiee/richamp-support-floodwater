@@ -75,21 +75,23 @@
 # to use one cycle as it is instead of stitching. --waterExists and --maps do not combine
 # with --stofsExists.
 #
+# During a hurricane run (fort.63 from ADCIRC, STOFS added as another line):
 #python generateGraphs.py \
 #  --stations OBS_STATIONS.json \
-#  --stofsExists true \
-#  --stofsTideExists true \
-#  --startDate 2026101400 \
-#  --endDate 2026102400 \
 #  --obsExists true \
+#  --waterExists true \
+#  --water /scratch4/workspace/arash_rafiee_uri_edu-richamp/ecflow_output/ricv1/archive/20260127/hour_12/adcirc/analysis/fort.63.nc \
+#  --stofs auto \
 #  --tempDir /scratch4/workspace/arash_rafiee_uri_edu-richamp/post_temp/ \
 #  --backgroundChoice RHODE_ISLAND_CHAMP
 #
+# Before or after a hurricane (no fort.63, STOFS on its own over the given window):
 python generateGraphs.py \
   --stations OBS_STATIONS.json \
+  --stofsExists true \
+  --stofsTideExists true \
+  --startDate 2026101400 \
+  --endDate 2026102400 \
   --obsExists true \
-  --waterExists true \
-  --water /scratch4/workspace/arash_rafiee_uri_edu-richamp/ecflow_output/ricv1/archive/20260127/hour_12/adcirc/analysis/fort.63.nc \
-  --stofs auto \
   --tempDir /scratch4/workspace/arash_rafiee_uri_edu-richamp/post_temp/ \
   --backgroundChoice RHODE_ISLAND_CHAMP
