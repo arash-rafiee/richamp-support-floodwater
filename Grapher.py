@@ -633,6 +633,10 @@ class Grapher:
         delta = datetime.fromtimestamp(timestamp, timezone.utc) - startDate
         return delta.total_seconds()/3600
     
+    def obsLabelFor(self, index):
+        """Legend name of station index's observed water series."""
+        return self.tideObsLabels[index] if index < len(self.tideObsLabels) else self.obsWaterLabel
+
     def generateSplitWaterGraph(self, index, graph_directory, statisticsCsvRows):
         """The STOFS-only station graph: the water surface (WATER against the observed levels)
         above the tide alone (TIDEWATER against the NOAA tide predictions), each pair with
@@ -644,7 +648,7 @@ class Grapher:
         havePredicted = self.tideExists and index < len(self.tideDatapointsPredictionTimes) and len(self.tideDatapointsPredictionTimes[index]) > 0
         # (y label, model label, color, style, model times, model values, reference label, reference times, reference values)
         pairs = [
-            ("Water Level (m)", self.waterLabel, "C0", "-", self.waterTimes, self.datapointsWaters[index], self.obsWaterLabel,
+            ("Water Level (m)", self.waterLabel, "C0", "-", self.waterTimes, self.datapointsWaters[index], self.obsLabelFor(index),
              self.tideDatapointsTimes[index] if haveObserved else [], self.tideDatapointsWaters[index] if haveObserved else []),
             ("Tide Level (m)", self.tidewaterLabel, "C4", "-.", self.tidewaterTimes, self.datapointsTidewaters[index], "NOAA Predicted Tide",
              self.tideDatapointsPredictionTimes[index] if havePredicted else [], self.tideDatapointsPredictionWaters[index] if havePredicted else []),
@@ -692,8 +696,9 @@ class Grapher:
                     tableRows.append((label, color, stats))
                     statisticsCsvRows.append([stationName, stationId, label + " vs " + referenceLabel, stats["n"], stats["bias"],
                                               stats["mae"], stats["rmse"], stats["r"]])
-            drawStatisticsTable(axes[2], tableRows, self.obsWaterLabel,
-                                title="Full-period statistics vs " + pairs[0][6] + " (water) and " + pairs[1][6] + " (tide)")
+            references = [referenceLabel + (" (water)" if panel == 0 else " (tide)")
+                          for panel, (stats, (_, _, _, _, _, _, referenceLabel, _, _)) in enumerate(zip(statistics, pairs)) if stats is not None]
+            drawStatisticsTable(axes[2], tableRows, self.obsWaterLabel, title="Full-period statistics vs " + " and ".join(references))
         fig.savefig(graph_directory + stationName + '_water.png', dpi=200, facecolor="white", bbox_inches='tight', pad_inches=0.05)
         plt.close()
 
@@ -1206,6 +1211,7 @@ class Grapher:
         self.tideDatapointsTimes = []
         self.tideDatapointsWaters = []
     
+        self.tideObsLabels = []   # per station; a station's TIDE entry may carry its own "label"
         self.tideDatapointsPredictionTimes = []
         self.tideDatapointsPredictionWaters = []
         
@@ -1775,6 +1781,7 @@ class Grapher:
                                 tideWaters.append(tideWater)
                             self.tideDatapointsTimes.append(tideTimes)
                             self.tideDatapointsWaters.append(tideWaters)
+                            self.tideObsLabels.append(tideDataset[stationKey].get("label", self.obsWaterLabel))
                             tidePredictionTimes = []
                             tidePredictionWaters = []
                 #                         Height is not station altitude, it is sea surface height
@@ -1838,6 +1845,7 @@ class Grapher:
                                 tideWaters.append(tideWater)
                             self.tideDatapointsTimes.append(tideTimes)
                             self.tideDatapointsWaters.append(tideWaters)
+                            self.tideObsLabels.append(tideDataset[stationKey].get("label", self.obsWaterLabel))
                             tidePredictionTimes = []
                             tidePredictionWaters = []
                 #                         Height is not station altitude, it is sea surface height
@@ -2754,7 +2762,7 @@ class Grapher:
                         line, = ax.plot(times, values, label=label, color=color, linestyle=style, linewidth=lineWidth)
                         seriesColors.append(line.get_color())
                     if(self.tideExists):
-                        ax.plot(self.tideDatapointsTimes[index], self.tideDatapointsWaters[index], label=self.obsWaterLabel, color="C1", linestyle="--", linewidth=lineWidth)
+                        ax.plot(self.tideDatapointsTimes[index], self.tideDatapointsWaters[index], label=self.obsLabelFor(index), color="C1", linestyle="--", linewidth=lineWidth)
                         if(self.plotPredictions and index < len(self.tideDatapointsPredictionTimes) and len(self.tideDatapointsPredictionTimes[index]) > 0):
                             ax.plot(self.tideDatapointsPredictionTimes[index], self.tideDatapointsPredictionWaters[index], label="NOAA Predicted Tide", color="0.45", linestyle=":", linewidth=lineWidth)
                     stationName = self.tideLabels[index]
@@ -2791,7 +2799,7 @@ class Grapher:
                                 tableRows.append((label, color, stats))
                                 statisticsCsvRows.append([stationName, stationId, label, stats["n"], stats["bias"],
                                                           stats["mae"], stats["rmse"], stats["r"]])
-                        drawStatisticsTable(statisticsAx, tableRows, self.obsWaterLabel)
+                        drawStatisticsTable(statisticsAx, tableRows, self.obsLabelFor(index))
                     fig.savefig(graph_directory + stationName + '_water.png', dpi=200, facecolor="white", bbox_inches='tight', pad_inches=0.05)
                     plt.close()
                 

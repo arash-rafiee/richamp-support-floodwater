@@ -272,6 +272,45 @@ class GetBuoyWater:
                 waterDict[key]["prediction_times"] = unixTimes  # Same timestamps for predictions
                 waterDict[key]["prediction_water"] = prediction_waters
 
+            elif "NEST" in stationSource:
+                # Brown NEST water-level sensor (tools/nest/get_nest_data.py), NAVD88 m like the
+                # CO-OPS stations; the station id is the sensor's device name (e.g. RI_FPDP) and
+                # readings flagged suspect or fail by QARTOD are dropped. A sensor that cannot be
+                # fetched leaves an empty series so the rest of the run carries on.
+                print("Pulling Data from Brown NEST sensor", stationId, flush=True)
+                unixTimes = np.array([], dtype=np.int64)
+                waters = np.array([], dtype=np.float64)
+                try:
+                    import sys
+                    from pathlib import Path
+                    nestTools = os.path.join(os.path.dirname(os.path.abspath(__file__)), "tools", "nest")
+                    if nestTools not in sys.path:
+                        sys.path.insert(0, nestTools)
+                    from get_nest_data import water_level as nest_water_level
+                    nestFrame = nest_water_level(stationId,
+                                                 pd.Timestamp(startDateObject).tz_convert("UTC").tz_localize(None),
+                                                 pd.Timestamp(endDateObject).tz_convert("UTC").tz_localize(None),
+                                                 Path(temp_directory) / "nest_raw")
+                    nestFrame = nestFrame[nestFrame["qc"].isin([1, 2]) & np.isfinite(nestFrame["navd88_meters"])]
+                    unixTimes = (pd.to_datetime(nestFrame["time"]).astype("int64") // 10**9).to_numpy()
+                    waters = nestFrame["navd88_meters"].to_numpy(dtype=np.float64)
+                    # A sensor over a bed that dries at low water reports its floor value (the
+                    # same number, many times) while the bed is exposed; QARTOD lets it through
+                    if len(waters) > 0:
+                        atFloor = np.abs(waters - waters.min()) < 0.002
+                        if atFloor.sum() > 10:
+                            print(f"    dropping {int(atFloor.sum())} readings at the sensor floor {waters.min():.3f} m", flush=True)
+                            unixTimes, waters = unixTimes[~atFloor], waters[~atFloor]
+                    print(f"    {len(waters)} NEST readings", flush=True)
+                except Exception as error:
+                    print(f"Failed to download NEST data for sensor {stationId}: {error}", flush=True)
+                waterDict[key] = {}
+                waterDict[key]["label"] = "NEST Observed"  # legend name of this station's observed series
+                waterDict[key]["times"] = unixTimes
+                waterDict[key]["water"] = waters
+                waterDict[key]["prediction_times"] = []  # NEST publishes no tide predictions
+                waterDict[key]["prediction_water"] = []
+
             elif "USGS" in stationSource:
                 print("Pulling Data from USGS Station")
             

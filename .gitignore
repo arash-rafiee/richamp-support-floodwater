@@ -52,3 +52,6 @@ tools/adcirc_inputs/usgs_cache/
 
 # local test runs and checks of the adcirc_inputs tools
 tools/adcirc_inputs/test/
+
+# downloads of tools/nest/get_nest_data.py
+nest_data*/

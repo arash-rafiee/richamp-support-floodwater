@@ -61,7 +61,9 @@ def readStofsPoints(stofsFile, stationsDict, startDateObject=None, endDateObject
 
     series = {}
     for key, stationDict in stationsDict["NOS"].items():
-        stationId = str(stationDict["id"])
+        # a station without a STOFS point of its own (e.g. a NEST sensor) names the NOAA
+        # station whose STOFS point stands in for it as "stofs_id"
+        stationId = str(stationDict.get("stofs_id", stationDict["id"]))
         # the NOAA id is the third word; anything after it is free text (e.g. "Pier 1")
         matches = [index for index, name in enumerate(stofsNames) if len(name) > 2 and name[2] == stationId]
         if not matches:

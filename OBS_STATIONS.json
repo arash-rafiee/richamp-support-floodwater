@@ -337,6 +337,137 @@
       "latitude": "41.59124",
       "longitude": "-70.90082",
       "elevation": "0"
+    },
+    "201": {
+      "id": "RI_FPDP",
+      "source": "NEST",
+      "name": "Fox Point Barrier, downstream (NEST)",
+      "latitude": "41.8158388",
+      "longitude": "-71.4005542",
+      "stofs_id": "8454000",
+      "altitude": "0"
+    },
+    "202": {
+      "id": "RI_FPU",
+      "source": "NEST",
+      "name": "Fox Point Barrier, upstream (NEST)",
+      "latitude": "41.81680465",
+      "longitude": "-71.4015108",
+      "stofs_id": "8454000",
+      "altitude": "0"
+    },
+    "203": {
+      "id": "RI_WFB",
+      "source": "NEST",
+      "name": "Walker Farm Pier (NEST)",
+      "latitude": "41.75323349",
+      "longitude": "-71.32104118",
+      "stofs_id": "8452944",
+      "altitude": "0"
+    },
+    "204": {
+      "id": "RI_PCB",
+      "source": "NEST",
+      "name": "Police Cove Pier (NEST)",
+      "latitude": "41.73708512",
+      "longitude": "-71.29700682",
+      "stofs_id": "8452944",
+      "altitude": "0"
+    },
+    "205": {
+      "id": "RI_TBO",
+      "source": "NEST",
+      "name": "Tanyard Brook Outlet (NEST)",
+      "latitude": "41.66013109",
+      "longitude": "-71.26839085",
+      "stofs_id": "8452944",
+      "altitude": "0"
+    },
+    "206": {
+      "id": "RI_PPS",
+      "source": "NEST",
+      "name": "Poppasquash Rd (NEST)",
+      "latitude": "41.67972703",
+      "longitude": "-71.28971859",
+      "stofs_id": "8452944",
+      "altitude": "0"
+    },
+    "207": {
+      "id": "RI_BCP",
+      "source": "NEST",
+      "name": "URI Bay Campus Pier (NEST)",
+      "latitude": "41.49202535",
+      "longitude": "-71.41854161",
+      "stofs_id": "8452660",
+      "altitude": "0"
+    },
+    "208": {
+      "id": "RI_TSBD",
+      "source": "NEST",
+      "name": "Third Street Bridge, downstream (NEST)",
+      "latitude": "41.5107001",
+      "longitude": "-71.32041242",
+      "stofs_id": "8452660",
+      "altitude": "0"
+    },
+    "209": {
+      "id": "RI_TSBU",
+      "source": "NEST",
+      "name": "Third Street Bridge, upstream (NEST)",
+      "latitude": "41.51071486",
+      "longitude": "-71.32029141",
+      "stofs_id": "8452660",
+      "altitude": "0"
+    },
+    "210": {
+      "id": "RI_OBI",
+      "source": "NEST",
+      "name": "Old Harbor Tide Gauge, Block Island (NEST)",
+      "latitude": "41.1737",
+      "longitude": "-71.5577",
+      "stofs_id": "8459681",
+      "altitude": "0"
+    },
+    "211": {
+      "id": "RI_BMD",
+      "source": "NEST",
+      "name": "BIMI Dock, Block Island (NEST)",
+      "latitude": "41.18026917",
+      "longitude": "-71.57290894",
+      "stofs_id": "8459681",
+      "altitude": "0"
+    },
+    "212": {
+      "id": "RI_URIS",
+      "source": "NEST",
+      "name": "URI Sailing Center (NEST)",
+      "latitude": "41.42721664",
+      "longitude": "-71.49700882",
+      "altitude": "0"
+    },
+    "213": {
+      "id": "RI_HDGH",
+      "source": "NEST",
+      "name": "H Dock (NEST)",
+      "latitude": "41.37826962",
+      "longitude": "-71.5122903",
+      "altitude": "0"
+    },
+    "214": {
+      "id": "RI_UDGH",
+      "source": "NEST",
+      "name": "UU Dock (NEST)",
+      "latitude": "41.38354133",
+      "longitude": "-71.50844392",
+      "altitude": "0"
+    },
+    "215": {
+      "id": "RI_MTM",
+      "source": "NEST",
+      "name": "Matunuck Marina (NEST)",
+      "latitude": "41.38561008",
+      "longitude": "-71.52545303",
+      "altitude": "0"
     }
   }
 }
