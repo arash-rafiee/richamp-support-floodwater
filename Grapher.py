@@ -633,6 +633,78 @@ class Grapher:
         delta = datetime.fromtimestamp(timestamp, timezone.utc) - startDate
         return delta.total_seconds()/3600
     
+    def drawStationMap(self, graph_directory):
+        """closest_points.png: every station of the run drawn on the --backgroundChoice map,
+        numbered, with the numbered list of names beside the map; the point the model is read
+        at for each station (mesh node, STOFS point) is a small cross joined to the station."""
+        img = mpimg.imread(self.backgroundMap)
+        west, east, north, south = self.backgroundAxis
+        aspectRatio = (east - west) / (north - south)
+        # (type, marker, color, station lons, lats, names, model lons, model lats)
+        groups = []
+        if(self.windExists):
+            groups.append(("Wind", "o", "C2", self.obsLongitudes, self.obsLatitudes, self.obsLabels, self.windLongitudes, self.windLatitudes))
+        if(self.waterExists):
+            groups.append(("Water level", "o", "C0", self.tideLongitudes, self.tideLatitudes, self.tideLabels, self.waterLongitudes, self.waterLatitudes))
+        if(self.wavesExists):
+            groups.append(("Waves", "s", "C4", self.buoyLongitudes, self.buoyLatitudes, self.buoyLabels, self.waveLongitudes, self.waveLatitudes))
+        if(self.rainExists):
+            groups.append(("Rain", "^", "C9", self.gaugeLongitudes, self.gaugeLatitudes, self.gaugeLabels, self.rainLongitudes, self.rainLatitudes))
+        if(self.meshExists):
+            groups.append(("Assets", "D", "C3", self.assetLongitudes, self.assetLatitudes, self.assetLabels, self.elevationLongitudes, self.elevationLatitudes))
+        if(self.velocityExists):
+            groups.append(("Velocity", "v", "C5", [], [], self.velocityLabels, self.velocityLongitudes, self.velocityLatitudes))
+        groups = [g for g in groups if len(g[3]) > 0 or len(g[6]) > 0]
+        if not groups:
+            return
+        mapWidth = 9.5
+        fig, (ax, listAx) = plt.subplots(1, 2, figsize=(mapWidth + 4.5, mapWidth / aspectRatio + 0.8), layout="constrained",
+                                         width_ratios=[mapWidth, 4.5])
+        # the background images are stored south-up, so the extent is given as the map graphs give it
+        ax.imshow(img, extent=self.backgroundAxis, aspect="auto")
+        ax.set_xlim(west, east)
+        ax.set_ylim(south, north)
+        ax.set_xlabel("longitude", fontsize=10)
+        ax.set_ylabel("latitude", fontsize=10)
+        ax.tick_params(labelsize=8)
+        fig.richampBannerDrawn = True   # the banner is the subtitle here, not a band above the map
+        fig.suptitle("Station locations", fontsize=14, fontweight="bold")
+        subtitle = bannerSubtitle(self.stormBanner)
+        if subtitle:
+            ax.set_title(subtitle, fontsize=10.5, color="0.25")
+        listAx.axis("off")
+        number = 0
+        lines = []   # (text, color, bold)
+        modelDrawn = False
+        for typeName, marker, color, lons, lats, names, modelLons, modelLats in groups:
+            # stations as the run lists them; a type without station positions uses its model points
+            if len(lons) == 0:
+                lons, lats = modelLons, modelLats
+            if len(modelLons) == len(lons) and len(modelLons) > 0:
+                for lon, lat, modelLon, modelLat in zip(lons, lats, modelLons, modelLats):
+                    ax.plot([lon, modelLon], [lat, modelLat], color="0.2", linewidth=0.6, zorder=3)
+                ax.scatter(modelLons, modelLats, marker="x", s=28, color="0.2", linewidths=0.9, zorder=4,
+                           label=None if modelDrawn else "point the model is read at")
+                modelDrawn = True
+            ax.scatter(lons, lats, marker=marker, s=190, color=color, edgecolors="white", linewidths=1.0, zorder=5, label=typeName)
+            lines.append((typeName, color, True))
+            for lon, lat, name in zip(lons, lats, names):
+                number += 1
+                ax.text(lon, lat, str(number), ha="center", va="center", fontsize=6.5, color="white", fontweight="bold", zorder=6)
+                lines.append((f"{number:>2}  {name}", "0.15", False))
+        ax.legend(loc="lower right", fontsize=8, frameon=True, framealpha=0.9, edgecolor="0.8")
+        # the list beside the map, in two columns when it is long
+        columns = 2 if len(lines) > 34 else 1
+        perColumn = -(-len(lines) // columns)
+        fontSize = 8.5 if perColumn <= 34 else 7
+        lineHeight = min(0.028, 0.96 / max(perColumn, 1))
+        for column in range(columns):
+            for row, (label, color, bold) in enumerate(lines[column * perColumn:(column + 1) * perColumn]):
+                listAx.text(0.02 + column * 0.5, 0.98 - row * lineHeight, label, transform=listAx.transAxes, ha="left", va="top",
+                            fontsize=fontSize, color=color, fontweight="bold" if bold else "normal", family="monospace" if not bold else None)
+        fig.savefig(graph_directory + 'closest_points.png', dpi=170, facecolor="white", bbox_inches="tight", pad_inches=0.1)
+        plt.close()
+
     def obsLabelFor(self, index):
         """Legend name of station index's observed water series."""
         return self.tideObsLabels[index] if index < len(self.tideObsLabels) else self.obsWaterLabel
@@ -2144,66 +2216,8 @@ class Grapher:
         if(self.velocityExists):
             numberOfVelocityDatapoints = len(self.velocityLabels)
         print("numberOfDatapoints Wind, Rain, Water, Wave, Eta, Elevation, Runup, Velocity", numberOfWindDatapoints, numberOfRainDatapoints, numberOfWaterDatapoints, numberOfWaveDatapoints, numberOfEtaDatapoints, numberOfElevationDatapoints, numberOfRunupDatapoints, numberOfVelocityDatapoints, flush=True)
-        fig, ax = plt.subplots()
         print("maxWind", self.maxWind, "maxRain", self.maxRain, "maxWave", self.maxSWH, "maxWater", self.maxWater, "maxEta", self.maxEta, "maxElevation", self.maxElevation, "maxRunup", self.maxRunup, "maxVelocity", self.maxVelocity, flush=True)
-        
-        if(self.windExists):
-            ax.scatter(self.obsLongitudes, self.obsLatitudes, label="Obs")
-            ax.scatter(self.windLongitudes, self.windLatitudes, label="Wind")
-        if(self.wavesExists):
-            ax.scatter(self.tideLongitudes, self.tideLatitudes, label="Tide")
-            ax.scatter(self.waveLongitudes, self.waveLatitudes, label="Waves")
-        if(self.rainExists):
-            ax.scatter(self.rainLongitudes, self.rainLatitudes, label="Rain")
-            ax.scatter(self.gaugeLongitudes, self.gaugeLatitudes, label="Gauge")
-        if(self.waterExists):
-            ax.scatter(self.buoyLongitudes, self.buoyLatitudes, label="Buoy")
-            ax.scatter(self.waterLongitudes, self.waterLatitudes, label="Water")
-        if(self.meshExists):
-            ax.scatter(self.assetLongitudes, self.assetLatitudes, label="Asset")
-            ax.scatter(self.elevationLongitudes, self.elevationLatitudes, label="Mesh")
-        if(self.etaExists):
-            ax.scatter(self.etaLongitudes, self.etaLatitudes, label="Eta")
-        if(self.runupExists):
-            ax.scatter(self.runupLongitudes, self.runupLatitudes)
-        if(self.velocityExists):
-            ax.scatter(self.velocityLongitudes, self.velocityLatitudes, label="Velocity")
-        ax.legend(loc="lower right")
-
-        for index, label in enumerate(self.obsLabels):
-            ax.annotate(label, (self.obsLongitudes[index], self.obsLatitudes[index]))
-            if(self.windExists):
-                ax.annotate(self.windLabels[index], (self.windLongitudes[index], self.windLatitudes[index]))
-        for index, label in enumerate(self.buoyLabels):
-            ax.annotate(label, (self.buoyLongitudes[index], self.buoyLatitudes[index]))
-            if(self.wavesExists):
-                ax.annotate(self.waveLabels[index], (self.waveLongitudes[index], self.waveLatitudes[index]))
-        for index, label in enumerate(self.gaugeLabels):
-            ax.annotate(label, (self.gaugeLongitudes[index], self.gaugeLatitudes[index]))
-            if(self.rainExists):
-                ax.annotate(self.rainLabels[index], (self.rainLongitudes[index], self.rainLatitudes[index]))
-        for index, label in enumerate(self.tideLabels):
-            ax.annotate(label, (self.tideLongitudes[index], self.tideLatitudes[index]))
-            if(self.waterExists):
-                ax.annotate(self.waterLabels[index], (self.waterLongitudes[index], self.waterLatitudes[index]))
-            if(self.etaExists):
-                ax.annotate(self.etaLabels[index], (self.etaLongitudes[index], self.etaLatitudes[index]))
-        for index, label in enumerate(self.assetLabels):
-            ax.annotate(label, (self.assetLongitudes[index], self.assetLatitudes[index]))
-            if(self.meshExists):
-                ax.annotate(self.elevationLabels[index], (self.elevationLongitudes[index], self.elevationLatitudes[index]))
-            if(self.etaExists):
-                ax.annotate(self.etaLabels[index], (self.etaLongitudes[index], self.etaLatitudes[index]))
-        for index, label in enumerate(self.runupLabels):
-            ax.annotate(label, (self.runupLongitudes[index], self.runupLatitudes[index]))
-        for index, label in enumerate(self.velocityLabels):
-            ax.annotate(label, (self.velocityLongitudes[index], self.velocityLatitudes[index]))
-
-        plt.title("location of datapoints by data type")
-        plt.xlabel("longitude")
-        plt.ylabel("latitude")
-        plt.savefig(graph_directory + 'closest_points.png')
-        plt.close()
+        self.drawStationMap(graph_directory)
         
         img = mpimg.imread(self.backgroundMap)
         plotAxis = [self.backgroundAxis[0], self.backgroundAxis[1], self.backgroundAxis[3], self.backgroundAxis[2]]

@@ -298,7 +298,7 @@ class GetBuoyWater:
                     # same number, many times) while the bed is exposed; QARTOD lets it through
                     if len(waters) > 0:
                         atFloor = np.abs(waters - waters.min()) < 0.002
-                        if atFloor.sum() > 10:
+                        if atFloor.sum() > 50:
                             print(f"    dropping {int(atFloor.sum())} readings at the sensor floor {waters.min():.3f} m", flush=True)
                             unixTimes, waters = unixTimes[~atFloor], waters[~atFloor]
                     print(f"    {len(waters)} NEST readings", flush=True)
