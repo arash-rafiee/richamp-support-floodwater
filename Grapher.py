@@ -534,10 +534,11 @@ def waterStatistics(modelTimes, modelValues, obsTimes, obsValues, maxGapSeconds=
             "rmse": float(np.sqrt((error ** 2).mean())), "r": r}
 
 
-def drawStatisticsTable(ax, rows, observedLabel):
+def drawStatisticsTable(ax, rows, observedLabel, title=None):
     """Draw a "Full-period statistics" table on an empty axes.
 
-    rows are (label, color, stats) with stats from waterStatistics.
+    rows are (label, color, stats) with stats from waterStatistics. title replaces
+    the "Full-period statistics vs <observedLabel>" header when given.
     """
     ax.axis("off")
     # Compact block on the left, like a journal table, rather than spread over the full width
@@ -546,7 +547,7 @@ def drawStatisticsTable(ax, rows, observedLabel):
     tableRight = columns[-1][1]
     lineHeight = 1.0 / (len(rows) + 2.6)
     y = 1.0
-    ax.text(0.0, y, "Full-period statistics vs " + observedLabel, transform=ax.transAxes, ha="left", va="top",
+    ax.text(0.0, y, title if title else "Full-period statistics vs " + observedLabel, transform=ax.transAxes, ha="left", va="top",
             fontsize=10.5, fontweight="bold", color="0.15")
     y -= lineHeight
     for name, x, align in columns:
@@ -632,6 +633,70 @@ class Grapher:
         delta = datetime.fromtimestamp(timestamp, timezone.utc) - startDate
         return delta.total_seconds()/3600
     
+    def generateSplitWaterGraph(self, index, graph_directory, statisticsCsvRows):
+        """The STOFS-only station graph: the water surface (WATER against the observed levels)
+        above the tide alone (TIDEWATER against the NOAA tide predictions), each pair with
+        its own statistics. Saved under the same name as the single-panel water graph."""
+        lineWidth = 2.0
+        stationName = self.tideLabels[index]
+        stationId = self.tideIds[index] if index < len(self.tideIds) else ""
+        haveObserved = self.tideExists and index < len(self.tideDatapointsTimes)
+        havePredicted = self.tideExists and index < len(self.tideDatapointsPredictionTimes) and len(self.tideDatapointsPredictionTimes[index]) > 0
+        # (y label, model label, color, style, model times, model values, reference label, reference times, reference values)
+        pairs = [
+            ("Water Level (m)", self.waterLabel, "C0", "-", self.waterTimes, self.datapointsWaters[index], self.obsWaterLabel,
+             self.tideDatapointsTimes[index] if haveObserved else [], self.tideDatapointsWaters[index] if haveObserved else []),
+            ("Tide Level (m)", self.tidewaterLabel, "C4", "-.", self.tidewaterTimes, self.datapointsTidewaters[index], "NOAA Predicted Tide",
+             self.tideDatapointsPredictionTimes[index] if havePredicted else [], self.tideDatapointsPredictionWaters[index] if havePredicted else []),
+        ]
+        statistics = [waterStatistics(times, values, referenceTimes, referenceValues) if len(referenceTimes) > 1 else None
+                      for _, _, _, _, times, values, _, referenceTimes, referenceValues in pairs]
+        statisticsRows = sum(stats is not None for stats in statistics)
+        heights = [4.2, 4.2]
+        if statisticsRows:
+            heights.append(0.3 * statisticsRows + 0.85)
+        fig, axes = plt.subplots(len(heights), 1, figsize=(11, sum(heights) + 0.4), layout="constrained", height_ratios=heights)
+        fig.richampBannerDrawn = True
+        title = self.titlePrefix + stationName
+        if stationId:
+            title += " \u2014 Station " + stationId
+        fig.suptitle(title, fontsize=15, fontweight="bold")
+        subtitle = bannerSubtitle(self.stormBanner, self.waterTimes[0], self.waterTimes[-1])
+        for panel, (ax, (yLabel, label, color, style, times, values, referenceLabel, referenceTimes, referenceValues)) in enumerate(zip(axes[:2], pairs)):
+            ax.plot(times, values, label=label, color=color, linestyle=style, linewidth=lineWidth)
+            if len(referenceTimes) > 0:
+                ax.plot(referenceTimes, referenceValues, label=referenceLabel, color="C1", linestyle="--", linewidth=lineWidth)
+            if panel == 0 and subtitle:
+                ax.set_title(subtitle, fontsize=11, color="0.25")
+            ax.set_ylabel(yLabel, fontsize=12)
+            ax.tick_params(labelsize=10)
+            ax.margins(x=0)
+            # Headroom above the highest crest so the legend sits clear of the data
+            low, high = ax.get_ylim()
+            ax.set_ylim(low, high + 0.15 * (high - low))
+            ax.xaxis.set_major_locator(mdates.DayLocator(tz=timezone.utc))
+            ax.xaxis.set_major_formatter(plt.FuncFormatter(
+                lambda value, position: (lambda d: f"{d:%b} {d.day}")(mdates.num2date(value, tz=timezone.utc))))
+            plt.setp(ax.get_xticklabels(), rotation=30, ha="right")
+            ax.grid(True, which="major", color="0.88", linewidth=0.6)
+            ax.set_axisbelow(True)
+            ax.set_facecolor("white")
+            ax.legend(loc="best", fontsize=10, frameon=True, framealpha=0.9, edgecolor="0.8",
+                      ncol=2, handlelength=2.6, borderpad=0.4, columnspacing=1.2)
+        axes[1].set_xlim(axes[0].get_xlim())
+        axes[0].tick_params(labelbottom=False)
+        if statisticsRows:
+            tableRows = []
+            for (yLabel, label, color, style, times, values, referenceLabel, referenceTimes, referenceValues), stats in zip(pairs, statistics):
+                if stats is not None:
+                    tableRows.append((label, color, stats))
+                    statisticsCsvRows.append([stationName, stationId, label + " vs " + referenceLabel, stats["n"], stats["bias"],
+                                              stats["mae"], stats["rmse"], stats["r"]])
+            drawStatisticsTable(axes[2], tableRows, self.obsWaterLabel,
+                                title="Full-period statistics vs " + pairs[0][6] + " (water) and " + pairs[1][6] + " (tide)")
+        fig.savefig(graph_directory + stationName + '_water.png', dpi=200, facecolor="white", bbox_inches='tight', pad_inches=0.05)
+        plt.close()
+
     def extrapolateWindToTenMeterHeight(self, windVelocity, altitude):
         return windVelocity
     #     WIND_PROFILE_EXPONENT = 0.11
@@ -2653,78 +2718,82 @@ class Grapher:
         statisticsCsvRows = []
         for index in range(numberOfWaterDatapoints):
             if(len(self.datapointsWaters) > 0):
-                # Publication style figure: compact layout, title and a small
-                # forcing/date subtitle in place of the global banner
-                # Model series, each with its statistics against the observations
-                modelSeries = []
-                if(self.stillwaterExists):
-                    modelSeries.append(("ADCIRC Stillwater", self.stillwaterTimes, self.datapointsStillwaters[index], ":"))
-                if(self.tidewaterExists):
-                    modelSeries.append((self.tidewaterLabel, self.tidewaterTimes, self.datapointsTidewaters[index], "-."))
-                modelSeries.append((self.waterLabel, self.waterTimes, self.datapointsWaters[index], "-"))
-                if(self.stofsExists and len(self.stofsDatapoints[index][0]) > 0):
-                    modelSeries.append(("NOAA STOFS", self.stofsDatapoints[index][0], self.stofsDatapoints[index][1], "-"))
-                seriesStatistics = []
-                if(self.tideExists):
-                    for label, times, values, style in modelSeries:
-                        seriesStatistics.append(waterStatistics(times, values, self.tideDatapointsTimes[index],
-                                                                self.tideDatapointsWaters[index]))
-                statisticsRows = sum(stats is not None for stats in seriesStatistics)
-                if statisticsRows:
-                    tableHeight = 0.3 * statisticsRows + 0.85
-                    fig, (ax, statisticsAx) = plt.subplots(2, 1, figsize=(11, 5.5 + tableHeight), layout="constrained",
-                                                           height_ratios=[5.5, tableHeight])
+                if(self.plotPredictions and self.tidewaterExists):
+                    # STOFS-only graphs: the water surface and the tide alone as two panels
+                    self.generateSplitWaterGraph(index, graph_directory, statisticsCsvRows)
                 else:
-                    fig, ax = plt.subplots(figsize=(11, 5.5), layout="constrained")
-                fig.richampBannerDrawn = True
-                lineWidth = 2.0
-                seriesColors = []
-                for label, times, values, style in modelSeries:
-                    # ADCIRC keeps C0 and the observations C1; the variants get their own colors
-                    color = {"NOAA STOFS": "C3", "ADCIRC Stillwater": "C2", self.tidewaterLabel: "C4", self.waterLabel: "C0"}[label]
-                    line, = ax.plot(times, values, label=label, color=color, linestyle=style, linewidth=lineWidth)
-                    seriesColors.append(line.get_color())
-                if(self.tideExists):
-                    ax.plot(self.tideDatapointsTimes[index], self.tideDatapointsWaters[index], label=self.obsWaterLabel, color="C1", linestyle="--", linewidth=lineWidth)
-                    if(self.plotPredictions and index < len(self.tideDatapointsPredictionTimes) and len(self.tideDatapointsPredictionTimes[index]) > 0):
-                        ax.plot(self.tideDatapointsPredictionTimes[index], self.tideDatapointsPredictionWaters[index], label="NOAA Predicted Tide", color="0.45", linestyle=":", linewidth=lineWidth)
-                stationName = self.tideLabels[index]
-                stationId = self.tideIds[index] if index < len(self.tideIds) else ""
-                maxElevation = str(round(max(self.datapointsWaters[index]), 2))
+                    # Publication style figure: compact layout, title and a small
+                    # forcing/date subtitle in place of the global banner
+                    # Model series, each with its statistics against the observations
+                    modelSeries = []
+                    if(self.stillwaterExists):
+                        modelSeries.append(("ADCIRC Stillwater", self.stillwaterTimes, self.datapointsStillwaters[index], ":"))
+                    if(self.tidewaterExists):
+                        modelSeries.append((self.tidewaterLabel, self.tidewaterTimes, self.datapointsTidewaters[index], "-."))
+                    modelSeries.append((self.waterLabel, self.waterTimes, self.datapointsWaters[index], "-"))
+                    if(self.stofsExists and len(self.stofsDatapoints[index][0]) > 0):
+                        modelSeries.append(("NOAA STOFS", self.stofsDatapoints[index][0], self.stofsDatapoints[index][1], "-"))
+                    seriesStatistics = []
+                    if(self.tideExists):
+                        for label, times, values, style in modelSeries:
+                            seriesStatistics.append(waterStatistics(times, values, self.tideDatapointsTimes[index],
+                                                                    self.tideDatapointsWaters[index]))
+                    statisticsRows = sum(stats is not None for stats in seriesStatistics)
+                    if statisticsRows:
+                        tableHeight = 0.3 * statisticsRows + 0.85
+                        fig, (ax, statisticsAx) = plt.subplots(2, 1, figsize=(11, 5.5 + tableHeight), layout="constrained",
+                                                               height_ratios=[5.5, tableHeight])
+                    else:
+                        fig, ax = plt.subplots(figsize=(11, 5.5), layout="constrained")
+                    fig.richampBannerDrawn = True
+                    lineWidth = 2.0
+                    seriesColors = []
+                    for label, times, values, style in modelSeries:
+                        # ADCIRC keeps C0 and the observations C1; the variants get their own colors
+                        color = {"NOAA STOFS": "C3", "ADCIRC Stillwater": "C2", self.tidewaterLabel: "C4", self.waterLabel: "C0"}[label]
+                        line, = ax.plot(times, values, label=label, color=color, linestyle=style, linewidth=lineWidth)
+                        seriesColors.append(line.get_color())
+                    if(self.tideExists):
+                        ax.plot(self.tideDatapointsTimes[index], self.tideDatapointsWaters[index], label=self.obsWaterLabel, color="C1", linestyle="--", linewidth=lineWidth)
+                        if(self.plotPredictions and index < len(self.tideDatapointsPredictionTimes) and len(self.tideDatapointsPredictionTimes[index]) > 0):
+                            ax.plot(self.tideDatapointsPredictionTimes[index], self.tideDatapointsPredictionWaters[index], label="NOAA Predicted Tide", color="0.45", linestyle=":", linewidth=lineWidth)
+                    stationName = self.tideLabels[index]
+                    stationId = self.tideIds[index] if index < len(self.tideIds) else ""
+                    maxElevation = str(round(max(self.datapointsWaters[index]), 2))
 
-                title = self.titlePrefix + stationName
-                if stationId:
-                    title += " — Station " + stationId
-                fig.suptitle(title, fontsize=15, fontweight="bold")
-                subtitle = bannerSubtitle(self.stormBanner, self.waterTimes[0], self.waterTimes[-1])
-                if subtitle:
-                    ax.set_title(subtitle, fontsize=11, color="0.25")
+                    title = self.titlePrefix + stationName
+                    if stationId:
+                        title += " — Station " + stationId
+                    fig.suptitle(title, fontsize=15, fontweight="bold")
+                    subtitle = bannerSubtitle(self.stormBanner, self.waterTimes[0], self.waterTimes[-1])
+                    if subtitle:
+                        ax.set_title(subtitle, fontsize=11, color="0.25")
 
-                ax.set_ylabel("Water Level (m)", fontsize=12)
-                ax.tick_params(labelsize=10)
-                ax.margins(x=0)
-                # Headroom above the highest crest so the legend sits clear of the data
-                low, high = ax.get_ylim()
-                ax.set_ylim(low, high + 0.15 * (high - low))
-                ax.xaxis.set_major_locator(mdates.DayLocator(tz=timezone.utc))
-                ax.xaxis.set_major_formatter(plt.FuncFormatter(
-                    lambda value, position: (lambda d: f"{d:%b} {d.day}")(mdates.num2date(value, tz=timezone.utc))))
-                plt.setp(ax.get_xticklabels(), rotation=30, ha="right")
-                ax.grid(True, which="major", color="0.88", linewidth=0.6)
-                ax.set_axisbelow(True)
-                ax.set_facecolor("white")
-                ax.legend(loc="best", fontsize=10, frameon=True, framealpha=0.9, edgecolor="0.8",
-                          ncol=2, handlelength=2.6, borderpad=0.4, columnspacing=1.2)
-                if statisticsRows:
-                    tableRows = []
-                    for (label, times, values, style), color, stats in zip(modelSeries, seriesColors, seriesStatistics):
-                        if stats is not None:
-                            tableRows.append((label, color, stats))
-                            statisticsCsvRows.append([stationName, stationId, label, stats["n"], stats["bias"],
-                                                      stats["mae"], stats["rmse"], stats["r"]])
-                    drawStatisticsTable(statisticsAx, tableRows, self.obsWaterLabel)
-                fig.savefig(graph_directory + stationName + '_water.png', dpi=200, facecolor="white", bbox_inches='tight', pad_inches=0.05)
-                plt.close()
+                    ax.set_ylabel("Water Level (m)", fontsize=12)
+                    ax.tick_params(labelsize=10)
+                    ax.margins(x=0)
+                    # Headroom above the highest crest so the legend sits clear of the data
+                    low, high = ax.get_ylim()
+                    ax.set_ylim(low, high + 0.15 * (high - low))
+                    ax.xaxis.set_major_locator(mdates.DayLocator(tz=timezone.utc))
+                    ax.xaxis.set_major_formatter(plt.FuncFormatter(
+                        lambda value, position: (lambda d: f"{d:%b} {d.day}")(mdates.num2date(value, tz=timezone.utc))))
+                    plt.setp(ax.get_xticklabels(), rotation=30, ha="right")
+                    ax.grid(True, which="major", color="0.88", linewidth=0.6)
+                    ax.set_axisbelow(True)
+                    ax.set_facecolor("white")
+                    ax.legend(loc="best", fontsize=10, frameon=True, framealpha=0.9, edgecolor="0.8",
+                              ncol=2, handlelength=2.6, borderpad=0.4, columnspacing=1.2)
+                    if statisticsRows:
+                        tableRows = []
+                        for (label, times, values, style), color, stats in zip(modelSeries, seriesColors, seriesStatistics):
+                            if stats is not None:
+                                tableRows.append((label, color, stats))
+                                statisticsCsvRows.append([stationName, stationId, label, stats["n"], stats["bias"],
+                                                          stats["mae"], stats["rmse"], stats["r"]])
+                        drawStatisticsTable(statisticsAx, tableRows, self.obsWaterLabel)
+                    fig.savefig(graph_directory + stationName + '_water.png', dpi=200, facecolor="white", bbox_inches='tight', pad_inches=0.05)
+                    plt.close()
                 
 
                 if(self.tideExists):
