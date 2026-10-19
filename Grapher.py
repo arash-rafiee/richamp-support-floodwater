@@ -645,7 +645,14 @@ class Grapher:
         if(self.windExists):
             groups.append(("Wind", "o", "C2", self.obsLongitudes, self.obsLatitudes, self.obsLabels, self.windLongitudes, self.windLatitudes))
         if(self.waterExists):
-            groups.append(("Water level", "o", "C0", self.tideLongitudes, self.tideLatitudes, self.tideLabels, self.waterLongitudes, self.waterLatitudes))
+            # NOAA tide gauges and NEST sensors as two groups, each with its station and model points
+            for typeName, marker, color, wanted in (("NOAA tide gauge", "o", "C0", False), ("NEST water-level sensor", "s", "C3", True)):
+                picked = [i for i in range(len(self.tideLabels)) if ((i < len(self.tideSources) and self.tideSources[i] == "NEST") == wanted)]
+                if picked:
+                    groups.append((typeName, marker, color,
+                                   [self.tideLongitudes[i] for i in picked], [self.tideLatitudes[i] for i in picked], [self.tideLabels[i] for i in picked],
+                                   [self.waterLongitudes[i] for i in picked if i < len(self.waterLongitudes)],
+                                   [self.waterLatitudes[i] for i in picked if i < len(self.waterLatitudes)]))
         if(self.wavesExists):
             groups.append(("Waves", "s", "C4", self.buoyLongitudes, self.buoyLatitudes, self.buoyLabels, self.waveLongitudes, self.waveLatitudes))
         if(self.rainExists):
@@ -692,11 +699,12 @@ class Grapher:
                 number += 1
                 ax.text(lon, lat, str(number), ha="center", va="center", fontsize=6.5, color="white", fontweight="bold", zorder=6)
                 lines.append((f"{number:>2}  {name}", "0.15", False))
-        ax.legend(loc="lower right", fontsize=8, frameon=True, framealpha=0.9, edgecolor="0.8")
+        ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.07), ncol=3, fontsize=11, frameon=False,
+                  markerscale=1.1, handletextpad=0.5, columnspacing=1.8)
         # the list beside the map, in two columns when it is long
         columns = 2 if len(lines) > 34 else 1
         perColumn = -(-len(lines) // columns)
-        fontSize = 8.5 if perColumn <= 34 else 7
+        fontSize = 10 if perColumn <= 30 else 8
         lineHeight = min(0.028, 0.96 / max(perColumn, 1))
         for column in range(columns):
             for row, (label, color, bold) in enumerate(lines[column * perColumn:(column + 1) * perColumn]):
@@ -1279,6 +1287,7 @@ class Grapher:
         self.tideLatitudes = []
         self.tideLabels = []
         self.tideIds = []
+        self.tideSources = []   # "NEST" for a Brown NEST sensor, otherwise a NOAA gauge
         
         self.tideDatapointsTimes = []
         self.tideDatapointsWaters = []
@@ -1805,6 +1814,7 @@ class Grapher:
                         if(not tideLabelsInitialized):
                             self.tideLabels.append(self.obsMetadata["NOS"][stationKey]["name"])
                             self.tideIds.append(self.obsMetadata["NOS"][stationKey].get("id", ""))
+                            self.tideSources.append(self.obsMetadata["NOS"][stationKey].get("source", ""))
                             self.tideLatitudes.append(float(self.obsMetadata["NOS"][stationKey]["latitude"]))
                             self.tideLongitudes.append(float(self.obsMetadata["NOS"][stationKey]["longitude"]))
 
@@ -1895,6 +1905,7 @@ class Grapher:
                         if(not tideLabelsInitialized):
                             self.tideLabels.append(self.obsMetadata["NOS"][stationKey]["name"])
                             self.tideIds.append(self.obsMetadata["NOS"][stationKey].get("id", ""))
+                            self.tideSources.append(self.obsMetadata["NOS"][stationKey].get("source", ""))
                             self.tideLatitudes.append(float(self.obsMetadata["NOS"][stationKey]["latitude"]))
                             self.tideLongitudes.append(float(self.obsMetadata["NOS"][stationKey]["longitude"]))
     
