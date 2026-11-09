@@ -1,9 +1,11 @@
 # Pulls NOAA STOFS-2D-Global station water levels (combined tide + surge, "cwl")
 # for one forecast cycle and saves them per station for the water graphs.
 #
-# Every cycle (00/06/12/18Z) since late 2020 is kept on NOAA's public AWS bucket,
+# Every cycle (00/06/12/18Z) since 2020-12-30 is kept on NOAA's public AWS bucket,
 # so past events and the next one can both be fetched the same way:
 #   https://noaa-gestofs-pds.s3.amazonaws.com/stofs_2d_glo.YYYYMMDD/stofs_2d_glo.tHHz.points.cwl.nc
+# Cycles before 2023-01-12 (ESTOFS-Global, the earlier name of the same model) are at
+#   https://noaa-gestofs-pds.s3.amazonaws.com/estofs.YYYYMMDD/estofs.tHHz.points.cwl.nc
 # Values are meters "above geoid" as labelled in the file. The same folder holds the
 # tide-only run of the cycle as ...points.htp.nc (product "htp").
 
@@ -19,6 +21,9 @@ from Encoders import NumpyEncoder
 STOFS_BUCKET_URL = "https://noaa-gestofs-pds.s3.amazonaws.com/"
 # A cycle's points file runs from 6 hours before the cycle time to 180 hours after it
 STOFS_CYCLE_HOURS = 180
+# The bucket starts on 2020-12-30. Before 2023-01-12 the folders are
+# estofs.YYYYMMDD/estofs.tHHz.points.cwl.nc; from then on stofs_2d_glo.YYYYMMDD/...
+STOFS_RENAME_DAY = "20230112"
 
 
 def stofsCycleFor(dateObject):
@@ -32,10 +37,13 @@ def downloadStofsPoints(cycle, temp_directory, product="cwl"):
     and returns its path; later runs reuse the downloaded file. product is "cwl"
     (tide + surge, the default) or "htp" (the tide-only run)."""
     day, hour = cycle[0:8], cycle[8:10]
-    fileName = f"stofs_2d_glo.t{hour}z.points.{product}.nc"
-    filePath = os.path.join(temp_directory, f"stofs_2d_glo.{day}.{fileName}")
+    # cycles before STOFS_RENAME_DAY are in the older ESTOFS-Global folders, whose
+    # points files have the same variables and stations under the "estofs" name
+    prefix = "estofs" if day < STOFS_RENAME_DAY else "stofs_2d_glo"
+    fileName = f"{prefix}.t{hour}z.points.{product}.nc"
+    filePath = os.path.join(temp_directory, f"{prefix}.{day}.{fileName}")
     if not os.path.exists(filePath):
-        url = f"{STOFS_BUCKET_URL}stofs_2d_glo.{day}/{fileName}"
+        url = f"{STOFS_BUCKET_URL}{prefix}.{day}/{fileName}"
         print("Downloading STOFS", url, flush=True)
         urlretrieve(url, filePath + ".part")
         os.replace(filePath + ".part", filePath)
