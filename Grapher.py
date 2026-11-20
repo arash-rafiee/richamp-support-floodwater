@@ -568,6 +568,54 @@ def drawStatisticsTable(ax, rows, observedLabel, title=None):
             fontsize=8.5, color="0.45")
 
 
+def surgeResidual(modelTimes, modelValues, tideTimes, tideValues):
+    """Model water level minus the NOAA predicted tide, at the model times inside the prediction's span.
+
+    Times are timezone-aware datetimes; the prediction is interpolated linearly onto the model times.
+    Returns (times, residuals) or None when the two do not overlap.
+    """
+    modelSeconds = np.array([t.timestamp() for t in modelTimes])
+    values = np.array(modelValues, dtype=float)
+    values[values < -50] = np.nan  # ADCIRC's -99999 for a dry node
+    tideSeconds = np.array([t.timestamp() for t in tideTimes])
+    tide = np.array(tideValues, dtype=float)
+    keep = np.isfinite(tide)
+    tideSeconds, tide = tideSeconds[keep], tide[keep]
+    if len(tide) < 2:
+        return None
+    order = np.argsort(tideSeconds)
+    tideSeconds, tide = tideSeconds[order], tide[order]
+    inside = (modelSeconds >= tideSeconds[0]) & (modelSeconds <= tideSeconds[-1]) & np.isfinite(values)
+    if not inside.any():
+        return None
+    picked = np.flatnonzero(inside)
+    return [modelTimes[i] for i in picked], values[picked] - np.interp(modelSeconds[picked], tideSeconds, tide)
+
+
+def drawSurgeTable(ax, rows):
+    """Draw the "Highest surge" table on an empty axes; rows are (label, color, peak, peakTime)."""
+    ax.axis("off")
+    columns = [("Model", 0.0, "left"), ("Highest surge", 0.36, "right"), ("Time (UTC)", 0.58, "right")]
+    tableRight = columns[-1][1]
+    lineHeight = 1.0 / (len(rows) + 2.6)
+    y = 1.0
+    ax.text(0.0, y, "Highest surge (model − NOAA predicted tide)", transform=ax.transAxes, ha="left", va="top",
+            fontsize=10.5, fontweight="bold", color="0.15")
+    y -= lineHeight
+    for name, x, align in columns:
+        ax.text(x, y, name, transform=ax.transAxes, ha=align, va="top", fontsize=9.5, color="0.35")
+    ax.plot([0.0, tableRight], [y - 0.8 * lineHeight] * 2, transform=ax.transAxes, color="0.75", linewidth=0.6)
+    factor = FEET_PER_METER if imperial() else 1.0
+    for label, color, peak, peakTime in rows:
+        y -= lineHeight
+        ax.text(0.0, y - 0.2 * lineHeight, label, transform=ax.transAxes, ha="left", va="top", fontsize=10,
+                fontweight="bold", color=color)
+        for (name, x, align), value in zip(columns[1:], [f"{peak * factor:+.2f} " + ("ft" if imperial() else "m"),
+                                                         f"{peakTime:%b} {peakTime.day} {peakTime:%H:%M}"]):
+            ax.text(x, y - 0.2 * lineHeight, value, transform=ax.transAxes, ha=align, va="top", fontsize=10,
+                    color="0.15")
+
+
 def compactDateRange(start, end):
     """Format a date span as "Sep 13–20, 2026", widening as months/years differ."""
     if start.year != end.year:
@@ -1169,7 +1217,7 @@ class Grapher:
     # plot_extended_lines(self, ax, runupIndex, index, runupLabel)
 
     def __init__(self, dataToGraph={}, STATIONS_FILE="", backgroundMap="", backgroundAxis=[], titlePrefix="", stormBanner="", obsWaterLabel="NOAA Observed",
-                 waterLabel="ADCIRC", tidewaterLabel="ADCIRC Tide Only", plotPredictions=False):
+                 waterLabel="ADCIRC", tidewaterLabel="ADCIRC Tide Only", plotPredictions=False, plotSurge=False):
         print("Initializing grapher", flush=True)
         self.obsExists = False
         self.gaugeExists = False
@@ -1209,6 +1257,8 @@ class Grapher:
         self.waterLabel=waterLabel
         self.tidewaterLabel=tidewaterLabel
         self.plotPredictions=plotPredictions
+        # Surge panel under the station water graphs: each model minus the NOAA predicted tide
+        self.plotSurge=plotSurge
         installFigureBanner(stormBanner)
         
         if("OBS" in dataToGraph):
@@ -2749,6 +2799,7 @@ class Grapher:
                 plt.savefig(graph_directory + stationName + '_rain_accumulation.png')
                 plt.close()
         statisticsCsvRows = []
+        surgeCsvRows = []
         for index in range(numberOfWaterDatapoints):
             if(len(self.datapointsWaters) > 0):
                 if(self.plotPredictions and self.tidewaterExists):
@@ -2772,12 +2823,33 @@ class Grapher:
                             seriesStatistics.append(waterStatistics(times, values, self.tideDatapointsTimes[index],
                                                                     self.tideDatapointsWaters[index]))
                     statisticsRows = sum(stats is not None for stats in seriesStatistics)
+                    # --surgeExists: ADCIRC and STOFS minus the NOAA predicted tide, for stations
+                    # that have a prediction (NOAA gauges; not NEST)
+                    hasPrediction = (self.tideExists and index < len(self.tideDatapointsPredictionTimes)
+                                     and len(self.tideDatapointsPredictionTimes[index]) > 0)
+                    surgeSeries = []
+                    if self.plotSurge and hasPrediction:
+                        for label, times, values, style in modelSeries:
+                            if label in (self.waterLabel, "NOAA STOFS"):
+                                residual = surgeResidual(times, values, self.tideDatapointsPredictionTimes[index],
+                                                         self.tideDatapointsPredictionWaters[index])
+                                if residual is not None:
+                                    surgeSeries.append((label, residual[0], residual[1]))
+                    panelHeights = [5.5]
+                    if surgeSeries:
+                        panelHeights.append(2.6)
                     if statisticsRows:
                         tableHeight = 0.3 * statisticsRows + 0.85
-                        fig, (ax, statisticsAx) = plt.subplots(2, 1, figsize=(11, 5.5 + tableHeight), layout="constrained",
-                                                               height_ratios=[5.5, tableHeight])
-                    else:
-                        fig, ax = plt.subplots(figsize=(11, 5.5), layout="constrained")
+                        panelHeights.append(tableHeight)
+                    if surgeSeries:
+                        panelHeights.append(0.3 * len(surgeSeries) + 0.85)
+                    fig, axes = plt.subplots(len(panelHeights), 1, figsize=(11, sum(panelHeights)), layout="constrained",
+                                             height_ratios=panelHeights)
+                    axes = list(np.atleast_1d(axes))
+                    ax = axes.pop(0)
+                    surgeAx = axes.pop(0) if surgeSeries else None
+                    statisticsAx = axes.pop(0) if statisticsRows else None
+                    surgeTableAx = axes.pop(0) if surgeSeries else None
                     fig.richampBannerDrawn = True
                     lineWidth = 2.0
                     seriesColors = []
@@ -2788,7 +2860,7 @@ class Grapher:
                         seriesColors.append(line.get_color())
                     if(self.tideExists):
                         ax.plot(self.tideDatapointsTimes[index], self.tideDatapointsWaters[index], label=self.obsLabelFor(index), color="C1", linestyle="--", linewidth=lineWidth)
-                        if(self.plotPredictions and index < len(self.tideDatapointsPredictionTimes) and len(self.tideDatapointsPredictionTimes[index]) > 0):
+                        if((self.plotPredictions or surgeSeries) and hasPrediction):
                             ax.plot(self.tideDatapointsPredictionTimes[index], self.tideDatapointsPredictionWaters[index], label="NOAA Predicted Tide", color="0.45", linestyle=":", linewidth=lineWidth)
                     stationName = self.tideLabels[index]
                     stationId = self.tideIds[index] if index < len(self.tideIds) else ""
@@ -2817,6 +2889,34 @@ class Grapher:
                     ax.set_facecolor("white")
                     ax.legend(loc="best", fontsize=10, frameon=True, framealpha=0.9, edgecolor="0.8",
                               ncol=2, handlelength=2.6, borderpad=0.4, columnspacing=1.2)
+                    if surgeSeries:
+                        # The surge panel shares the time axis; the dates go under it instead
+                        timeLimits = ax.get_xlim()
+                        surgeAx.sharex(ax)
+                        ax.tick_params(labelbottom=False)
+                        surgeAx.axhline(0.0, color="0.55", linewidth=0.8)
+                        surgeRows = []
+                        for label, times, residual in surgeSeries:
+                            color = "C3" if label == "NOAA STOFS" else "C0"
+                            name = "STOFS" if label == "NOAA STOFS" else label
+                            surgeAx.plot(times, residual, color=color, linewidth=lineWidth, label=name + " − NOAA tide")
+                            peakIndex = int(np.nanargmax(residual))
+                            surgeAx.plot(times[peakIndex], residual[peakIndex], "o", color=color, markersize=7,
+                                         markeredgecolor="white", zorder=5)
+                            surgeRows.append((label, color, float(residual[peakIndex]), times[peakIndex]))
+                            surgeCsvRows.append([stationName, stationId, label, float(residual[peakIndex]),
+                                                 times[peakIndex]])
+                        surgeAx.set_ylabel("Surge (m)", fontsize=12)
+                        surgeAx.tick_params(labelsize=10)
+                        surgeAx.xaxis.set_major_locator(mdates.DayLocator(tz=timezone.utc))
+                        surgeAx.xaxis.set_major_formatter(plt.FuncFormatter(
+                            lambda value, position: (lambda d: f"{d:%b} {d.day}")(mdates.num2date(value, tz=timezone.utc))))
+                        plt.setp(surgeAx.get_xticklabels(), rotation=30, ha="right")
+                        surgeAx.grid(True, which="major", color="0.88", linewidth=0.6)
+                        surgeAx.set_axisbelow(True)
+                        surgeAx.legend(loc="best", fontsize=10, frameon=True, framealpha=0.9, edgecolor="0.8", ncol=2)
+                        surgeAx.set_xlim(timeLimits)  # no padding: the same span as the panel above
+                        drawSurgeTable(surgeTableAx, surgeRows)
                     if statisticsRows:
                         tableRows = []
                         for (label, times, values, style), color, stats in zip(modelSeries, seriesColors, seriesStatistics):
@@ -2849,6 +2949,15 @@ class Grapher:
                 writer.writerow(["station", "station_id", "model", "n", "bias_" + unit, "mae_" + unit, "rmse_" + unit, "r"])
                 for row in statisticsCsvRows:
                     writer.writerow(row[:4] + [f"{value * factor:.4f}" for value in row[4:7]] + [f"{row[7]:.4f}"])
+        if surgeCsvRows:
+            # The highest surge of each model at each station, as in the tables under the plots
+            import csv
+            with open(graph_directory + "surge_peaks.csv", "w", newline="") as surgeFile:
+                writer = csv.writer(surgeFile)
+                unit, factor = ("ft", FEET_PER_METER) if imperial() else ("m", 1.0)
+                writer.writerow(["station", "station_id", "model", "highest_surge_" + unit, "time_utc"])
+                for station, stationId, label, peak, peakTime in surgeCsvRows:
+                    writer.writerow([station, stationId, label, f"{peak * factor:.4f}", f"{peakTime:%Y-%m-%d %H:%M}"])
 #         No loop because no timeseries
         if(len(self.datapointsElevation) > 0):
             fig, ax = plt.subplots(figsize=(16,13))

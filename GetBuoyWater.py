@@ -89,8 +89,12 @@ def download_coops_water_level_csv(stationId, startDateObject, endDateObject, fi
     predictionsDf = pd.concat(predictionFrames, ignore_index=True) if predictionFrames else pd.DataFrame(columns=["Date Time", "Prediction"])
     waterLevelDf = pd.concat(waterLevelFrames, ignore_index=True) if waterLevelFrames else pd.DataFrame(columns=["Date Time", "Water Level"])
 
-    predictionsDf["Date Time"] = pd.to_datetime(predictionsDf["Date Time"])
-    waterLevelDf["Date Time"] = pd.to_datetime(waterLevelDf["Date Time"])
+    # A product the station does not offer (Quonset Pt has predictions but no water_level)
+    # comes back as an "Error: No data was found" line; drop such rows rather than fail
+    predictionsDf["Date Time"] = pd.to_datetime(predictionsDf["Date Time"], errors="coerce")
+    waterLevelDf["Date Time"] = pd.to_datetime(waterLevelDf["Date Time"], errors="coerce")
+    predictionsDf = predictionsDf.dropna(subset=["Date Time"])
+    waterLevelDf = waterLevelDf.dropna(subset=["Date Time"])
     predictionsDf["Prediction"] = pd.to_numeric(predictionsDf["Prediction"], errors="coerce") + navdOffset
     waterLevelDf["Water Level"] = pd.to_numeric(waterLevelDf["Water Level"], errors="coerce") + navdOffset
 

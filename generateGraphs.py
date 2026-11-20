@@ -381,6 +381,12 @@ def main():
         help="With --stofsExists, also graph the STOFS tide-only run (the cycle's .points.htp.nc file)"
     )
     p.add_argument(
+        "--surgeExists", type=bool,
+        help="With --waterExists: draw the NOAA predicted tide on the station water graphs and a surge panel "
+             "under them (ADCIRC and STOFS minus the NOAA predicted tide) with each model's highest surge; "
+             "NOAA stations only, also written to surge_peaks.csv. Turns on --obsExists"
+    )
+    p.add_argument(
         "--nestExists", type=bool,
         help="Include the Brown NEST water-level sensors (stations with source \"NEST\" in --stations); "
              "left out unless this is given"
@@ -834,6 +840,10 @@ def main():
         dataToGraph["PWP"] = WAVE_PWP_DATA_FILE
 #         dataToGraph["RAD"] = WAVE_RAD_DATA_FILE
         
+    if args.surgeExists and not args.obsExists:
+        # the NOAA predicted tide comes with the observation download
+        print("--surgeExists needs the NOAA tide predictions; turning on --obsExists", flush=True)
+        args.obsExists = True
     print("args.obsExists", args.obsExists, flush=True)
     if(args.obsExists):
         if(args.gfsExists or args.adcircExists or args.postExists):
@@ -898,7 +908,8 @@ def main():
         obsWaterLabel="NOAA Predicted Tide" if args.obsPredicted else "NOAA Observed",
         waterLabel="NOAA STOFS" if args.stofsExists else "ADCIRC",
         tidewaterLabel="STOFS Tide Only" if args.stofsExists else "ADCIRC Tide Only",
-        plotPredictions=bool(args.stofsExists and args.obsExists and not args.obsPredicted)).generateGraphs()
+        plotPredictions=bool(args.stofsExists and args.obsExists and not args.obsPredicted),
+        plotSurge=bool(args.surgeExists and not args.stofsExists and not args.obsPredicted)).generateGraphs()
 
 if __name__ == "__main__":
     main()

@@ -60,6 +60,11 @@
 # (downloaded once into --tempDir from NOAA's AWS archive), add one of:
 #   --stofs auto \          (the STOFS cycle at the start of --water)
 #   --stofs 2026092412 \    (a specific cycle, YYYYMMDDHH with HH = 00, 06, 12 or 18)
+# To see the storm surge on the station water graphs of a fort.63 run (--waterExists), add:
+#   --surgeExists true \
+# It draws the NOAA predicted tide with ADCIRC and STOFS, and under them a panel of each
+# model minus the NOAA predicted tide with its highest surge (also in surge_peaks.csv).
+# NOAA stations only (NEST has no tide prediction); it turns on --obsExists. Off by default.
 # The Brown NEST water-level sensors in OBS_STATIONS.json are left out by default; to add
 # them to the station water graphs and the station map, add:
 #   --nestExists true \
