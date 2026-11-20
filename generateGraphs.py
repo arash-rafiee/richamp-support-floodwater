@@ -381,6 +381,11 @@ def main():
         help="With --stofsExists, also graph the STOFS tide-only run (the cycle's .points.htp.nc file)"
     )
     p.add_argument(
+        "--nestExists", type=bool,
+        help="Include the Brown NEST water-level sensors (stations with source \"NEST\" in --stations); "
+             "left out unless this is given"
+    )
+    p.add_argument(
         "--startDate", type=str,
         help="With --stofsExists, start of the graphed window as YYYYMMDDHH UTC (default: now)"
     )
@@ -436,6 +441,19 @@ def main():
     dataToGraph = {}  
     print("Loading NetCDF file!", flush=True)
     STATIONS_FILE = args.stations
+    if STATIONS_FILE and not args.nestExists:
+        # NEST sensors are opt-in: every reader gets a copy of the station list without them
+        with open(STATIONS_FILE) as stationsFile:
+            allStations = json.load(stationsFile)
+        withoutNest = {group: {key: station for key, station in entries.items()
+                               if not (isinstance(station, dict) and station.get("source") == "NEST")}
+                       if isinstance(entries, dict) else entries
+                       for group, entries in allStations.items()}
+        STATIONS_FILE = os.path.join(args.tempDir or os.path.dirname(os.path.abspath(args.stations)),
+                                     "stations_without_nest.json")
+        with open(STATIONS_FILE, "w") as stationsFile:
+            json.dump(withoutNest, stationsFile, indent=2)
+        print("NEST sensors left out (add --nestExists true to include them)", flush=True)
 #     Default to Rhode Island Map
     if(not args.backgroundChoice):
         backgroundChoice = "RHODE_ISLAND"
@@ -794,7 +812,6 @@ def main():
         WAVE_MWP_DATA_FILE = wave_temp_directory + "wave_mwp_data_file" + ".json"
         WAVE_PWP_DATA_FILE = wave_temp_directory + "wave_pwp_data_file" + ".json"
         WAVE_RAD_DATA_FILE = wave_temp_directory + "wave_rad_data_file" + ".json"
-        STATIONS_FILE = args.stations
         (waveStartDateObject, waveEndDateObject) = WaveReader(
             WAVE_SWH_FILE=WAVE_SWH_FILE,
             WAVE_MWD_FILE=WAVE_MWD_FILE,

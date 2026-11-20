@@ -60,6 +60,9 @@
 # (downloaded once into --tempDir from NOAA's AWS archive), add one of:
 #   --stofs auto \          (the STOFS cycle at the start of --water)
 #   --stofs 2026092412 \    (a specific cycle, YYYYMMDDHH with HH = 00, 06, 12 or 18)
+# The Brown NEST water-level sensors in OBS_STATIONS.json are left out by default; to add
+# them to the station water graphs and the station map, add:
+#   --nestExists true \
 # To also draw map frames over --backgroundChoice and save them as an .avi video
 # (water is .mp4 instead when an ffmpeg program is already on the PATH), add:
 #   --maps true \
