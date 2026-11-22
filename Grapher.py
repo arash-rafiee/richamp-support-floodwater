@@ -1226,7 +1226,7 @@ class Grapher:
     # plot_extended_lines(self, ax, runupIndex, index, runupLabel)
 
     def __init__(self, dataToGraph={}, STATIONS_FILE="", backgroundMap="", backgroundAxis=[], titlePrefix="", stormBanner="", obsWaterLabel="NOAA Observed",
-                 waterLabel="ADCIRC", tidewaterLabel="ADCIRC Tide Only", plotPredictions=False, plotSurge=False):
+                 waterLabel="ADCIRC", tidewaterLabel="ADCIRC Tide Only", plotPredictions=False, plotSurge=False, stofsNote=None):
         print("Initializing grapher", flush=True)
         self.obsExists = False
         self.gaugeExists = False
@@ -1268,6 +1268,8 @@ class Grapher:
         self.plotPredictions=plotPredictions
         # Surge panel under the station water graphs: each model minus the NOAA predicted tide
         self.plotSurge=plotSurge
+        # Added to the water graph caption when STOFS was asked for but could not be downloaded
+        self.stofsNote=stofsNote
         installFigureBanner(stormBanner)
         
         if("OBS" in dataToGraph):
@@ -2880,6 +2882,8 @@ class Grapher:
                         title += " — Station " + stationId
                     fig.suptitle(title, fontsize=15, fontweight="bold")
                     subtitle = bannerSubtitle(self.stormBanner, self.waterTimes[0], self.waterTimes[-1])
+                    if self.stofsNote:
+                        subtitle = (subtitle + "\n" if subtitle else "") + self.stofsNote
                     if subtitle:
                         ax.set_title(subtitle, fontsize=11, color="0.25")
 

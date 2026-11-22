@@ -13,6 +13,7 @@ import argparse
 import json
 import os
 
+NO_STOFS_NOTE = "No STOFS for this period at this time"
 NARRAGANSETT_MOUTH_MAP = "NarragansettMouth.png"
 NARRAGANSETT_MOUTH_OUTLINE_MAP = "NarragansettMouthOutline.png"
 NARRAGANSETT_MOUTH_AXIS = [-71.52799682617189, -71.32200317382814, 41.50218339933836, 41.34772474532908]
@@ -444,7 +445,9 @@ def main():
     if not os.path.exists(water_temp_directory):
         os.makedirs(water_temp_directory)
     
-    dataToGraph = {}  
+    dataToGraph = {}
+    stofsNote = None            # caption line on the water graphs when STOFS could not be added
+    stofsUnavailable = False    # --stofsExists: the STOFS series could not be downloaded
     print("Loading NetCDF file!", flush=True)
     STATIONS_FILE = args.stations
     if STATIONS_FILE and not args.nestExists:
@@ -730,9 +733,14 @@ def main():
 #         dataToGraph["DIFF"] = ADCIRC_DIFF_WATER_DATA_FILE
         if(args.stofs):
             STOFS_WATER_DATA_FILE = water_temp_directory + "stofs_water_data_file" + ".json"
-            GetStofsWater(STATIONS_FILE=STATIONS_FILE, STOFS_WATER_DATA_FILE=STOFS_WATER_DATA_FILE, stofs=args.stofs,
-                          startDateObject=waterStartDateObject, endDateObject=waterEndDateObject)
-            dataToGraph["STOFS"] = STOFS_WATER_DATA_FILE
+            try:
+                GetStofsWater(STATIONS_FILE=STATIONS_FILE, STOFS_WATER_DATA_FILE=STOFS_WATER_DATA_FILE, stofs=args.stofs,
+                              startDateObject=waterStartDateObject, endDateObject=waterEndDateObject)
+                dataToGraph["STOFS"] = STOFS_WATER_DATA_FILE
+            except Exception as error:
+                # NOAA posts each STOFS cycle some hours after its start; until then graph without it
+                print("STOFS not available, graphing without it:", error, flush=True)
+                stofsNote = NO_STOFS_NOTE
 
     print("args.stillwaterExists", args.stillwaterExists, flush=True)
     if(args.stillwaterExists):
@@ -758,14 +766,24 @@ def main():
         stofsEndDateObject = toDate(args.endDate) if args.endDate else None
         stofsStitch = not args.stofs   # one named cycle or file is used as it is; otherwise the daily cycles are stitched
         STOFS_WATER_DATA_FILE = water_temp_directory + "stofs_water_data_file" + ".json"
-        GetStofsWater(STATIONS_FILE=STATIONS_FILE, STOFS_WATER_DATA_FILE=STOFS_WATER_DATA_FILE, stofs=args.stofs or "auto",
-                      startDateObject=stofsStartDateObject, endDateObject=stofsEndDateObject, stitch=stofsStitch)
+        try:
+            GetStofsWater(STATIONS_FILE=STATIONS_FILE, STOFS_WATER_DATA_FILE=STOFS_WATER_DATA_FILE, stofs=args.stofs or "auto",
+                          startDateObject=stofsStartDateObject, endDateObject=stofsEndDateObject, stitch=stofsStitch)
+        except Exception as error:
+            # nothing to graph in this mode without STOFS; the other products still run
+            print("STOFS not available for this period at this time, no STOFS graphs:", error, flush=True)
+            stofsUnavailable = True
+    if(args.stofsExists and not stofsUnavailable):
         dataToGraph["WATER"] = STOFS_WATER_DATA_FILE
         if(args.stofsTideExists):
             STOFS_TIDE_DATA_FILE = water_temp_directory + "stofs_tide_data_file" + ".json"
-            GetStofsWater(STATIONS_FILE=STATIONS_FILE, STOFS_WATER_DATA_FILE=STOFS_TIDE_DATA_FILE, stofs=args.stofs or "auto",
-                          startDateObject=stofsStartDateObject, endDateObject=stofsEndDateObject, product="htp", stitch=stofsStitch)
-            dataToGraph["TIDEWATER"] = STOFS_TIDE_DATA_FILE
+            try:
+                GetStofsWater(STATIONS_FILE=STATIONS_FILE, STOFS_WATER_DATA_FILE=STOFS_TIDE_DATA_FILE, stofs=args.stofs or "auto",
+                              startDateObject=stofsStartDateObject, endDateObject=stofsEndDateObject, product="htp", stitch=stofsStitch)
+                dataToGraph["TIDEWATER"] = STOFS_TIDE_DATA_FILE
+            except Exception as error:
+                print("STOFS tide-only run not available, graphing without it:", error, flush=True)
+                stofsNote = "No STOFS tide-only run for this period at this time"
         # The window actually written drives the NOAA fetch below and, unless a run.properties
         # was named explicitly, the graph banner (one left behind by an ADCIRC run is ignored)
         with open(STOFS_WATER_DATA_FILE) as stofsFile:
@@ -858,7 +876,7 @@ def main():
             GetObsRain(STATIONS_FILE=STATIONS_FILE, OBS_RAIN_DATA_FILE=OBS_RAIN_DATA_FILE, startDateObject=rainStartDateObject, endDateObject=rainEndDateObject)
             dataToGraph["GAUGE"] = OBS_RAIN_DATA_FILE
             
-        if(args.waterExists or args.stofsExists):
+        if(args.waterExists or (args.stofsExists and not stofsUnavailable)):
             print("Parsed start and end date from netCDF, ", waterStartDateObject, waterEndDateObject, flush=True)
             OBS_WATER_DATA_FILE = wind_temp_directory + "obs_water_data_file" + ".json"
             GetBuoyWater(STATIONS_FILE=STATIONS_FILE, OBS_WATER_DATA_FILE=OBS_WATER_DATA_FILE, startDateObject=waterStartDateObject, endDateObject=waterEndDateObject,
@@ -909,7 +927,8 @@ def main():
         waterLabel="NOAA STOFS" if args.stofsExists else "ADCIRC",
         tidewaterLabel="STOFS Tide Only" if args.stofsExists else "ADCIRC Tide Only",
         plotPredictions=bool(args.stofsExists and args.obsExists and not args.obsPredicted),
-        plotSurge=bool(args.surgeExists and not args.stofsExists and not args.obsPredicted)).generateGraphs()
+        plotSurge=bool(args.surgeExists and not args.stofsExists and not args.obsPredicted),
+        stofsNote=stofsNote).generateGraphs()
 
 if __name__ == "__main__":
     main()
