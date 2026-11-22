@@ -233,6 +233,9 @@ def buildStormBanner(properties, dataWindow=None, windProduct=None):
     else:
         start = formatForecastTime(properties.get("rawstart", ""), properties.get("forecastValidStart", ""))
         end = formatForecastTime(properties.get("rawend", ""), properties.get("forecastValidEnd", ""))
+    if windProduct and start and end:
+        # the product name already carries the cycle (e.g. GFS-22112026-06Z); dates only, no hours
+        start, end = start[:10], end[:10]
     bannerLines = []
     if stormFields:
         bannerLines.append(" · ".join(stormFields))
