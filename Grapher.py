@@ -627,8 +627,15 @@ def compactDateRange(start, end):
     return f"{start:%b} {start.day}, {end.year}"
 
 
+def compactTimeRange(start, end):
+    """Format a time span as "Nov 21 12:00 – Nov 26 12:00, 2026", with the year once when both share it."""
+    if start.year != end.year:
+        return f"{start:%b} {start.day}, {start.year} {start:%H:%M} – {end:%b} {end.day}, {end.year} {end:%H:%M}"
+    return f"{start:%b} {start.day} {start:%H:%M} – {end:%b} {end.day} {end:%H:%M}, {end.year}"
+
+
 def bannerSubtitle(banner, fallbackStart=None, fallbackEnd=None):
-    """Condense the two line storm banner into "GFS | Sep 13–20, 2026 UTC".
+    """Condense the two line storm banner into "GFS | Nov 21 12:00 – Nov 26 12:00, 2026 UTC".
 
     The banner window is "YYYY-MM-DD HH:MM – YYYY-MM-DD HH:MM UTC"; when the
     banner has none, the plotted data's own first and last time is used.
@@ -636,18 +643,20 @@ def bannerSubtitle(banner, fallbackStart=None, fallbackEnd=None):
     lines = [line for line in (banner or "").split("\n") if line.strip()]
     source = ""
     start, end = fallbackStart, fallbackEnd
+    withHours = True
     for line in lines:
-        dates = re.findall(r"\d{4}-\d{2}-\d{2}", line)
-        if len(dates) == 2:
-            start = datetime.strptime(dates[0], "%Y-%m-%d")
-            end = datetime.strptime(dates[1], "%Y-%m-%d")
+        stamps = re.findall(r"\d{4}-\d{2}-\d{2}(?:[ T]\d{2}:\d{2})?", line)
+        if len(stamps) == 2:
+            withHours = all(":" in stamp for stamp in stamps)  # a date-only window stays date-only
+            start, end = [datetime.strptime(stamp.replace("T", " "), "%Y-%m-%d %H:%M" if ":" in stamp else "%Y-%m-%d")
+                          for stamp in stamps]
         elif not source:
             source = line
     parts = []
     if source:
         parts.append(source)
     if start is not None and end is not None:
-        parts.append(compactDateRange(start, end) + " UTC")
+        parts.append((compactTimeRange(start, end) if withHours else compactDateRange(start, end)) + " UTC")
     return " | ".join(parts)
 
 
