@@ -11,7 +11,8 @@ import matplotlib.colors as mcolors
 from matplotlib.cm import ScalarMappable
 from matplotlib.figure import Figure
 from matplotlib.tri import Triangulation
-from datetime import datetime, timezone
+from matplotlib.patches import Patch, Rectangle
+from datetime import datetime, timezone, timedelta
 import imageio
 import re
 import gc
@@ -660,6 +661,169 @@ def bannerSubtitle(banner, fallbackStart=None, fallbackEnd=None):
     return " | ".join(parts)
 
 
+# ---------------------------------------------------------------------------
+# Station wind figure (--windFigureExists): speed, the direction the wind comes
+# from, a day-by-hour barb grid and a wind rose. Also used by tools/wind_slides.
+# ---------------------------------------------------------------------------
+WIND_FIGURE_SIZE = (11.2, 5.5)          # inches; the deck's picture box, so text keeps its size on a slide
+WIND_LINE_COLOR = "C0"
+WIND_GRID_LINE = "#C8D2DC"
+WIND_CELL_SHADES = ("#E8EEF4", "white")  # chessboard cells of the barb grid
+WIND_KEY_FILL = "#F4F7FA"
+WIND_ROSE_FILL = "#FAFAFA"
+WIND_BARB_HOURS = (0, 6, 12, 18)        # rows of the barb grid, bottom to top
+WIND_BARB_SCALE = dict(half=5, full=10, flag=50)   # in the display unit (m/s, or mph with --unit imperial)
+WIND_ROSE_SECTORS = 16
+WIND_ROSE_COLORS = plt.cm.YlOrRd(np.linspace(0.25, 0.95, 5))
+
+
+def windDisplayUnit():
+    """(unit, factor from m/s, rose speed-bin edges) for the barbs and the rose."""
+    if imperial():
+        return "mph", MPH_PER_MPS, [0, 5, 10, 15, 20]
+    return "m/s", 1.0, [0, 2, 4, 6, 8]
+
+
+def binLabels(edges):
+    """["< 2", "2-4", ..., "> 8"] for bin edges [0, 2, 4, 6, 8]."""
+    return ([f"< {edges[1]}"] + [f"{lo}-{hi}" for lo, hi in zip(edges[1:-1], edges[2:])]
+            + [f"> {edges[-1]}"])
+
+
+def drawWindBarbGrid(ax, times, u, v, valid):
+    """Barbs in a chessboard: one column per day (centred on the hours the run covers), rows WIND_BARB_HOURS."""
+    start, end = times[0], times[-1]
+    dayStarts = [t.replace(hour=0, minute=0, second=0, microsecond=0) for t in times]
+    days = sorted(set(dayStarts))
+    centres = {}
+    for column, day in enumerate(days):
+        inDay = [t for t, d in zip(times, dayStarts) if d == day]
+        left = mdates.date2num(max(day, start))
+        right = mdates.date2num(min(day + timedelta(days=1), end))
+        middle = day + timedelta(hours=12) if len(inDay) >= 24 else inDay[0] + (inDay[-1] - inDay[0]) / 2
+        centres[day] = mdates.date2num(middle)
+        for row in range(len(WIND_BARB_HOURS)):
+            ax.add_patch(Rectangle((left, row - 0.5), right - left, 1, zorder=0, lw=0.5, edgecolor=WIND_GRID_LINE,
+                                   facecolor=WIND_CELL_SHADES[(column + row) % 2]))
+    xs, ys, us, vs = [], [], [], []
+    for k, t in enumerate(times):
+        if t.hour in WIND_BARB_HOURS and t.minute == 0 and valid[k]:
+            xs.append(centres[dayStarts[k]])
+            ys.append(WIND_BARB_HOURS.index(t.hour))
+            us.append(u[k])
+            vs.append(v[k])
+    if xs:
+        ax.barbs(xs, ys, us, vs, color=WIND_LINE_COLOR, length=5.2, linewidth=1.0, pivot="middle",
+                 barb_increments=WIND_BARB_SCALE, sizes=dict(emptybarb=0.1), zorder=3, clip_on=False)
+    ax.set_ylim(-0.5, len(WIND_BARB_HOURS) - 0.5)
+    ax.set_yticks(range(len(WIND_BARB_HOURS)))
+    ax.set_yticklabels([f"{hour:02d}Z" for hour in WIND_BARB_HOURS])
+    ax.set_ylabel("Barbs", fontsize=10.5)
+    ax.tick_params(axis="y", length=0, labelsize=10)
+    ax.tick_params(axis="x", labelsize=10)
+    ax.xaxis.set_major_locator(mdates.DayLocator())
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%b %d"))
+
+
+def drawWindRose(ax, legendAx, speed, fromDir, edges, unit):
+    """Wind rose of the hours given: share of hours per 22.5 degree sector the wind comes from, stacked by speed."""
+    ax.set_theta_zero_location("N")
+    ax.set_theta_direction(-1)
+    sectorWidth = 360 / WIND_ROSE_SECTORS
+    sector = ((fromDir + sectorWidth / 2) % 360 // sectorWidth).astype(int)
+    speedBin = np.digitize(speed, edges[1:])          # 0 .. len(edges) - 1
+    angles = np.deg2rad(np.arange(WIND_ROSE_SECTORS) * sectorWidth)
+    base = np.zeros(WIND_ROSE_SECTORS)
+    for j, color in enumerate(WIND_ROSE_COLORS[:len(edges)]):
+        share = np.bincount(sector[speedBin == j], minlength=WIND_ROSE_SECTORS) / len(speed) * 100
+        ax.bar(angles, share, width=np.deg2rad(sectorWidth) * 0.92, bottom=base, color=color,
+               edgecolor="white", lw=0.5, zorder=3)
+        base += share
+    step = 5 if base.max() <= 25 else 10
+    ringMax = max(step, int(np.ceil(base.max() / step) * step))
+    rings = list(range(step, ringMax + 1, step))
+    ax.set_ylim(0, ringMax)
+    ax.set_yticks(rings)
+    ax.set_yticklabels([f"{ring}%" for ring in rings], fontsize=7.5, color="grey")
+    ax.set_rlabel_position(157.5)
+    ax.set_xticks(np.deg2rad([0, 90, 180, 270]))
+    ax.set_xticklabels(["N", "E", "S", "W"], fontsize=9.5)
+    ax.tick_params(axis="x", pad=-3)
+    ax.grid(color="#DDDDDD", lw=0.6)
+    ax.spines["polar"].set_color("#B0B0B0")
+    ax.set_facecolor(WIND_ROSE_FILL)
+    ax.set_title("Wind rose (% of hours)", fontsize=10, fontweight="bold", pad=16)
+    legendAx.axis("off")
+    legendAx.legend(handles=[Patch(color=c, label=l) for c, l in zip(WIND_ROSE_COLORS, binLabels(edges))],
+                    loc="center left", fontsize=9, frameon=False, handlelength=1.4, handleheight=1.1,
+                    title=unit, title_fontsize=9, borderaxespad=0)
+
+
+def drawWindBarbKey(ax, unit):
+    """Sample barbs for half feather, full feather, full + half and flag."""
+    half, full, flag = WIND_BARB_SCALE["half"], WIND_BARB_SCALE["full"], WIND_BARB_SCALE["flag"]
+    ax.set_xlim(0, 1)
+    ax.set_ylim(0, 1)
+    ax.axis("off")
+    ax.add_patch(Rectangle((0.02, 0.03), 0.96, 0.94, facecolor=WIND_KEY_FILL, edgecolor=WIND_GRID_LINE, lw=0.8))
+    ax.text(0.07, 0.9, f"Barbs ({unit})", fontsize=11, fontweight="bold", va="top")
+    samples = [(half, f"{half} half"), (full, f"{full} full"), (full + half, f"{full + half}"), (flag, f"{flag} flag")]
+    for k, (value, label) in enumerate(samples):
+        x, y = (0.17 if k < 2 else 0.6), 0.64 - (k % 2) * 0.3
+        ax.barbs([x], [y], [value], [0], length=6, color=WIND_LINE_COLOR, linewidth=1.2, pivot="middle",
+                 barb_increments=WIND_BARB_SCALE)
+        ax.text(x + 0.11, y, label, va="center", fontsize=10.5)
+    ax.text(0.07, 0.07, "staff points to where wind comes from", fontsize=8.5, color="0.4", va="bottom")
+
+
+def drawStationWindFigure(path, times, speed, fromDir, u, v, title, subtitle=""):
+    """One station's wind figure, saved to path. Inputs are hourly, in m/s, fromDir in degrees the wind
+    comes FROM. Returns False (and draws nothing) when the station has no valid hour."""
+    times = list(times)
+    speed, fromDir, u, v = (np.asarray(values, dtype=float) for values in (speed, fromDir, u, v))
+    # hours without wind (e.g. a station outside the wind grid) are left out
+    valid = np.isfinite(speed) & np.isfinite(fromDir) & np.isfinite(u) & np.isfinite(v)
+    if not times or not valid.any():
+        return False
+    unit, factor, edges = windDisplayUnit()
+
+    fig = plt.figure(figsize=WIND_FIGURE_SIZE)
+    fig.richampBannerDrawn = True   # the heading below replaces the banner band
+    gs = fig.add_gridspec(3, 2, width_ratios=[2.6, 1], height_ratios=[1, 1, 1.3], hspace=0.12, wspace=0.1,
+                          left=0.07, right=0.985, top=0.83, bottom=0.075)
+    fig.suptitle(title, fontsize=15, fontweight="bold", y=0.985)
+    if subtitle:
+        fig.text(0.5, 0.905, subtitle, ha="center", fontsize=11.5, color="0.25")
+
+    ax = fig.add_subplot(gs[0, 0])
+    ax.plot(times, speed, color=WIND_LINE_COLOR, lw=1.8)
+    ax.set_ylabel("Speed\n(m/s)", fontsize=10.5)    # turned into mph by --unit imperial at savefig
+    ax.set_ylim(0, max(1.0, np.nanmax(speed)) * 1.15)
+    ax.set_xlim(times[0], times[-1])
+    ax.grid(alpha=0.3)
+    ax.tick_params(labelbottom=False, labelsize=10)
+
+    # dots, not a line, so crossing north does not draw a false jump
+    axd = fig.add_subplot(gs[1, 0], sharex=ax)
+    axd.scatter(times, fromDir, s=5, color=WIND_LINE_COLOR, zorder=3)
+    axd.set_ylim(-20, 380)
+    axd.set_yticks([0, 90, 180, 270, 360])
+    axd.set_yticklabels(["N", "E", "S", "W", "N"])
+    axd.set_ylabel("Wind\nfrom", fontsize=10.5)
+    axd.grid(alpha=0.3)
+    axd.tick_params(labelbottom=False, labelsize=10)
+
+    drawWindBarbGrid(fig.add_subplot(gs[2, 0], sharex=ax), times, u * factor, v * factor, valid)
+    roseGrid = gs[0:2, 1].subgridspec(1, 2, width_ratios=[3.0, 1], wspace=0.22)
+    drawWindRose(fig.add_subplot(roseGrid[0], projection="polar"), fig.add_subplot(roseGrid[1]),
+                 speed[valid] * factor, fromDir[valid], edges, unit)
+    drawWindBarbKey(fig.add_subplot(gs[2, 1]), unit)
+
+    fig.savefig(path, dpi=200)
+    plt.close(fig)
+    return True
+
+
 class Grapher:
     DATE_FORMAT = "%m/%d/%y-%HZ"    
     CONVERT_TO_WATER_DEPTH = False
@@ -671,144 +835,19 @@ class Grapher:
         return int(nodeIndex[nodeIndex.find(",") + 1: nodeIndex.find(")")])
     
     def drawWindFigures(self, graph_directory):
-        """--windFigureExists: one figure per wind station, <station>_wind.png.
-
-        Speed, direction the wind comes from, barbs (one column per day, rows 00Z-18Z; m/s: half feather 5,
-        full 10, flag 50) and a wind rose for the whole window, under the water-graph heading.
-        Forecast only; the old _wind_speed.png and _wind_direction.png are still drawn.
-        """
-        from matplotlib.patches import Patch, Rectangle
-        from datetime import timedelta
-        times = list(self.windTimes)
-        if not times or not self.windFromDirections:
-            return
-        start, end = times[0], times[-1]
-        hours = np.array([t.hour for t in times])
-        days = sorted({t.replace(hour=0, minute=0, second=0, microsecond=0) for t in times})
-        rows = [0, 6, 12, 18]
-        speedBins = [0, 2, 4, 6, 8, np.inf]
-        speedLabels = ["< 2", "2-4", "4-6", "6-8", "> 8"]
-        roseColors = plt.cm.YlOrRd(np.linspace(0.25, 0.95, 5))
-        sectors = 16
-        width = 2 * np.pi / sectors
-        barbScale = dict(half=5, full=10, flag=50)
+        """--windFigureExists: one figure per wind station, <station>_wind.png (see drawStationWindFigure)."""
         for index in range(len(self.windFromDirections)):
-            speed = np.asarray(self.datapointsSpeeds[index], dtype=float)
-            fromDir = np.asarray(self.windFromDirections[index], dtype=float)
-            u, v = np.asarray(self.windU[index], dtype=float), np.asarray(self.windV[index], dtype=float)
             stationName = self.obsLabels[index]
             stationId = str(self.windIds[index]) if index < len(self.windIds) else ""
             if stationId in ("0", "None"):
                 stationId = ""
-            # hours without wind (e.g. a station outside the wind grid) are left out of the rose and barbs
-            valid = np.isfinite(speed) & np.isfinite(fromDir) & np.isfinite(u) & np.isfinite(v)
-            if not valid.any():
+            title = self.titlePrefix + stationName + (" — Station " + stationId if stationId else "")
+            subtitle = bannerSubtitle(self.stormBanner, self.windTimes[0], self.windTimes[-1])
+            drawn = drawStationWindFigure(graph_directory + stationName + "_wind.png", self.windTimes,
+                                          self.datapointsSpeeds[index], self.windFromDirections[index],
+                                          self.windU[index], self.windV[index], title, subtitle)
+            if not drawn:
                 print("No wind at " + stationName + "; no wind figure drawn", flush=True)
-                continue
-
-            fig = plt.figure(figsize=(11.2, 5.5))
-            fig.richampBannerDrawn = True   # the heading below replaces the banner band
-            gs = fig.add_gridspec(3, 2, width_ratios=[2.6, 1], height_ratios=[1, 1, 1.3], hspace=0.12, wspace=0.1,
-                                  left=0.07, right=0.985, top=0.83, bottom=0.075)
-            fig.suptitle(self.titlePrefix + stationName + (" — Station " + stationId if stationId else ""),
-                         fontsize=15, fontweight="bold", y=0.985)
-            subtitle = bannerSubtitle(self.stormBanner, start, end)
-            if subtitle:
-                fig.text(0.5, 0.905, subtitle, ha="center", fontsize=11.5, color="0.25")
-
-            ax = fig.add_subplot(gs[0, 0])
-            ax.plot(times, speed, color="C0", lw=1.8)
-            ax.set_ylabel("Speed\n(m/s)", fontsize=10.5)
-            ax.set_ylim(0, max(1.0, np.nanmax(speed)) * 1.15)
-            ax.set_xlim(start, end)
-            ax.grid(alpha=0.3)
-            ax.tick_params(labelbottom=False, labelsize=10)
-
-            # dots, not a line, so crossing north does not draw a false jump
-            axd = fig.add_subplot(gs[1, 0], sharex=ax)
-            axd.scatter(times, fromDir, s=5, color="C0", zorder=3)
-            axd.set_ylim(-20, 380)
-            axd.set_yticks([0, 90, 180, 270, 360])
-            axd.set_yticklabels(["N", "E", "S", "W", "N"])
-            axd.set_ylabel("Wind\nfrom", fontsize=10.5)
-            axd.grid(alpha=0.3)
-            axd.tick_params(labelbottom=False, labelsize=10)
-
-            # barbs: one column per day (centred on the hours the run covers), rows 00Z-18Z, chessboard cells
-            axv = fig.add_subplot(gs[2, 0], sharex=ax)
-            for column, day in enumerate(days):
-                inDay = [t for t in times if day <= t < day + timedelta(days=1)]
-                left = mdates.date2num(max(day, start))
-                right = mdates.date2num(min(day + timedelta(days=1), end))
-                centre = mdates.date2num(inDay[0] + (inDay[-1] - inDay[0]) / 2) if len(inDay) < 24 \
-                    else mdates.date2num(day + timedelta(hours=12))
-                for row, hour in enumerate(rows):
-                    axv.add_patch(Rectangle((left, row - 0.5), right - left, 1, zorder=0, lw=0.5, edgecolor="#C8D2DC",
-                                            facecolor="#E8EEF4" if (column + row) % 2 == 0 else "white"))
-                    at = [k for k, t in enumerate(times) if t.hour == hour and day <= t < day + timedelta(days=1)]
-                    if at and valid[at[0]]:
-                        k = at[0]
-                        axv.barbs([centre], [row], [u[k]], [v[k]], color="C0", length=5.2, linewidth=1.0,
-                                  pivot="middle", barb_increments=barbScale, sizes=dict(emptybarb=0.1), zorder=3,
-                                  clip_on=False)
-            axv.set_ylim(-0.5, len(rows) - 0.5)
-            axv.set_yticks(range(len(rows)))
-            axv.set_yticklabels([f"{hour:02d}Z" for hour in rows])
-            axv.set_ylabel("Barbs", fontsize=10.5)
-            axv.tick_params(axis="y", length=0, labelsize=10)
-            axv.tick_params(axis="x", labelsize=10)
-            axv.xaxis.set_major_locator(mdates.DayLocator())
-            axv.xaxis.set_major_formatter(mdates.DateFormatter("%b %d"))
-
-            # wind rose for the whole window (% of hours, wind FROM, coloured by speed)
-            roseGrid = gs[0:2, 1].subgridspec(1, 2, width_ratios=[3.0, 1], wspace=0.22)
-            ra = fig.add_subplot(roseGrid[0], projection="polar")
-            ra.set_theta_zero_location("N")
-            ra.set_theta_direction(-1)
-            roseSpeed, roseDir = speed[valid], fromDir[valid]
-            sector = ((roseDir + 360 / sectors / 2) % 360 // (360 / sectors)).astype(int)
-            base = np.zeros(sectors)
-            for j in range(len(speedLabels)):
-                inBin = (roseSpeed >= speedBins[j]) & (roseSpeed < speedBins[j + 1])
-                share = np.array([(inBin & (sector == s)).sum() for s in range(sectors)]) / len(roseSpeed) * 100
-                ra.bar(np.arange(sectors) * width, share, width=width * 0.92, bottom=base, color=roseColors[j],
-                       edgecolor="white", lw=0.5, zorder=3)
-                base += share
-            step = 5 if base.max() <= 25 else 10
-            ringMax = max(step, int(np.ceil(base.max() / step) * step))
-            ra.set_ylim(0, ringMax)
-            ra.set_yticks(list(range(step, ringMax + 1, step)))
-            ra.set_yticklabels([f"{ring}%" for ring in range(step, ringMax + 1, step)], fontsize=7.5, color="grey")
-            ra.set_rlabel_position(157.5)
-            ra.set_xticks(np.arange(0, 2 * np.pi, np.pi / 2))
-            ra.set_xticklabels(["N", "E", "S", "W"], fontsize=9.5)
-            ra.tick_params(axis="x", pad=-3)
-            ra.grid(color="#DDDDDD", lw=0.6)
-            ra.spines["polar"].set_color("#B0B0B0")
-            ra.set_facecolor("#FAFAFA")
-            ra.set_title("Wind rose (% of hours)", fontsize=10, fontweight="bold", pad=16)
-            legendAx = fig.add_subplot(roseGrid[1])
-            legendAx.axis("off")
-            legendAx.legend(handles=[Patch(color=c, label=l) for c, l in zip(roseColors, speedLabels)],
-                            loc="center left", fontsize=9, frameon=False, handlelength=1.4, handleheight=1.1,
-                            title="m/s", title_fontsize=9, borderaxespad=0)
-
-            # barb key
-            ak = fig.add_subplot(gs[2, 1])
-            ak.set_xlim(0, 1)
-            ak.set_ylim(0, 1)
-            ak.axis("off")
-            ak.add_patch(Rectangle((0.02, 0.03), 0.96, 0.94, facecolor="#F4F7FA", edgecolor="#C8D2DC", lw=0.8))
-            ak.text(0.07, 0.9, "Barbs (m/s)", fontsize=11, fontweight="bold", va="top")
-            for k, (value, label) in enumerate([(5, "5 half"), (10, "10 full"), (15, "15"), (50, "50 flag")]):
-                x, y = (0.17 if k < 2 else 0.6), 0.64 - (k % 2) * 0.3
-                ak.barbs([x], [y], [value], [0], length=6, color="C0", linewidth=1.2, pivot="middle",
-                         barb_increments=barbScale)
-                ak.text(x + 0.11, y, label, va="center", fontsize=10.5)
-            ak.text(0.07, 0.07, "staff points to where wind comes from", fontsize=8.5, color="0.4", va="bottom")
-
-            fig.savefig(graph_directory + stationName + "_wind.png", dpi=200)
-            plt.close(fig)
 
     def vectorSpeed(self, x,y):
         return math.sqrt(x**2 + y**2)

@@ -22,4 +22,7 @@ The figure is 11.2 × 5.5 in.
      `python gfs_wind_series.py 20261124 12 <out_dir>`
 2. One figure: `python wind_figure.py wind.csv "Newport, RI" newport_wind.png`
 
-`wind_figure.py` uses pandas; a version inside Grapher.py for the Floodwater graphs would use numpy only.
+   (an optional fourth argument names the forcing in the subtitle; default GFS)
+
+`wind_figure.py` only reads the CSV: the figure is drawn by `drawStationWindFigure` in Grapher.py, the same
+code as `generateGraphs.py --windFigureExists`, so both give the same figure. numpy and matplotlib only.
