@@ -1,8 +1,8 @@
-"""Station wind figure for the RICHAMP decks: speed, direction (dots), barbs (one column per day, rows
+"""Station wind figure: speed, direction (dots), barbs (one column per day, rows
 00Z-18Z) and a wind rose for the whole window, with the water-graph heading ("Station — Station ID",
 "GFS | window UTC").
 
-Drawn at the deck's picture-box size (11.2 x 5.5 in) so the text is the size it shows on the slide.
+Figure size 11.2 x 5.5 in.
 Barbs in m/s: half feather 5, full feather 10, flag 50; the staff points to where the wind comes from.
 
 Input: a CSV with station, time, u10, v10, speed_ms, dir_from_deg (from gfs_wind_series.py or

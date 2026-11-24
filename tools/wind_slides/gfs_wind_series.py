@@ -1,7 +1,7 @@
 """GFS 10 m wind time series at the RI NOAA stations for one cycle (f000-f120 hourly), from NOMADS.
 
 Same NOMADS filter request as narragansett_wind_stats.py (u10/v10, RI subregion), bilinear to each station.
-NOMADS keeps only the last ~10 days of cycles. For local checks and decks: it needs requests and cfgrib,
+NOMADS keeps only the last ~10 days of cycles. For local checks: it needs requests and cfgrib,
 so it is not meant for the Floodwater environment (use netcdf_wind_series.py there).
 
 Usage: python gfs_wind_series.py 20261124 12 [out_dir]
