@@ -811,7 +811,9 @@ def drawStationWindFigure(path, times, speed, fromDir, u, v, title, subtitle="",
         inWindow = [times[0] <= t <= times[-1] for t in obsTimes]
         if any(inWindow) and np.isfinite(obsSpeed[inWindow]).any():
             top = max(top, np.nanmax(obsSpeed[inWindow]))
-        ax.legend(loc="upper left", fontsize=9, frameon=True, framealpha=0.9)
+        # in the free space right of the heading, so it never covers the data
+        fig.legend(*ax.get_legend_handles_labels(), loc="upper right", bbox_to_anchor=(0.985, 0.985),
+                   fontsize=10, frameon=False, handlelength=2.2)
     ax.set_ylabel("Speed\n(m/s)", fontsize=10.5)    # turned into mph by --unit imperial at savefig
     ax.set_ylim(0, max(1.0, top) * 1.15)
     ax.set_xlim(times[0], times[-1])
