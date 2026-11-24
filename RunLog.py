@@ -37,6 +37,9 @@ class _Tee:
 
     def write(self, text):
         self.stream.write(text)
+        if self.log.closed:
+            # a library that wrapped the stream during the run (e.g. colorama) may still write at exit
+            return len(text)
         self.log.write(text)
         self.pending += text
         while "\n" in self.pending:
@@ -47,7 +50,8 @@ class _Tee:
 
     def flush(self):
         self.stream.flush()
-        self.log.flush()
+        if not self.log.closed:
+            self.log.flush()
 
     def __getattr__(self, name):        # encoding, isatty, fileno, ... of the original stream
         return getattr(self.stream, name)
