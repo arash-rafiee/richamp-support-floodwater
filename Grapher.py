@@ -675,6 +675,8 @@ WIND_BARB_HOURS = (0, 6, 12, 18)        # rows of the barb grid, bottom to top
 WIND_BARB_SCALE = dict(half=5, full=10, flag=50)   # in the display unit (m/s, or mph with --unit imperial)
 WIND_ROSE_SECTORS = 16
 WIND_ROSE_COLORS = plt.cm.YlOrRd(np.linspace(0.25, 0.95, 5))
+WIND_OBSERVED_COLOR = "C1"              # NOAA observed, as on the water graphs
+WIND_FORECAST_LABELS = {"GFS": "GFS", "FORT": "ADCIRC wind (fort.74)", "POST": "RICHAMP wind"}
 
 
 def windDisplayUnit():
@@ -776,9 +778,12 @@ def drawWindBarbKey(ax, unit):
     ax.text(0.07, 0.07, "staff points to where wind comes from", fontsize=8.5, color="0.4", va="bottom")
 
 
-def drawStationWindFigure(path, times, speed, fromDir, u, v, title, subtitle=""):
+def drawStationWindFigure(path, times, speed, fromDir, u, v, title, subtitle="", observed=None,
+                          forecastLabel=None):
     """One station's wind figure, saved to path. Inputs are hourly, in m/s, fromDir in degrees the wind
-    comes FROM. Returns False (and draws nothing) when the station has no valid hour."""
+    comes FROM. observed = (times, speeds, fromDirs) adds the NOAA observed wind to the speed and direction
+    panels (dashed line, dots); the barbs and the rose stay forecast only. Returns False (and draws nothing)
+    when the station has no valid hour."""
     times = list(times)
     speed, fromDir, u, v = (np.asarray(values, dtype=float) for values in (speed, fromDir, u, v))
     # hours without wind (e.g. a station outside the wind grid) are left out
@@ -796,9 +801,19 @@ def drawStationWindFigure(path, times, speed, fromDir, u, v, title, subtitle="")
         fig.text(0.5, 0.905, subtitle, ha="center", fontsize=11.5, color="0.25")
 
     ax = fig.add_subplot(gs[0, 0])
-    ax.plot(times, speed, color=WIND_LINE_COLOR, lw=1.8)
+    ax.plot(times, speed, color=WIND_LINE_COLOR, lw=1.8, label=forecastLabel or "Forecast")
+    top = np.nanmax(speed)
+    if observed is not None:
+        obsTimes = list(observed[0])
+        obsSpeed = np.asarray(observed[1], dtype=float)
+        obsDir = np.asarray(observed[2], dtype=float)
+        ax.plot(obsTimes, obsSpeed, color=WIND_OBSERVED_COLOR, lw=1.5, ls="--", label="NOAA observed")
+        inWindow = [times[0] <= t <= times[-1] for t in obsTimes]
+        if any(inWindow) and np.isfinite(obsSpeed[inWindow]).any():
+            top = max(top, np.nanmax(obsSpeed[inWindow]))
+        ax.legend(loc="upper left", fontsize=9, frameon=True, framealpha=0.9)
     ax.set_ylabel("Speed\n(m/s)", fontsize=10.5)    # turned into mph by --unit imperial at savefig
-    ax.set_ylim(0, max(1.0, np.nanmax(speed)) * 1.15)
+    ax.set_ylim(0, max(1.0, top) * 1.15)
     ax.set_xlim(times[0], times[-1])
     ax.grid(alpha=0.3)
     ax.tick_params(labelbottom=False, labelsize=10)
@@ -806,6 +821,8 @@ def drawStationWindFigure(path, times, speed, fromDir, u, v, title, subtitle="")
     # dots, not a line, so crossing north does not draw a false jump
     axd = fig.add_subplot(gs[1, 0], sharex=ax)
     axd.scatter(times, fromDir, s=5, color=WIND_LINE_COLOR, zorder=3)
+    if observed is not None:
+        axd.scatter(obsTimes, obsDir, s=5, color=WIND_OBSERVED_COLOR, zorder=4)
     axd.set_ylim(-20, 380)
     axd.set_yticks([0, 90, 180, 270, 360])
     axd.set_yticklabels(["N", "E", "S", "W", "N"])
@@ -843,9 +860,14 @@ class Grapher:
                 stationId = ""
             title = self.titlePrefix + stationName + (" — Station " + stationId if stationId else "")
             subtitle = bannerSubtitle(self.stormBanner, self.windTimes[0], self.windTimes[-1])
+            observed = None
+            if self.obsExists and index < len(self.obsDatapointsTimes):
+                observed = (self.obsDatapointsTimes[index], self.obsDatapointsSpeeds[index],
+                            self.obsDatapointsDirections[index])
             drawn = drawStationWindFigure(graph_directory + stationName + "_wind.png", self.windTimes,
                                           self.datapointsSpeeds[index], self.windFromDirections[index],
-                                          self.windU[index], self.windV[index], title, subtitle)
+                                          self.windU[index], self.windV[index], title, subtitle,
+                                          observed=observed, forecastLabel=WIND_FORECAST_LABELS.get(self.windType))
             if not drawn:
                 print("No wind at " + stationName + "; no wind figure drawn", flush=True)
 
@@ -1846,9 +1868,9 @@ class Grapher:
                                 windX = windDataset[stationKey]["windsX"][index]
                                 windY = windDataset[stationKey]["windsY"][index]
                                 windSpeed = self.vectorSpeed(windX, windY)
-                                windDirection = self.vectorDirection(windX, windY)
-                                # u east, v north -> the direction the wind comes from
-                                fromDirection = (270 - math.degrees(math.atan2(windY, windX))) % 360
+                                # u east, v north -> the direction the wind comes from (meteorological)
+                                windDirection = (270 - math.degrees(math.atan2(windY, windX))) % 360
+                                fromDirection = windDirection
                                 windU, windV = windX, windY
                             elif(self.windType == "POST"):
                                 windSpeed = windDataset[stationKey]["speeds"][index]
@@ -2943,7 +2965,7 @@ class Grapher:
 #                 ax.set_ylim([0, 50])
                 stationName = self.obsLabels[index]
                 plt.title(stationName + " station wind directions", fontsize=24)
-                plt.ylabel("wind direction (degrees)")
+                plt.ylabel("wind from (degrees)")
                 plt.savefig(graph_directory + stationName + '_wind_direction.png')
                 plt.close()
         if(self.windFigure and self.windExists):
