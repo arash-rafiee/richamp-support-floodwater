@@ -8,6 +8,7 @@ from GetBuoyWaves import GetBuoyWaves
 from GetObsRain import GetObsRain
 from GetObsElevation import GetObsElevation
 from GetRunup import GetRunup
+from RunLog import RunLog
 import datetime
 import argparse
 import json
@@ -426,6 +427,11 @@ def main():
         "--unit", "--units", dest="unit", type=str, default="metric",
         help="Units shown on the graphs and videos: metric (default; m, m/s, mm) or imperial (ft, mph, in). "
              "Only the display changes; data and calculations stay metric"
+    )
+    p.add_argument(
+        "--logFile", type=str,
+        help="Run log to append to (default graphs/graph_run.log): header, everything printed, and a summary "
+             "of the graphs made, notes, warnings and errors"
     )
     p.add_argument(
         "--generateRunup", type=bool, help="Generate runup predictions from runup stations"
@@ -945,4 +951,5 @@ def main():
         windFigure=bool(args.windFigureExists)).generateGraphs()
 
 if __name__ == "__main__":
-    main()
+    with RunLog():      # graphs/graph_run.log, or --logFile
+        main()
