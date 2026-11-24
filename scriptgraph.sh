@@ -68,6 +68,11 @@
 # The Brown NEST water-level sensors in OBS_STATIONS.json are left out by default; to add
 # them to the station water graphs and the station map, add:
 #   --nestExists true \
+# To draw one combined wind figure per station (<station>_wind.png: speed, the direction
+# the wind comes from, barbs in m/s and a wind rose) in a wind run (--wind with
+# --gfsExists, --adcircExists or --postExists), add:
+#   --windFigureExists true \
+# Forecast only; the usual _wind_speed and _wind_direction graphs are still drawn. Off by default.
 # To also draw map frames over --backgroundChoice and save them as an .avi video
 # (water is .mp4 instead when an ffmpeg program is already on the PATH), add:
 #   --maps true \

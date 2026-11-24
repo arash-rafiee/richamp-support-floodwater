@@ -670,6 +670,146 @@ class Grapher:
     def extractLongitudeIndex(self, nodeIndex):
         return int(nodeIndex[nodeIndex.find(",") + 1: nodeIndex.find(")")])
     
+    def drawWindFigures(self, graph_directory):
+        """--windFigureExists: one figure per wind station, <station>_wind.png.
+
+        Speed, direction the wind comes from, barbs (one column per day, rows 00Z-18Z; m/s: half feather 5,
+        full 10, flag 50) and a wind rose for the whole window, under the water-graph heading.
+        Forecast only; the old _wind_speed.png and _wind_direction.png are still drawn.
+        """
+        from matplotlib.patches import Patch, Rectangle
+        from datetime import timedelta
+        times = list(self.windTimes)
+        if not times or not self.windFromDirections:
+            return
+        start, end = times[0], times[-1]
+        hours = np.array([t.hour for t in times])
+        days = sorted({t.replace(hour=0, minute=0, second=0, microsecond=0) for t in times})
+        rows = [0, 6, 12, 18]
+        speedBins = [0, 2, 4, 6, 8, np.inf]
+        speedLabels = ["< 2", "2-4", "4-6", "6-8", "> 8"]
+        roseColors = plt.cm.YlOrRd(np.linspace(0.25, 0.95, 5))
+        sectors = 16
+        width = 2 * np.pi / sectors
+        barbScale = dict(half=5, full=10, flag=50)
+        for index in range(len(self.windFromDirections)):
+            speed = np.asarray(self.datapointsSpeeds[index], dtype=float)
+            fromDir = np.asarray(self.windFromDirections[index], dtype=float)
+            u, v = np.asarray(self.windU[index], dtype=float), np.asarray(self.windV[index], dtype=float)
+            stationName = self.obsLabels[index]
+            stationId = str(self.windIds[index]) if index < len(self.windIds) else ""
+            if stationId in ("0", "None"):
+                stationId = ""
+            # hours without wind (e.g. a station outside the wind grid) are left out of the rose and barbs
+            valid = np.isfinite(speed) & np.isfinite(fromDir) & np.isfinite(u) & np.isfinite(v)
+            if not valid.any():
+                print("No wind at " + stationName + "; no wind figure drawn", flush=True)
+                continue
+
+            fig = plt.figure(figsize=(11.2, 5.5))
+            fig.richampBannerDrawn = True   # the heading below replaces the banner band
+            gs = fig.add_gridspec(3, 2, width_ratios=[2.6, 1], height_ratios=[1, 1, 1.3], hspace=0.12, wspace=0.1,
+                                  left=0.07, right=0.985, top=0.83, bottom=0.075)
+            fig.suptitle(self.titlePrefix + stationName + (" — Station " + stationId if stationId else ""),
+                         fontsize=15, fontweight="bold", y=0.985)
+            subtitle = bannerSubtitle(self.stormBanner, start, end)
+            if subtitle:
+                fig.text(0.5, 0.905, subtitle, ha="center", fontsize=11.5, color="0.25")
+
+            ax = fig.add_subplot(gs[0, 0])
+            ax.plot(times, speed, color="C0", lw=1.8)
+            ax.set_ylabel("Speed\n(m/s)", fontsize=10.5)
+            ax.set_ylim(0, max(1.0, np.nanmax(speed)) * 1.15)
+            ax.set_xlim(start, end)
+            ax.grid(alpha=0.3)
+            ax.tick_params(labelbottom=False, labelsize=10)
+
+            # dots, not a line, so crossing north does not draw a false jump
+            axd = fig.add_subplot(gs[1, 0], sharex=ax)
+            axd.scatter(times, fromDir, s=5, color="C0", zorder=3)
+            axd.set_ylim(-20, 380)
+            axd.set_yticks([0, 90, 180, 270, 360])
+            axd.set_yticklabels(["N", "E", "S", "W", "N"])
+            axd.set_ylabel("Wind\nfrom", fontsize=10.5)
+            axd.grid(alpha=0.3)
+            axd.tick_params(labelbottom=False, labelsize=10)
+
+            # barbs: one column per day (centred on the hours the run covers), rows 00Z-18Z, chessboard cells
+            axv = fig.add_subplot(gs[2, 0], sharex=ax)
+            for column, day in enumerate(days):
+                inDay = [t for t in times if day <= t < day + timedelta(days=1)]
+                left = mdates.date2num(max(day, start))
+                right = mdates.date2num(min(day + timedelta(days=1), end))
+                centre = mdates.date2num(inDay[0] + (inDay[-1] - inDay[0]) / 2) if len(inDay) < 24 \
+                    else mdates.date2num(day + timedelta(hours=12))
+                for row, hour in enumerate(rows):
+                    axv.add_patch(Rectangle((left, row - 0.5), right - left, 1, zorder=0, lw=0.5, edgecolor="#C8D2DC",
+                                            facecolor="#E8EEF4" if (column + row) % 2 == 0 else "white"))
+                    at = [k for k, t in enumerate(times) if t.hour == hour and day <= t < day + timedelta(days=1)]
+                    if at and valid[at[0]]:
+                        k = at[0]
+                        axv.barbs([centre], [row], [u[k]], [v[k]], color="C0", length=5.2, linewidth=1.0,
+                                  pivot="middle", barb_increments=barbScale, sizes=dict(emptybarb=0.1), zorder=3,
+                                  clip_on=False)
+            axv.set_ylim(-0.5, len(rows) - 0.5)
+            axv.set_yticks(range(len(rows)))
+            axv.set_yticklabels([f"{hour:02d}Z" for hour in rows])
+            axv.set_ylabel("Barbs", fontsize=10.5)
+            axv.tick_params(axis="y", length=0, labelsize=10)
+            axv.tick_params(axis="x", labelsize=10)
+            axv.xaxis.set_major_locator(mdates.DayLocator())
+            axv.xaxis.set_major_formatter(mdates.DateFormatter("%b %d"))
+
+            # wind rose for the whole window (% of hours, wind FROM, coloured by speed)
+            roseGrid = gs[0:2, 1].subgridspec(1, 2, width_ratios=[3.0, 1], wspace=0.22)
+            ra = fig.add_subplot(roseGrid[0], projection="polar")
+            ra.set_theta_zero_location("N")
+            ra.set_theta_direction(-1)
+            roseSpeed, roseDir = speed[valid], fromDir[valid]
+            sector = ((roseDir + 360 / sectors / 2) % 360 // (360 / sectors)).astype(int)
+            base = np.zeros(sectors)
+            for j in range(len(speedLabels)):
+                inBin = (roseSpeed >= speedBins[j]) & (roseSpeed < speedBins[j + 1])
+                share = np.array([(inBin & (sector == s)).sum() for s in range(sectors)]) / len(roseSpeed) * 100
+                ra.bar(np.arange(sectors) * width, share, width=width * 0.92, bottom=base, color=roseColors[j],
+                       edgecolor="white", lw=0.5, zorder=3)
+                base += share
+            step = 5 if base.max() <= 25 else 10
+            ringMax = max(step, int(np.ceil(base.max() / step) * step))
+            ra.set_ylim(0, ringMax)
+            ra.set_yticks(list(range(step, ringMax + 1, step)))
+            ra.set_yticklabels([f"{ring}%" for ring in range(step, ringMax + 1, step)], fontsize=7.5, color="grey")
+            ra.set_rlabel_position(157.5)
+            ra.set_xticks(np.arange(0, 2 * np.pi, np.pi / 2))
+            ra.set_xticklabels(["N", "E", "S", "W"], fontsize=9.5)
+            ra.tick_params(axis="x", pad=-3)
+            ra.grid(color="#DDDDDD", lw=0.6)
+            ra.spines["polar"].set_color("#B0B0B0")
+            ra.set_facecolor("#FAFAFA")
+            ra.set_title("Wind rose (% of hours)", fontsize=10, fontweight="bold", pad=16)
+            legendAx = fig.add_subplot(roseGrid[1])
+            legendAx.axis("off")
+            legendAx.legend(handles=[Patch(color=c, label=l) for c, l in zip(roseColors, speedLabels)],
+                            loc="center left", fontsize=9, frameon=False, handlelength=1.4, handleheight=1.1,
+                            title="m/s", title_fontsize=9, borderaxespad=0)
+
+            # barb key
+            ak = fig.add_subplot(gs[2, 1])
+            ak.set_xlim(0, 1)
+            ak.set_ylim(0, 1)
+            ak.axis("off")
+            ak.add_patch(Rectangle((0.02, 0.03), 0.96, 0.94, facecolor="#F4F7FA", edgecolor="#C8D2DC", lw=0.8))
+            ak.text(0.07, 0.9, "Barbs (m/s)", fontsize=11, fontweight="bold", va="top")
+            for k, (value, label) in enumerate([(5, "5 half"), (10, "10 full"), (15, "15"), (50, "50 flag")]):
+                x, y = (0.17 if k < 2 else 0.6), 0.64 - (k % 2) * 0.3
+                ak.barbs([x], [y], [value], [0], length=6, color="C0", linewidth=1.2, pivot="middle",
+                         barb_increments=barbScale)
+                ak.text(x + 0.11, y, label, va="center", fontsize=10.5)
+            ak.text(0.07, 0.07, "staff points to where wind comes from", fontsize=8.5, color="0.4", va="bottom")
+
+            fig.savefig(graph_directory + stationName + "_wind.png", dpi=200)
+            plt.close(fig)
+
     def vectorSpeed(self, x,y):
         return math.sqrt(x**2 + y**2)
     
@@ -1226,7 +1366,8 @@ class Grapher:
     # plot_extended_lines(self, ax, runupIndex, index, runupLabel)
 
     def __init__(self, dataToGraph={}, STATIONS_FILE="", backgroundMap="", backgroundAxis=[], titlePrefix="", stormBanner="", obsWaterLabel="NOAA Observed",
-                 waterLabel="ADCIRC", tidewaterLabel="ADCIRC Tide Only", plotPredictions=False, plotSurge=False, stofsNote=None):
+                 waterLabel="ADCIRC", tidewaterLabel="ADCIRC Tide Only", plotPredictions=False, plotSurge=False, stofsNote=None,
+                 windFigure=False):
         print("Initializing grapher", flush=True)
         self.obsExists = False
         self.gaugeExists = False
@@ -1270,6 +1411,8 @@ class Grapher:
         self.plotSurge=plotSurge
         # Added to the water graph caption when STOFS was asked for but could not be downloaded
         self.stofsNote=stofsNote
+        # --windFigureExists: one combined wind figure per station (speed, direction, barbs, wind rose)
+        self.windFigure=windFigure
         installFigureBanner(stormBanner)
         
         if("OBS" in dataToGraph):
@@ -1374,6 +1517,11 @@ class Grapher:
         
         self.datapointsDirections = []
         self.datapointsSpeeds = []
+        # for the --windFigureExists figure: direction the wind comes FROM (meteorological), u, v, NOAA id
+        self.windFromDirections = []
+        self.windU = []
+        self.windV = []
+        self.windIds = []
         
         self.waterLongitudes = []
         self.waterLatitudes = []
@@ -1647,6 +1795,9 @@ class Grapher:
                     
                         datapointDirections = []
                         datapointSpeeds = []
+                        fromDirections = []
+                        windsU = []
+                        windsV = []
                         for index in range(len(windDataset[stationKey]["times"])):
                             if(self.windStartDate == None):
                                 self.windStartDate = datetime.fromtimestamp(int(windDataset[stationKey]["times"][index]), timezone.utc)
@@ -1657,14 +1808,28 @@ class Grapher:
                                 windY = windDataset[stationKey]["windsY"][index]
                                 windSpeed = self.vectorSpeed(windX, windY)
                                 windDirection = self.vectorDirection(windX, windY)
+                                # u east, v north -> the direction the wind comes from
+                                fromDirection = (270 - math.degrees(math.atan2(windY, windX))) % 360
+                                windU, windV = windX, windY
                             elif(self.windType == "POST"):
                                 windSpeed = windDataset[stationKey]["speeds"][index]
                                 windDirection = windDataset[stationKey]["directions"][index]
+                                # the RICHAMP wind file stores the direction the wind comes from
+                                fromDirection = windDirection % 360
+                                windU = -windSpeed * math.sin(math.radians(windDirection))
+                                windV = -windSpeed * math.cos(math.radians(windDirection))
                             datapointDirections.append(windDirection)
                             datapointSpeeds.append(windSpeed)
+                            fromDirections.append(fromDirection)
+                            windsU.append(windU)
+                            windsV.append(windV)
                         windTimestampsInitialized = True
                         self.datapointsDirections.append(datapointDirections)
                         self.datapointsSpeeds.append(datapointSpeeds)
+                        self.windFromDirections.append(fromDirections)
+                        self.windU.append(windsU)
+                        self.windV.append(windsV)
+                        self.windIds.append(self.obsMetadata["NOS"][stationKey].get("id", stationKey))
                         if(self.obsExists):
                             obsTimes = []
                             obsSpeeds = []
@@ -2742,6 +2907,8 @@ class Grapher:
                 plt.ylabel("wind direction (degrees)")
                 plt.savefig(graph_directory + stationName + '_wind_direction.png')
                 plt.close()
+        if(self.windFigure and self.windExists):
+            self.drawWindFigures(graph_directory)
         # Plot water velocity (current speed/direction) over time
         for index in range(numberOfVelocityDatapoints):
             stationName = self.velocityStationNames[index]
