@@ -727,7 +727,16 @@ def drawWindBarbGrid(ax, times, u, v, valid):
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%b %d"))
 
 
-def drawWindRose(ax, legendAx, speed, fromDir, edges, unit):
+def windowText(start, end):
+    """"next 5 days" for a 120 h window, "next 36 hours" when it is not whole days."""
+    hours = round((end - start).total_seconds() / 3600)
+    if hours >= 24 and hours % 24 == 0:
+        days = hours // 24
+        return f"next {days} day" + ("s" if days > 1 else "")
+    return f"next {hours} hours"
+
+
+def drawWindRose(ax, legendAx, speed, fromDir, edges, unit, title="Wind rose"):
     """Wind rose of the hours given: share of hours per 22.5 degree sector the wind comes from, stacked by speed."""
     ax.set_theta_zero_location("N")
     ax.set_theta_direction(-1)
@@ -754,7 +763,7 @@ def drawWindRose(ax, legendAx, speed, fromDir, edges, unit):
     ax.grid(color="#DDDDDD", lw=0.6)
     ax.spines["polar"].set_color("#B0B0B0")
     ax.set_facecolor(WIND_ROSE_FILL)
-    ax.set_title("Wind rose (% of hours)", fontsize=10, fontweight="bold", pad=16)
+    ax.set_title(title + "\n(% of hours)", fontsize=10, fontweight="bold", pad=16)
     legendAx.axis("off")
     legendAx.legend(handles=[Patch(color=c, label=l) for c, l in zip(WIND_ROSE_COLORS, binLabels(edges))],
                     loc="center left", fontsize=9, frameon=False, handlelength=1.4, handleheight=1.1,
@@ -835,7 +844,8 @@ def drawStationWindFigure(path, times, speed, fromDir, u, v, title, subtitle="",
     drawWindBarbGrid(fig.add_subplot(gs[2, 0], sharex=ax), times, u * factor, v * factor, valid)
     roseGrid = gs[0:2, 1].subgridspec(1, 2, width_ratios=[3.0, 1], wspace=0.22)
     drawWindRose(fig.add_subplot(roseGrid[0], projection="polar"), fig.add_subplot(roseGrid[1]),
-                 speed[valid] * factor, fromDir[valid], edges, unit)
+                 speed[valid] * factor, fromDir[valid], edges, unit,
+                 title="Wind rose, " + windowText(times[0], times[-1]))
     drawWindBarbKey(fig.add_subplot(gs[2, 1]), unit)
 
     fig.savefig(path, dpi=200)
