@@ -35,8 +35,8 @@
 # python generateWindGraphs.py --stations OBS_STATIONS.json --waverad /Volumes/ssd/downloads/wave_data/rads.64.nc --waveswh /Volumes/ssd/downloads/wave_data/swan_HS.63.nc --wavemwd /Volumes/ssd/downloads/wave_data/swan_DIR.63.nc --wavemwp /Volumes/ssd/downloads/wave_data/swan_TMM10.63.nc --wavepwp /Volumes/ssd/downloads/wave_data/swan_TPS.63.nc
 
 
-# python generateGraphs.py --stations OBS_STATIONS.json --adcircExists true --wind /Volumes/ssd/ObservationalWind/RICV1_Unity_Dec15_fort.74.nc
-# python generateGraphs.py --stations OBS_STATIONS.json --adcircExists true --wind /Volumes/ssd/ObservationalWind/RICV1_Unity_Dec15_fort.74.nc --obsExists true --rainExists true --rain /Volumes/ssd/ObservationalWind/rain_gfs.nc
+# python generateGraphs.py --stations OBS_STATIONS.json --fort74Exists true --wind /Volumes/ssd/ObservationalWind/RICV1_Unity_Dec15_fort.74.nc
+# python generateGraphs.py --stations OBS_STATIONS.json --fort74Exists true --wind /Volumes/ssd/ObservationalWind/RICV1_Unity_Dec15_fort.74.nc --obsExists true --rainExists true --rain /Volumes/ssd/ObservationalWind/rain_gfs.nc
 # python generateGraphs.py --stations OBS_STATIONS.json --rainExists true --rain /Volumes/ssd/ObservationalWind/rain_gfs.nc
 # python generateGraphs.py --stations OBS_STATIONS.json --postExists true --wind /Volumes/ssd/downloads/wind_data/RICHAMP_wind.nc --obsExists true
 # python generateGraphs.py --stations OBS_STATIONS.json --gfsExists true --wind /Volumes/ssd/ObservationalWind/wind_gfs.nc --obsExists true --rainExists true --rain /Volumes/ssd/ObservationalWind/rain_gfs.nc

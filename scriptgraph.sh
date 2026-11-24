@@ -12,7 +12,7 @@
 #python generateGraphs.py \
 #  --stations OBS_STATIONS.json \
 #  --obsExists true \
-#  --adcircExists true \
+#  --fort74Exists true \
 #  --wind /work/pi_reza_hashemi_uri_edu/01_RI_CHAMP_Model/01_RICHAMP_Backup/ricv1_ofcl_veer_Henri/archive/advisory_017/adcirc/forecast/forecast_ofcl/fort.74.nc \
 #  --tempDir /scratch3/workspace/arash_rafiee_uri_edu-richamp/post_temp/ \
 #  --backgroundChoice RHODE_ISLAND_CHAMP
@@ -70,7 +70,7 @@
 #   --nestExists true \
 # To draw one combined wind figure per station (<station>_wind.png: speed, the direction
 # the wind comes from, barbs in m/s and a wind rose) in a wind run (--wind with
-# --gfsExists, --adcircExists or --postExists), add:
+# --gfsExists, --fort74Exists or --postExists), add:
 #   --windFigureExists true \
 # Forecast only; the usual _wind_speed and _wind_direction graphs are still drawn. Off by default.
 # To also draw map frames over --backgroundChoice and save them as an .avi video

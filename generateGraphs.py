@@ -320,7 +320,8 @@ def main():
     )
     #TODO: Fix rhia
     p.add_argument(
-        "--adcircExists", type=bool, help="Graph adcirc wind data"
+        "--fort74Exists", "--adcircExists", dest="fort74Exists", type=bool,
+        help="Graph the ADCIRC wind output (fort.74.nc given with --wind); --adcircExists is the old name"
     )
     p.add_argument(
         "--gfsExists", type=bool, help="Graph gfs wind data"
@@ -392,7 +393,7 @@ def main():
     )
     p.add_argument(
         "--windFigureExists", type=bool,
-        help="With a wind run (--wind and --gfsExists, --adcircExists or --postExists): also draw one figure per "
+        help="With a wind run (--wind and --gfsExists, --fort74Exists or --postExists): also draw one figure per "
              "station, <station>_wind.png, with speed, the direction the wind comes from, barbs (m/s) and a wind "
              "rose; forecast only. The usual _wind_speed and _wind_direction graphs are still drawn"
     )
@@ -699,8 +700,8 @@ def main():
         backgroundMap = NARRAGANSETT_MOUTH_OUTLINE_MAP
         backgroundAxis = NARRAGANSETT_MOUTH_AXIS
         
-    print("args.adcircExists", args.adcircExists, flush=True)
-    if(args.adcircExists):
+    print("args.fort74Exists", args.fort74Exists, flush=True)
+    if(args.fort74Exists):
         ADCIRC_WIND_FILE = args.wind
         ADCIRC_WIND_DATA_FILE = wind_temp_directory + "adcirc_wind_data_file" + ".json"
         (windStartDateObject, windEndDateObject) = Fort74Reader(ADCIRC_WIND_FILE=ADCIRC_WIND_FILE, STATIONS_FILE=STATIONS_FILE, ADCIRC_WIND_DATA_FILE=ADCIRC_WIND_DATA_FILE, BACKGROUND_AXIS=backgroundAxis).generateWindDataForStations()
@@ -867,8 +868,8 @@ def main():
         dataToGraph["PWP"] = WAVE_PWP_DATA_FILE
 #         dataToGraph["RAD"] = WAVE_RAD_DATA_FILE
         
-    if args.windFigureExists and not (args.gfsExists or args.adcircExists or args.postExists):
-        print("--windFigureExists needs a wind run (--wind with --gfsExists, --adcircExists or --postExists); "
+    if args.windFigureExists and not (args.gfsExists or args.fort74Exists or args.postExists):
+        print("--windFigureExists needs a wind run (--wind with --gfsExists, --fort74Exists or --postExists); "
               "no wind figure will be drawn", flush=True)
     if args.surgeExists and not args.obsExists:
         # the NOAA predicted tide comes with the observation download
@@ -876,7 +877,7 @@ def main():
         args.obsExists = True
     print("args.obsExists", args.obsExists, flush=True)
     if(args.obsExists):
-        if(args.gfsExists or args.adcircExists or args.postExists):
+        if(args.gfsExists or args.fort74Exists or args.postExists):
             print("Parsed start and end date from netCDF, ", windStartDateObject, windEndDateObject, flush=True)
             OBS_WIND_DATA_FILE = wind_temp_directory + "obs_wind_data_file" + ".json"
             GetBuoyWind(STATIONS_FILE=STATIONS_FILE, OBS_WIND_DATA_FILE=OBS_WIND_DATA_FILE, startDateObject=windStartDateObject, endDateObject=windEndDateObject)
