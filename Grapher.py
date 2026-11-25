@@ -32,6 +32,7 @@ plt.rc('legend', fontsize=SMALL_SIZE)    # legend fontsize
 plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
 
 _bannerInstalled = False
+_bannerLines = None   # set by installFigureBanner; map movies stamp their one figure with it
 
 # ---------------------------------------------------------------------------
 # Output units (--unit). All data and calculations stay metric; imperial only
@@ -217,6 +218,8 @@ def installFigureBanner(banner):
     if not banner or _bannerInstalled:
         return
     bannerLines = banner.split("\n")
+    global _bannerLines
+    _bannerLines = bannerLines
     originalSavefig = Figure.savefig
 
     def savefigWithBanner(self, *args, **kwargs):
@@ -316,7 +319,7 @@ def findFfmpeg():
         return None
 
 
-def writeVideo(outputBase, makeFrames, width, height, fps):
+def writeVideo(outputBase, makeFrames, width, height, fps, title="ADCIRC water-surface elevation"):
     """Write frames as outputBase.mp4 (H.264) when ffmpeg exists, else outputBase.avi (MJPEG).
 
     makeFrames() returns a fresh iterator of (height, width, 3) uint8 frames; it
@@ -329,7 +332,7 @@ def writeVideo(outputBase, makeFrames, width, height, fps):
         command = [ffmpeg, "-y", "-loglevel", "error",
                    "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{width}x{height}", "-r", str(fps), "-i", "-",
                    "-c:v", "libx264", "-preset", "medium", "-crf", "18", "-pix_fmt", "yuv420p",
-                   "-movflags", "+faststart", "-metadata", "title=ADCIRC water-surface elevation", outputFile]
+                   "-movflags", "+faststart", "-metadata", "title=" + title, outputFile]
         process = None
         try:
             process = subprocess.Popen(command, stdin=subprocess.PIPE)
@@ -1122,7 +1125,52 @@ class Grapher:
         the time below the map as YYYY-MM-DD HH:MM UTC in 10 pt."""
         ax.set_title(self.titlePrefix + title, fontsize=14, fontweight="bold")
         if timestamp is not None:
-            ax.set_xlabel(datetime.fromtimestamp(int(timestamp), timezone.utc).strftime("%Y-%m-%d %H:%M UTC"), fontsize=10)
+            ax.set_xlabel(self.mapTimeText(timestamp), fontsize=10)
+
+    def mapTimeText(self, timestamp):
+        return datetime.fromtimestamp(int(timestamp), timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+
+    def writeMapMovie(self, graph_directory, name, times, drawFirstFrame, videoTitle):
+        """Map movie made the way writeWaterVideo makes the water movie: one figure, fixed parts drawn once.
+
+        drawFirstFrame(0) builds the complete figure for the first time step and returns
+        (fig, ax, update); update(index) only swaps the field data. Each frame is one render
+        taken straight from memory, cropped like a tight savefig, and passed to writeVideo
+        (.mp4 with ffmpeg, else .avi). No frame PNGs are written.
+        """
+        from matplotlib.backends.backend_agg import FigureCanvasAgg
+        fig, ax, update = drawFirstFrame(0)
+        fig.set_dpi(MAP_DPI)
+        canvas = FigureCanvasAgg(fig)
+        convertFigureUnits(fig)
+        if _bannerLines:
+            stampFigureBanner(fig, _bannerLines)
+        canvas.draw()
+        # crop box of a tight save (0.1 in pad), padded to a multiple of 16 px for video players
+        figureWidth, figureHeight = canvas.get_width_height()
+        tight = fig.get_tightbbox(canvas.get_renderer()).padded(0.1)
+        left = max(0, int(math.floor(tight.x0 * MAP_DPI)))
+        right = min(figureWidth, int(math.ceil(tight.x1 * MAP_DPI)))
+        top = max(0, figureHeight - int(math.ceil(tight.y1 * MAP_DPI)))
+        bottom = min(figureHeight, figureHeight - int(math.floor(tight.y0 * MAP_DPI)))
+        width = -(-(right - left) // 16) * 16
+        height = -(-(bottom - top) // 16) * 16
+
+        def makeFrames():
+            for index in range(len(times)):
+                if(index % 10 == 0 or index == len(times) - 1):   # frames print nothing else
+                    print("%s map frame %d/%d" % (name, index + 1, len(times)), flush=True)
+                update(index)
+                ax.xaxis.label.set_text(self.mapTimeText(times[index]))
+                canvas.draw()
+                image = np.asarray(canvas.buffer_rgba())[top:bottom, left:right, :3]
+                frame = np.full((height, width, 3), 255, dtype=np.uint8)
+                frame[:image.shape[0], :image.shape[1]] = image
+                yield frame
+
+        writeVideo(graph_directory + name, makeFrames, width, height, MAP_VIDEO_FPS, title=videoTitle)
+        plt.close(fig)
+        gc.collect()
 
     def drawWaterSwath(self, outputFile, swathWaters, rasterizer, plotAxis, img, aspectRatio,
                        cmapName="Blues", vminSwath=0, vmax=3, colorbarLabel="Max Water Elevation (m)",
@@ -2668,9 +2716,7 @@ class Grapher:
                 print("Rasterizing wind mesh for the map frames", flush=True)
                 windRasterizer = MeshRasterizer(self.mapWindPointsLongitudes, self.mapWindPointsLatitudes,
                                                 self.mapWindTriangles, self.mapWindMaskedTriangles, plotAxis)
-            for index in range(len(self.mapWindTimes)):
-                if(index % 10 == 0 or index == len(self.mapWindTimes) - 1):   # frames print nothing else
-                    print("wind map frame %d/%d" % (index + 1, len(self.mapWindTimes)), flush=True)
+            def drawWindFrame(index):
                 fig, ax = plt.subplots(figsize=mapFigureSize)
 #                 plt.figure(figsize=(6, 6))
     #             print(self.endWindPointsLongitudes)
@@ -2703,10 +2749,14 @@ class Grapher:
                     label="Meters/Second",
                     ax=plt.gca()
                 ), mapAx=ax)
-                plt.savefig(graph_directory + 'map_wind_' + str(index) + '.png', bbox_inches="tight", dpi=MAP_DPI)
-                plt.close()
-                gc.collect()
-            writeMapAnimation(graph_directory, "map_wind_", len(self.mapWindTimes), "wind")
+
+                def update(index):
+                    if(self.windType == "FORT"):
+                        contourset.set_data(windRasterizer.values(self.mapSpeeds[index]))
+                    else:   # GFS / POST regular grid (gouraud pcolormesh)
+                        contourset.set_array(np.asarray(self.mapSpeeds[index]))
+                return fig, ax, update
+            self.writeMapMovie(graph_directory, "wind", self.mapWindTimes, drawWindFrame, "Wind speed")
             mapSpeedsNoNan = np.nan_to_num(self.mapSpeeds)
             swathWind = np.max(mapSpeedsNoNan, axis=0)
             fig, ax = plt.subplots(figsize=mapFigureSize)
@@ -2740,9 +2790,7 @@ class Grapher:
             levels = 100
             levelBoundaries = np.linspace(vmin, vmax, levels + 1)
             levelBoundariesAccumulation = np.linspace(vmin, vmaxAccumulation, levels + 1)
-            for index in range(len(self.mapRainTimes)):
-                if(index % 10 == 0 or index == len(self.mapRainTimes) - 1):   # frames print nothing else
-                    print("rain map frame %d/%d" % (index + 1, len(self.mapRainTimes)), flush=True)
+            def drawRainFrame(index):
                 fig, ax = plt.subplots(figsize=mapFigureSize)
     #             print(self.endWavePointsLongitudes)
     #             print(self.endWavePointsLatitudes)
@@ -2761,10 +2809,11 @@ class Grapher:
                     label="Millimeters/Hour",
                     ax=plt.gca()
                 ), mapAx=ax)
-                plt.savefig(graph_directory + 'map_rain_' + str(index) + '.png', bbox_inches="tight", dpi=MAP_DPI)
-                plt.close()
-                gc.collect()
-            writeMapAnimation(graph_directory, "map_rain_", len(self.mapRainTimes), "rain")
+
+                def update(index):
+                    contourset.set_array(np.asarray(self.mapRains[index]))
+                return fig, ax, update
+            self.writeMapMovie(graph_directory, "rain", self.mapRainTimes, drawRainFrame, "Rain rate")
             mapRainsNoNan = np.nan_to_num(self.mapRains)
             accumulatedRain = np.sum(mapRainsNoNan, axis=0)
             fig, ax = plt.subplots(figsize=mapFigureSize)
@@ -2832,9 +2881,7 @@ class Grapher:
 #             vmax = 20
             levels = 100
             levelBoundaries = np.linspace(vmin, vmax, levels + 1)
-            for index in range(len(self.mapEtaTimes)):
-                if(index % 10 == 0 or index == len(self.mapEtaTimes) - 1):   # frames print nothing else
-                    print("eta map frame %d/%d" % (index + 1, len(self.mapEtaTimes)), flush=True)
+            def drawEtaFrame(index):
                 fig, ax = plt.subplots()
     #             print(self.endWavePointsLongitudes)
     #             print(self.endWavePointsLatitudes)
@@ -2854,10 +2901,11 @@ class Grapher:
                     label="Meters",
                     ax=plt.gca()
                 ), mapAx=ax)
-                plt.savefig(graph_directory + 'map_eta_' + str(index) + '.png', dpi=MAP_DPI)
-                plt.close()
-                gc.collect()
-            writeMapAnimation(graph_directory, "map_eta_", len(self.mapEtaTimes), "eta")
+
+                def update(index):
+                    contourset.set_array(np.asarray(self.mapEta[index]))
+                return fig, ax, update
+            self.writeMapMovie(graph_directory, "eta", self.mapEtaTimes, drawEtaFrame, "Eta elevation")
             mapEtaNoNan = np.nan_to_num(self.mapEta)
             swathEta = np.max(self.mapEta, axis=0)
             fig, ax = plt.subplots()
@@ -2939,21 +2987,16 @@ class Grapher:
             velocityCmap = plt.get_cmap("viridis")
             datapointColor = "#4a3aa7"   # violet
 
-            for index in range(len(self.mapVelocityTimes)):
-                if(index % 10 == 0 or index == len(self.mapVelocityTimes) - 1):   # frames print nothing else
-                    print("velocity map frame %d/%d" % (index + 1, len(self.mapVelocityTimes)), flush=True)
+            # Same picture as tripcolor(shading="gouraud") with dry triangles masked, but the mesh is
+            # turned into a pixel grid once and a frame is a gather (MeshRasterizer, as for water)
+            print("Rasterizing velocity mesh for the map frames", flush=True)
+            velocityRasterizer = MeshRasterizer(self.mapVelocityPointsLongitudes, self.mapVelocityPointsLatitudes,
+                                                self.mapVelocityTriangles, self.mapVelocityMaskedTriangles, plotAxis)
+
+            def drawVelocityFrame(index):
                 fig, ax = plt.subplots(figsize=(9,9), dpi=MAP_DPI)
                 plt.imshow(img, extent=self.backgroundAxis, alpha=0.6, aspect=aspectRatio, zorder=2)
-                currentMaskedTriangles = self.mapVelocityMaskedTriangles.copy()
-                for triangleIndex, triangle in enumerate(self.mapVelocityTriangles):
-                    for pointIndex in triangle:
-                        speed = self.mapVelocitySpeeds[index][pointIndex]
-                        if(speed == -99999.0):
-                            currentMaskedTriangles[triangleIndex] = True
-                            break
-                velocityTriangulation = Triangulation(self.mapVelocityPointsLongitudes, self.mapVelocityPointsLatitudes, triangles=self.mapVelocityTriangles, mask=currentMaskedTriangles)
-
-                ax.tripcolor(velocityTriangulation, self.mapVelocitySpeeds[index], shading='gouraud', cmap=velocityCmap, vmin=vmin, vmax=vmax, zorder=1)
+                field = velocityRasterizer.imshow(ax, self.mapVelocitySpeeds[index], cmap=velocityCmap, vmin=vmin, vmax=vmax, aspect=aspectRatio, zorder=1)
                 ax.scatter(self.velocityLongitudes, self.velocityLatitudes, label="Datapoints", color=datapointColor, edgecolors="white", linewidths=0.5, s=30, zorder=3)
 
                 plt.axis(plotAxis)
@@ -2966,10 +3009,12 @@ class Grapher:
                     label="Velocity (m/s)",
                     ax=plt.gca()
                 ), mapAx=ax)
-                plt.savefig(graph_directory + 'map_velocity_' + str(index) + '.png', bbox_inches="tight")
-                plt.close()
-                gc.collect()
-            writeMapAnimation(graph_directory, "map_velocity_", len(self.mapVelocityTimes), "velocity")
+
+                def update(index):
+                    field.set_data(velocityRasterizer.values(self.mapVelocitySpeeds[index]))
+                return fig, ax, update
+            self.writeMapMovie(graph_directory, "velocity", self.mapVelocityTimes, drawVelocityFrame, "Water velocity")
+            del velocityRasterizer
 
             swathVelocity = np.max(self.mapVelocitySpeeds, axis=0)
             swathMaskedTriangles = self.mapVelocityMaskedTriangles.copy()
@@ -3004,29 +3049,20 @@ class Grapher:
             levels = 100
             levelBoundaries = np.linspace(vmin, vmax, levels + 1)
             # waveTriangulation = Triangulation(self.mapWavePointsLongitudes, self.mapWavePointsLatitudes, triangles=self.mapWaveTriangles, mask=self.mapWaveMaskedTriangles)
-            for index in range(len(self.mapWaveTimes)):
-                if(index % 10 == 0 or index == len(self.mapWaveTimes) - 1):   # frames print nothing else
-                    print("wave map frame %d/%d" % (index + 1, len(self.mapWaveTimes)), flush=True)
-                fig, ax = plt.subplots(figsize=mapFigureSize)
-    #             print(self.endWavePointsLongitudes)
-    #             print(self.endWavePointsLatitudes)
-    #             print(self.endSWH)
-    
-                currentMaskedTriangles = self.mapWaveMaskedTriangles.copy()
-                for triangleIndex, triangle in enumerate(self.mapWaveTriangles):
-                    for pointIndex in triangle:
-                        swh = self.mapSWH[index][pointIndex]
-    #                     Check for nan value
-    #                     point = (self.mapWaterPointsLongitudes[pointIndex], self.mapWaterPointsLatitudes[pointIndex])
-                        if(swh == -99999.0):
-    #                     if(point[0] < -72.1 and point[0] > -72.15 and point[1] > 41.4 and point[1] < 41.42):
-    #                         print("point, water", point, water)
-                            currentMaskedTriangles[triangleIndex] = True
-                            break
-                waveTriangulation = Triangulation(self.mapWavePointsLongitudes, self.mapWavePointsLatitudes, triangles=self.mapWaveTriangles, mask=currentMaskedTriangles)
+            waveTriangles = np.asarray(self.mapWaveTriangles)
+            waveBaseMask = np.asarray(self.mapWaveMaskedTriangles, dtype=bool)
+            waveTriangulation = Triangulation(self.mapWavePointsLongitudes, self.mapWavePointsLatitudes, triangles=waveTriangles)
 
+            def waveMask(index):
+                # triangles with a dry (-99999) corner are left out, as before, in one numpy step
+                return waveBaseMask | (np.asarray(self.mapSWH[index])[waveTriangles] == -99999.0).any(axis=1)
+
+            def drawWaveFrame(index):
+                fig, ax = plt.subplots(figsize=mapFigureSize)
+                waveTriangulation.set_mask(waveMask(index))
                 plt.imshow(img, extent=self.backgroundAxis, aspect=aspectRatio)
-                contourset = ax.tricontourf(waveTriangulation, self.mapSWH[index], levelBoundaries, alpha=0.5, vmin=vmin, vmax=vmax)
+                contours = [ax.tricontourf(waveTriangulation, self.mapSWH[index], levelBoundaries, alpha=0.5, vmin=vmin, vmax=vmax)]
+                contourset = contours[0]
                 plt.axis(plotAxis)
                 self.styleMapAxes(plt.gca(), "Significant Wave Height", self.mapWaveTimes[index])
     #             plt.gca().invert_yaxis()
@@ -3038,10 +3074,14 @@ class Grapher:
                     label="Meters",
                     ax=plt.gca()
                 ), mapAx=ax)                
-                plt.savefig(graph_directory + 'map_swh_' + str(index) + '.png', bbox_inches="tight", dpi=MAP_DPI)
-                plt.close()
-                gc.collect()
-            writeMapAnimation(graph_directory, "map_swh_", len(self.mapWaveTimes), "wave")
+
+                def update(index):
+                    # filled contours cannot take new data: swap the old set for a new one
+                    contours[0].remove()
+                    waveTriangulation.set_mask(waveMask(index))
+                    contours[0] = ax.tricontourf(waveTriangulation, self.mapSWH[index], levelBoundaries, alpha=0.5, vmin=vmin, vmax=vmax)
+                return fig, ax, update
+            self.writeMapMovie(graph_directory, "wave", self.mapWaveTimes, drawWaveFrame, "Significant wave height")
             swathSWH = np.max(self.mapSWH, axis=0)
             for index, triangle in enumerate(self.mapWaveTriangles):
                 for pointIndex in triangle:
