@@ -161,11 +161,29 @@ def stampFigureBanner(fig, bannerLines):
     lineHeight = 0.28   # inches per banner line
     bannerHeight = 2 * pad + lineHeight * len(bannerLines)
     width, height = fig.get_size_inches()
+    # Remove the empty margin above the figure's content (matplotlib's default top margin over
+    # the title). A tight crop drops it when there is no banner, but with the banner at the top
+    # it would stay as a gap between the banner and the title.
+    try:
+        fig.canvas.draw()
+        contentTop = fig.get_tightbbox(fig.canvas.get_renderer()).y1   # inches from the bottom
+    except Exception:
+        contentTop = height
+    spare = height - contentTop - pad
+    # Read every axes box before the figure is resized: get_position() re-fits a fixed-aspect map
+    # to the current figure size, which would move it away from its colour bar.
+    boxes = [(ax, ax.get_position()) for ax in fig.axes]
+    if spare > 0.05:
+        trimmedHeight = height - spare
+        fig.set_size_inches(width, trimmedHeight, forward=False)
+        boxes = [(ax, matplotlib.transforms.Bbox.from_bounds(box.x0, box.y0 * height / trimmedHeight,
+                                                             box.width, box.height * height / trimmedHeight))
+                 for ax, box in boxes]
+        height = trimmedHeight
     newHeight = height + bannerHeight
     fig.set_size_inches(width, newHeight, forward=False)
     scale = height / newHeight
-    for ax in fig.axes:
-        box = ax.get_position()
+    for ax, box in boxes:
         ax.set_position([box.x0, box.y0 * scale, box.width, box.height * scale])
     try:
         renderer = fig.canvas.get_renderer()
@@ -425,12 +443,36 @@ def writeMapAnimation(graph_directory, framePrefix, frameCount, name):
         os.remove(frameFile)
 
 
-def roundColorbarTicks(colorbar, maxTicks=8):
-    """Put the ticks of a map colour bar on round values (1, 2, 2.5 or 5 x 10^n) and print them plainly."""
+def roundColorbarTicks(colorbar, maxTicks=8, mapAx=None):
+    """Put the ticks of a map colour bar on round values (1, 2, 2.5 or 5 x 10^n) and print them plainly.
+
+    With mapAx, the bar is also made exactly as tall as the map drawn in mapAx. A true-scale map
+    is shorter than the slot plt.colorbar fills; a taller bar would stick out above the map title.
+    """
     colorbar.locator = matplotlib.ticker.MaxNLocator(nbins=maxTicks, steps=[1, 2, 2.5, 5, 10])
     colorbar.formatter = matplotlib.ticker.FormatStrFormatter("%g")
     colorbar.update_ticks()
+    if mapAx is not None:
+        mapAx.figure.canvas.draw()
+        mapBox = mapAx.get_position()
+        barBox = colorbar.ax.get_position()
+        # a plain box from here on: no 20:1 bar shape and no locator re-placing it at each draw
+        colorbar.ax.set_axes_locator(None)
+        colorbar.ax.set_box_aspect(None)
+        colorbar.ax.set_position([barBox.x0, mapBox.y0, barBox.width, mapBox.height])
     return colorbar
+
+
+def fitFigureToMap(fig, ax):
+    """Shrink fig's height to the map drawn in ax. A true-scale map (fixed aspect) can be shorter
+    than the slot the figure gives it; the empty band would sit between the banner and the title."""
+    for _ in range(3):
+        fig.canvas.draw()
+        width, height = fig.get_size_inches()
+        spare = (ax.get_position(original=True).height - ax.get_position().height) * height
+        if spare < 0.02:
+            return
+        fig.set_size_inches(width, height - spare)
 
 
 def groundAspect(south, north):
@@ -997,13 +1039,7 @@ class Grapher:
                             fontsize=fontSize, color=color, fontweight="bold" if bold else "normal", family="monospace" if not bold else None)
         # The map keeps its true ground scale, so it can be shorter than the slot the layout gives it;
         # shrink the figure height to the map so there is no empty band above and below it.
-        for _ in range(3):
-            fig.canvas.draw()
-            width, height = fig.get_size_inches()
-            spare = (ax.get_position(original=True).height - ax.get_position().height) * height
-            if spare < 0.05:
-                break
-            fig.set_size_inches(width, height - spare)
+        fitFigureToMap(fig, ax)
         fig.savefig(graph_directory + 'closest_points.png', dpi=MAP_DPI, facecolor="white", bbox_inches="tight", pad_inches=0.1)
         plt.close()
 
@@ -1137,7 +1173,7 @@ class Grapher:
                 values=(levelBoundariesSwath[:-1] + levelBoundariesSwath[1:]) / 2,
                 label=colorbarLabel,
                 ax=plt.gca()
-            ))
+            ), mapAx=ax)
         plt.savefig(outputFile, bbox_inches="tight")
         print("Wrote " + outputFile, flush=True)
         plt.close()
@@ -2667,7 +2703,7 @@ class Grapher:
                     values=(levelBoundaries[:-1] + levelBoundaries[1:]) / 2,
                     label="Meters/Second",
                     ax=plt.gca()
-                ))
+                ), mapAx=ax)
                 plt.savefig(graph_directory + 'map_wind_' + str(index) + '.png', bbox_inches="tight", dpi=MAP_DPI)
                 plt.close()
                 gc.collect()
@@ -2691,7 +2727,7 @@ class Grapher:
                 values=(levelBoundaries[:-1] + levelBoundaries[1:]) / 2,
                 label="Meters/Second",
                 ax=plt.gca()
-            ))
+            ), mapAx=ax)
             plt.savefig(graph_directory + 'map_wind_swath.png', bbox_inches="tight", dpi=MAP_DPI)
             plt.close()
             gc.collect()
@@ -2723,7 +2759,7 @@ class Grapher:
                     values=(levelBoundaries[:-1] + levelBoundaries[1:]) / 2,
                     label="Millimeters/Hour",
                     ax=plt.gca()
-                ))
+                ), mapAx=ax)
                 plt.savefig(graph_directory + 'map_rain_' + str(index) + '.png', bbox_inches="tight", dpi=MAP_DPI)
                 plt.close()
                 gc.collect()
@@ -2745,7 +2781,7 @@ class Grapher:
                 values=(levelBoundariesAccumulation[:-1] + levelBoundariesAccumulation[1:]) / 2,
                 label="Millimeters",
                 ax=plt.gca()
-            ))
+            ), mapAx=ax)
             plt.savefig(graph_directory + 'map_rain_accumulation.png', bbox_inches="tight", dpi=MAP_DPI)
             plt.close()
             gc.collect()
@@ -2785,7 +2821,7 @@ class Grapher:
                 values=(levelBoundaries[:-1] + levelBoundaries[1:]) / 2,
                 label="Meters",
                 ax=plt.gca()
-            ))        
+            ), mapAx=ax)        
             plt.savefig(graph_directory + 'map_elevation.png', dpi=MAP_DPI)
             plt.close()
             gc.collect()
@@ -2814,7 +2850,7 @@ class Grapher:
                     values=(levelBoundaries[:-1] + levelBoundaries[1:]) / 2,
                     label="Meters",
                     ax=plt.gca()
-                ))
+                ), mapAx=ax)
                 plt.savefig(graph_directory + 'map_eta_' + str(index) + '.png', dpi=MAP_DPI)
                 plt.close()
                 gc.collect()
@@ -2835,7 +2871,7 @@ class Grapher:
                 values=(levelBoundaries[:-1] + levelBoundaries[1:]) / 2,
                 label="Meters",
                 ax=plt.gca()
-            ))
+            ), mapAx=ax)
             plt.savefig(graph_directory + 'map_eta_swath.png', dpi=MAP_DPI)
             plt.close()
             gc.collect()
@@ -2924,7 +2960,7 @@ class Grapher:
                     values=(levelBoundaries[:-1] + levelBoundaries[1:]) / 2,
                     label="Velocity (m/s)",
                     ax=plt.gca()
-                ))
+                ), mapAx=ax)
                 plt.savefig(graph_directory + 'map_velocity_' + str(index) + '.png', bbox_inches="tight")
                 plt.close()
                 gc.collect()
@@ -2952,7 +2988,7 @@ class Grapher:
                 values=(levelBoundaries[:-1] + levelBoundaries[1:]) / 2,
                 label="Max Velocity (m/s)",
                 ax=plt.gca()
-            ))
+            ), mapAx=ax)
             plt.savefig(graph_directory + 'map_velocity_swath.png', bbox_inches="tight")
             plt.close()
             gc.collect()
@@ -2994,7 +3030,7 @@ class Grapher:
                     values=(levelBoundaries[:-1] + levelBoundaries[1:]) / 2,
                     label="Meters",
                     ax=plt.gca()
-                ))                
+                ), mapAx=ax)                
                 plt.savefig(graph_directory + 'map_swh_' + str(index) + '.png', bbox_inches="tight", dpi=MAP_DPI)
                 plt.close()
                 gc.collect()
@@ -3028,7 +3064,7 @@ class Grapher:
                 values=(levelBoundaries[:-1] + levelBoundaries[1:]) / 2,
                 label="Meters",
                 ax=plt.gca()
-            ))        
+            ), mapAx=ax)        
             plt.savefig(graph_directory + 'map_swh_swath.png', bbox_inches="tight", dpi=MAP_DPI)
             plt.close()
             gc.collect()
