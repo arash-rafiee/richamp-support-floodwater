@@ -215,6 +215,22 @@ fi
 rm -rf $output_dir/properties $output_dir/graphs
 cp -r properties $output_dir
 cp -r graphs $output_dir
+
+# also keep this run in its own subfolder of $RICHAMP_OUTDIR, with the same files as above,
+# e.g. GFS_20261125_06Z or NHC_20260725_Advisory03; a rerun of the same cycle gets _V02, _V03, ...
+run_name=$(python3 $postprocessdir/runFolderName.py properties/run.properties $output_dir)
+if [[ -n $run_name ]]; then
+    run_dir=$output_dir/$run_name
+    mkdir -p $run_dir
+    cp $wind_output $rain_output $water_output $max_inund_plot $run_dir
+    if [[ $GRAPH_WAVES == "True" ]]; then
+        cp $wave_output $run_dir/RICHAMP_wave.nc
+    fi
+    cp -r properties graphs $run_dir
+    echo "Run archived in $run_dir"
+else
+    echo "Run folder name could not be made from properties/run.properties; run not archived"
+fi
 #cp $indir/*.trk $output_dir
 
 #track="center"
