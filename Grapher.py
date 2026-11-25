@@ -2669,6 +2669,8 @@ class Grapher:
                 windRasterizer = MeshRasterizer(self.mapWindPointsLongitudes, self.mapWindPointsLatitudes,
                                                 self.mapWindTriangles, self.mapWindMaskedTriangles, plotAxis)
             for index in range(len(self.mapWindTimes)):
+                if(index % 10 == 0 or index == len(self.mapWindTimes) - 1):   # frames print nothing else
+                    print("wind map frame %d/%d" % (index + 1, len(self.mapWindTimes)), flush=True)
                 fig, ax = plt.subplots(figsize=mapFigureSize)
 #                 plt.figure(figsize=(6, 6))
     #             print(self.endWindPointsLongitudes)
@@ -2739,6 +2741,8 @@ class Grapher:
             levelBoundaries = np.linspace(vmin, vmax, levels + 1)
             levelBoundariesAccumulation = np.linspace(vmin, vmaxAccumulation, levels + 1)
             for index in range(len(self.mapRainTimes)):
+                if(index % 10 == 0 or index == len(self.mapRainTimes) - 1):   # frames print nothing else
+                    print("rain map frame %d/%d" % (index + 1, len(self.mapRainTimes)), flush=True)
                 fig, ax = plt.subplots(figsize=mapFigureSize)
     #             print(self.endWavePointsLongitudes)
     #             print(self.endWavePointsLatitudes)
@@ -2829,6 +2833,8 @@ class Grapher:
             levels = 100
             levelBoundaries = np.linspace(vmin, vmax, levels + 1)
             for index in range(len(self.mapEtaTimes)):
+                if(index % 10 == 0 or index == len(self.mapEtaTimes) - 1):   # frames print nothing else
+                    print("eta map frame %d/%d" % (index + 1, len(self.mapEtaTimes)), flush=True)
                 fig, ax = plt.subplots()
     #             print(self.endWavePointsLongitudes)
     #             print(self.endWavePointsLatitudes)
@@ -2934,6 +2940,8 @@ class Grapher:
             datapointColor = "#4a3aa7"   # violet
 
             for index in range(len(self.mapVelocityTimes)):
+                if(index % 10 == 0 or index == len(self.mapVelocityTimes) - 1):   # frames print nothing else
+                    print("velocity map frame %d/%d" % (index + 1, len(self.mapVelocityTimes)), flush=True)
                 fig, ax = plt.subplots(figsize=(9,9), dpi=MAP_DPI)
                 plt.imshow(img, extent=self.backgroundAxis, alpha=0.6, aspect=aspectRatio, zorder=2)
                 currentMaskedTriangles = self.mapVelocityMaskedTriangles.copy()
@@ -2997,6 +3005,8 @@ class Grapher:
             levelBoundaries = np.linspace(vmin, vmax, levels + 1)
             # waveTriangulation = Triangulation(self.mapWavePointsLongitudes, self.mapWavePointsLatitudes, triangles=self.mapWaveTriangles, mask=self.mapWaveMaskedTriangles)
             for index in range(len(self.mapWaveTimes)):
+                if(index % 10 == 0 or index == len(self.mapWaveTimes) - 1):   # frames print nothing else
+                    print("wave map frame %d/%d" % (index + 1, len(self.mapWaveTimes)), flush=True)
                 fig, ax = plt.subplots(figsize=mapFigureSize)
     #             print(self.endWavePointsLongitudes)
     #             print(self.endWavePointsLatitudes)
