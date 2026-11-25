@@ -1708,15 +1708,15 @@ class WaveReader:
         mwpExists = True
         pwpExists = True
         radExists = True
-        if(self.WAVE_SWH_FILE == ""):
+        if(not self.WAVE_SWH_FILE):   # option not given: generateGraphs passes None
             swhExists = False
-        if(self.WAVE_MWD_FILE == ""):
+        if(not self.WAVE_MWD_FILE):   # option not given: generateGraphs passes None
             mwdExists = False
-        if(self.WAVE_MWP_FILE == ""):
+        if(not self.WAVE_MWP_FILE):   # option not given: generateGraphs passes None
             mwpExists = False
-        if(self.WAVE_PWP_FILE == ""):
+        if(not self.WAVE_PWP_FILE):   # option not given: generateGraphs passes None
             pwpExists = False
-        if(self.WAVE_RAD_FILE == ""):
+        if(not self.WAVE_RAD_FILE):   # option not given: generateGraphs passes None
             radExists = False
         if(swhExists):
             swhDataset, timesSWH = self.reader.getNetcdfProperties(self.WAVE_SWH_FILE, "swh")

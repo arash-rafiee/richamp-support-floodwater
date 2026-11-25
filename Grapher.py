@@ -3417,7 +3417,7 @@ class Grapher:
             plt.savefig(graph_directory + 'all_stations_wave_swh.png')
             plt.close(fig_swh)
         # MWP Graph
-        if self.wavesExists:
+        if self.wavesExists and any(len(values) > 0 for values in self.datapointsMWP):   # only with --wavemwp
             fig_mwp, ax_mwp = plt.subplots(figsize=(12, 8))
             for index in range(numberOfWaveDatapoints):
                 if len(self.datapointsMWP[index]) > 0:
@@ -3438,7 +3438,7 @@ class Grapher:
             plt.close(fig_mwp)
 
         # PWP Graph
-        if self.wavesExists:
+        if self.wavesExists and any(len(values) > 0 for values in self.datapointsPWP):   # only with --wavepwp
             fig_pwp, ax_pwp = plt.subplots(figsize=(12, 8))
             for index in range(numberOfWaveDatapoints):
                 if len(self.datapointsPWP[index]) > 0:
@@ -3459,7 +3459,7 @@ class Grapher:
             plt.close(fig_pwp)
             
 #           Plot mwp and pwp together
-        if self.wavesExists:
+        if self.wavesExists and any(len(values) > 0 for values in self.datapointsMWP + self.datapointsPWP):
             fig, ax = plt.subplots(figsize=(12, 8))
     
             for index in range(numberOfWaveDatapoints):

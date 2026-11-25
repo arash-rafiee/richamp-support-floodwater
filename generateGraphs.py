@@ -445,6 +445,8 @@ def main():
         p.error("--stofsExists graphs STOFS in place of the ADCIRC water series; use --waterExists (with --stofs) or --stofsExists, not both")
     if args.stofsExists and args.maps:
         p.error("--maps needs the ADCIRC mesh output and is not available with --stofsExists")
+    if args.wavesExists and not args.waveswh:
+        p.error("--wavesExists needs --waveswh (swan_HS.63.nc); --wavemwd, --wavemwp, --wavepwp and --waverad are optional")
     args.epsg = 4326
     Reader.GENERATE_MAPS = bool(args.maps)
     print("Generating Wind Graphs!", flush=True)
@@ -868,10 +870,14 @@ def main():
         
 #         waveStartDateObject = datetime.datetime(year=2023, month=12, day=15, hour=0, tzinfo=datetime.timezone.utc)
 #         waveEndDateObject = datetime.datetime(year=2023, month=12, day=20, hour=0, tzinfo=datetime.timezone.utc)
+        # Only the wave products whose file was given; Grapher reads each data file it is handed
         dataToGraph["SWH"] = WAVE_SWH_DATA_FILE
-        dataToGraph["MWD"] = WAVE_MWD_DATA_FILE
-        dataToGraph["MWP"] = WAVE_MWP_DATA_FILE
-        dataToGraph["PWP"] = WAVE_PWP_DATA_FILE
+        if(WAVE_MWD_FILE):
+            dataToGraph["MWD"] = WAVE_MWD_DATA_FILE
+        if(WAVE_MWP_FILE):
+            dataToGraph["MWP"] = WAVE_MWP_DATA_FILE
+        if(WAVE_PWP_FILE):
+            dataToGraph["PWP"] = WAVE_PWP_DATA_FILE
 #         dataToGraph["RAD"] = WAVE_RAD_DATA_FILE
         
     if args.windFigureExists and not (args.gfsExists or args.fort74Exists or args.postExists):
