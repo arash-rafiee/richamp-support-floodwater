@@ -210,6 +210,7 @@ def installFigureBanner(banner):
 
 
 MAP_VIDEO_FPS = 10
+MAP_DPI = 150      # resolution of every map image (swaths, frames, station map)
 
 # ---------------------------------------------------------------------------
 # Water-surface elevation video (--maps). Only the look is set here; the
@@ -422,6 +423,19 @@ def writeMapAnimation(graph_directory, framePrefix, frameCount, name):
     print("Wrote " + outputFile, flush=True)
     for frameFile in frameFiles:
         os.remove(frameFile)
+
+
+def roundColorbarTicks(colorbar, maxTicks=8):
+    """Put the ticks of a map colour bar on round values (1, 2, 2.5 or 5 x 10^n) and print them plainly."""
+    colorbar.locator = matplotlib.ticker.MaxNLocator(nbins=maxTicks, steps=[1, 2, 2.5, 5, 10])
+    colorbar.formatter = matplotlib.ticker.FormatStrFormatter("%g")
+    colorbar.update_ticks()
+    return colorbar
+
+
+def groundAspect(south, north):
+    """Axes aspect (latitude units per longitude unit) that draws a lon/lat map at true ground scale."""
+    return 1.0 / math.cos(math.radians((south + north) / 2))
 
 
 def loadMapArrays(dataset):
@@ -909,7 +923,8 @@ class Grapher:
         at for each station (mesh node, STOFS point) is a small cross joined to the station."""
         img = mpimg.imread(self.backgroundMap)
         west, east, north, south = self.backgroundAxis
-        aspectRatio = (east - west) / (north - south)
+        mapAspect = groundAspect(south, north)
+        aspectRatio = (east - west) / ((north - south) * mapAspect)   # map width / height on the ground
         # (type, marker, color, station lons, lats, names, model lons, model lats)
         groups = []
         if(self.windExists):
@@ -938,7 +953,7 @@ class Grapher:
         fig, (ax, listAx) = plt.subplots(1, 2, figsize=(mapWidth + 4.5, mapWidth / aspectRatio + 0.8), layout="constrained",
                                          width_ratios=[mapWidth, 4.5])
         # the background images are stored south-up, so the extent is given as the map graphs give it
-        ax.imshow(img, extent=self.backgroundAxis, aspect="auto")
+        ax.imshow(img, extent=self.backgroundAxis, aspect=mapAspect)
         ax.set_xlim(west, east)
         ax.set_ylim(south, north)
         ax.set_xlabel("longitude", fontsize=10)
@@ -980,7 +995,16 @@ class Grapher:
             for row, (label, color, bold) in enumerate(lines[column * perColumn:(column + 1) * perColumn]):
                 listAx.text(0.02 + column * 0.5, 0.98 - row * lineHeight, label, transform=listAx.transAxes, ha="left", va="top",
                             fontsize=fontSize, color=color, fontweight="bold" if bold else "normal", family="monospace" if not bold else None)
-        fig.savefig(graph_directory + 'closest_points.png', dpi=170, facecolor="white", bbox_inches="tight", pad_inches=0.1)
+        # The map keeps its true ground scale, so it can be shorter than the slot the layout gives it;
+        # shrink the figure height to the map so there is no empty band above and below it.
+        for _ in range(3):
+            fig.canvas.draw()
+            width, height = fig.get_size_inches()
+            spare = (ax.get_position(original=True).height - ax.get_position().height) * height
+            if spare < 0.05:
+                break
+            fig.set_size_inches(width, height - spare)
+        fig.savefig(graph_directory + 'closest_points.png', dpi=MAP_DPI, facecolor="white", bbox_inches="tight", pad_inches=0.1)
         plt.close()
 
     def obsLabelFor(self, index):
@@ -1057,6 +1081,67 @@ class Grapher:
     #     WIND_PROFILE_EXPONENT = 0.11
     #     return windVelocity * ((10.0/altitude)**WIND_PROFILE_EXPONENT)
     
+    def styleMapAxes(self, ax, title, timestamp=None):
+        """One look for every map: bold 14 pt title with the run's prefix and, on a frame,
+        the time below the map as YYYY-MM-DD HH:MM UTC in 10 pt."""
+        ax.set_title(self.titlePrefix + title, fontsize=14, fontweight="bold")
+        if timestamp is not None:
+            ax.set_xlabel(datetime.fromtimestamp(int(timestamp), timezone.utc).strftime("%Y-%m-%d %H:%M UTC"), fontsize=10)
+
+    def drawWaterSwath(self, outputFile, swathWaters, rasterizer, plotAxis, img, aspectRatio,
+                       cmapName="Blues", vminSwath=0, vmax=3, colorbarLabel="Max Water Elevation (m)",
+                       matlabColorbar=False):
+        """Max water level over the run on the background map, saved as outputFile.
+
+        matlabColorbar=True draws the colour bar the way MATLAB's plot_max_inundation.m did:
+        one continuous bar as tall as the map, with round tick values.
+        """
+        levels = 100
+        levelBoundariesSwath = np.linspace(vminSwath, vmax, levels + 1)
+        # Swath is always >= 0 (max over the run), so a one-hue sequential
+        # ramp reads better than a diverging one with nothing below center.
+        swathCmap = plt.get_cmap(cmapName)
+        assetColor = "#eb6834"       # orange
+        buoyColor = "#1baf7a"        # aqua
+        datapointColor = "#4a3aa7"   # violet
+
+        print(len(swathWaters), len(self.mapWaterMaskedTriangles))
+        # Size the figure to the map's shape (aspectRatio is the true ground scale) so it has no empty margins
+        west, east, south, north = plotAxis
+        mapWidthOverHeight = (east - west) / ((north - south) * aspectRatio)
+        fig, ax = plt.subplots(figsize=(9 * mapWidthOverHeight + 1.6, 9), dpi=MAP_DPI)
+        plt.imshow(img, alpha=0.5, extent=self.backgroundAxis, aspect=aspectRatio, zorder=2)
+        # A node that never got wet keeps the -99999 fill in the max, so it stays blank
+        swathImage = rasterizer.imshow(ax, swathWaters, cmap=swathCmap, vmin=vminSwath, vmax=vmax, aspect=aspectRatio, zorder=1)
+        ax.scatter(self.waterLongitudes, self.waterLatitudes, label="Datapoints", color=datapointColor, edgecolors="white", linewidths=0.5, s=30, zorder=3)
+        if(self.buoyExists):
+                ax.scatter(self.buoyLongitudes, self.buoyLatitudes, label="Buoy", zorder=3, color=buoyColor, edgecolors="white", linewidths=0.5, s=30)
+        if(self.meshExists):
+            ax.scatter(self.assetLongitudes, self.assetLatitudes, label="Assets", zorder=4, alpha=0.85, marker="o", s=35, color=assetColor, edgecolors="white", linewidths=0.5)
+
+        plt.axis(plotAxis)
+        self.styleMapAxes(ax, "Water Swath")
+        ax.legend(loc="upper right", framealpha=0.9, fontsize=8)
+        if(matlabColorbar):
+            # Place the bar against the map as drawn (the fixed aspect narrows the axes box)
+            fig.canvas.draw()
+            mapBox = ax.get_position()
+            colorbarAx = fig.add_axes([mapBox.x1 + 0.02, mapBox.y0, 0.03, mapBox.height])
+            colorbar = fig.colorbar(swathImage, cax=colorbarAx)
+            roundColorbarTicks(colorbar)
+            colorbar.set_label(colorbarLabel)
+        else:
+            roundColorbarTicks(plt.colorbar(
+                ScalarMappable(norm=mcolors.Normalize(vmin=vminSwath, vmax=vmax), cmap=swathCmap),
+                boundaries=levelBoundariesSwath,
+                values=(levelBoundariesSwath[:-1] + levelBoundariesSwath[1:]) / 2,
+                label=colorbarLabel,
+                ax=plt.gca()
+            ))
+        plt.savefig(outputFile, bbox_inches="tight")
+        print("Wrote " + outputFile, flush=True)
+        plt.close()
+
     def writeWaterVideo(self, graph_directory, rasterizer, plotAxis, img):
         """Draw the water-surface elevation frames into one fixed 16:9 figure and save the video.
 
@@ -1609,7 +1694,8 @@ class Grapher:
         self.mapWaterTriangles = []
         self.mapWaterMaskedTriangles = []
         self.mapWaters = []
-        
+        self.mapWaterMax = None   # max water per node of the cropped mesh, for the swath maps
+
         self.datapointsWaters = []
         
         self.stillwaterTimes = []
@@ -2100,9 +2186,12 @@ class Grapher:
                     self.mapWaterPoints = waterDataset["map_data"]["map_points"]
                     self.mapWaterPointsLatitudes = waterDataset["map_data"]["map_pointsLatitudes"]
                     self.mapWaterPointsLongitudes = waterDataset["map_data"]["map_pointsLongitude"]
-                    self.mapWaters = np.asarray(waterDataset["map_data"]["map_water"])
+                    self.mapWaters = np.asarray(waterDataset["map_data"].get("map_water", []))
                     if(self.mapWaters.size):
                         self.maxWater = max(self.maxWater, float(self.mapWaters.max()))
+                        self.mapWaterMax = np.max(self.mapWaters, axis=0)   # --maps: every timestep is there
+                    elif("map_water_max" in waterDataset["map_data"]):
+                        self.mapWaterMax = np.asarray(waterDataset["map_data"]["map_water_max"])
                 else:
                     nodeIndex = waterDataset[stationKey]["nodeIndex"]
                     if(not self.tideExists or (stationKey in tideDataset.keys())):
@@ -2531,7 +2620,11 @@ class Grapher:
         
         img = mpimg.imread(self.backgroundMap)
         plotAxis = [self.backgroundAxis[0], self.backgroundAxis[1], self.backgroundAxis[3], self.backgroundAxis[2]]
-        aspectRatio = (self.backgroundAxis[1] - self.backgroundAxis[0]) / (self.backgroundAxis[2] - self.backgroundAxis[3])
+        # True ground scale for every map: a degree of longitude is cos(latitude) of a degree of latitude
+        aspectRatio = groundAspect(self.backgroundAxis[3], self.backgroundAxis[2])
+        # Figure shaped like the map (9 in tall, plus room for the colour bar) so a tall
+        # true-scale map does not sit small in a wide default canvas
+        mapFigureSize = (9 * (plotAxis[1] - plotAxis[0]) / ((plotAxis[3] - plotAxis[2]) * aspectRatio) + 1.6, 9)
 #         img = mpimg.imread('subsetFlipped.png')
 #         img = mpimg.imread('NorthAtlanticBasin3.png')
         if(len(self.mapWindTimes) > 0):
@@ -2543,7 +2636,7 @@ class Grapher:
             if(self.windType == "FORT"):
                 windTriangulation = Triangulation(self.mapWindPointsLongitudes, self.mapWindPointsLatitudes, triangles=self.mapWindTriangles, mask=self.mapWindMaskedTriangles)
             for index in range(len(self.mapWindTimes)):
-                fig, ax = plt.subplots()
+                fig, ax = plt.subplots(figsize=mapFigureSize)
 #                 plt.figure(figsize=(6, 6))
     #             print(self.endWindPointsLongitudes)
     #             print(self.endWindPointsLatitudes)
@@ -2564,43 +2657,42 @@ class Grapher:
                     contourset = ax.pcolormesh(self.mapWindPointsLongitudes, self.mapWindPointsLatitudes, self.mapSpeeds[index], shading='gouraud', cmap="jet", vmin=vmin, vmax=vmax, zorder=1)
                 plt.axis(plotAxis)
 #                 plt.axis([-76.59179620444773, -63.41595750651321, 36.92061410517965, 46.70943547053439])
-                plt.title("Wind Speed")
-                plt.xlabel(datetime.fromtimestamp(int(self.mapWindTimes[index]), timezone.utc))
+                self.styleMapAxes(plt.gca(), "Wind Speed", self.mapWindTimes[index])
 #                 plt.xlabel(datetime.fromtimestamp(timestamp, timezone.utc))
     #             graphs up to 10 m/s, ~20 knots
-                plt.colorbar(
+                roundColorbarTicks(plt.colorbar(
                     ScalarMappable(norm=contourset.norm, cmap=contourset.cmap),
                     ticks=range(vmin, vmax+5, 5),
                     boundaries=levelBoundaries,
                     values=(levelBoundaries[:-1] + levelBoundaries[1:]) / 2,
                     label="Meters/Second",
                     ax=plt.gca()
-                )
-                plt.savefig(graph_directory + 'map_wind_' + str(index) + '.png')
+                ))
+                plt.savefig(graph_directory + 'map_wind_' + str(index) + '.png', bbox_inches="tight", dpi=MAP_DPI)
                 plt.close()
                 gc.collect()
             writeMapAnimation(graph_directory, "map_wind_", len(self.mapWindTimes), "wind")
             mapSpeedsNoNan = np.nan_to_num(self.mapSpeeds)
             swathWind = np.max(mapSpeedsNoNan, axis=0)
-            fig, ax = plt.subplots()
+            fig, ax = plt.subplots(figsize=mapFigureSize)
             plt.imshow(img, alpha=0.5, extent=self.backgroundAxis, aspect=aspectRatio, zorder=2)
             if(self.windType == "FORT"):
                 contourset = ax.tricontourf(windTriangulation, self.mapSpeeds[index], levelBoundaries, alpha=0.5, vmin=vmin, vmax=vmax, zorder=1)
             else:
                 contourset = ax.pcolormesh(self.mapWindPointsLongitudes, self.mapWindPointsLatitudes, swathWind, shading='gouraud', cmap="jet", vmin=vmin, vmax=vmax, zorder=1)
             plt.axis(plotAxis)
-            plt.title("Wind Swath")
+            self.styleMapAxes(plt.gca(), "Wind Swath")
 #             plt.xlabel(datetime.fromtimestamp(int(self.mapWindTimes[index]), timezone.utc))
 #             graphs up to 10 m/s, ~20 knots
-            plt.colorbar(
+            roundColorbarTicks(plt.colorbar(
                 ScalarMappable(norm=contourset.norm, cmap=contourset.cmap),
                 ticks=range(vmin, vmax+5, 5),
                 boundaries=levelBoundaries,
                 values=(levelBoundaries[:-1] + levelBoundaries[1:]) / 2,
                 label="Meters/Second",
                 ax=plt.gca()
-            )
-            plt.savefig(graph_directory + 'map_wind_swath.png')
+            ))
+            plt.savefig(graph_directory + 'map_wind_swath.png', bbox_inches="tight", dpi=MAP_DPI)
             plt.close()
             gc.collect()
         if(len(self.mapRainTimes) > 0):
@@ -2614,7 +2706,7 @@ class Grapher:
             levelBoundaries = np.linspace(vmin, vmax, levels + 1)
             levelBoundariesAccumulation = np.linspace(vmin, vmaxAccumulation, levels + 1)
             for index in range(len(self.mapRainTimes)):
-                fig, ax = plt.subplots()
+                fig, ax = plt.subplots(figsize=mapFigureSize)
     #             print(self.endWavePointsLongitudes)
     #             print(self.endWavePointsLatitudes)
     #             print(self.endSWH)
@@ -2622,31 +2714,30 @@ class Grapher:
 #                 contourset = ax.tricontourf(self.mapRainPointsLongitudes, self.mapRainPointsLatitudes, self.mapRains[index], levelBoundaries, alpha=0.5, vmin=vmin, vmax=vmax)
                 contourset = ax.pcolormesh(self.mapRainPointsLongitudes, self.mapRainPointsLatitudes, self.mapRains[index], shading='gouraud', cmap="jet", vmin=vmin, vmax=vmax, zorder=1)
                 plt.axis(plotAxis)
-                plt.title("Rain")
-                plt.xlabel(datetime.fromtimestamp(int(self.mapRainTimes[index]), timezone.utc))
+                self.styleMapAxes(plt.gca(), "Rain", self.mapRainTimes[index])
     #             plt.gca().invert_yaxis()
-                plt.colorbar(
+                roundColorbarTicks(plt.colorbar(
                     ScalarMappable(norm=contourset.norm, cmap=contourset.cmap),
                     ticks=range(vmin, vmax+5, 5),
                     boundaries=levelBoundaries,
                     values=(levelBoundaries[:-1] + levelBoundaries[1:]) / 2,
                     label="Millimeters/Hour",
                     ax=plt.gca()
-                )
-                plt.savefig(graph_directory + 'map_rain_' + str(index) + '.png')
+                ))
+                plt.savefig(graph_directory + 'map_rain_' + str(index) + '.png', bbox_inches="tight", dpi=MAP_DPI)
                 plt.close()
                 gc.collect()
             writeMapAnimation(graph_directory, "map_rain_", len(self.mapRainTimes), "rain")
             mapRainsNoNan = np.nan_to_num(self.mapRains)
             accumulatedRain = np.sum(mapRainsNoNan, axis=0)
-            fig, ax = plt.subplots()
+            fig, ax = plt.subplots(figsize=mapFigureSize)
             plt.imshow(img, alpha=0.5, extent=self.backgroundAxis, aspect=aspectRatio, zorder=2)
             contourset = ax.pcolormesh(self.mapRainPointsLongitudes, self.mapRainPointsLatitudes, accumulatedRain, shading='gouraud', cmap="jet", vmin=vmin, vmax=vmaxAccumulation, zorder=1)
             plt.axis(plotAxis)
-            plt.title("Rain Accumulation")
+            self.styleMapAxes(plt.gca(), "Rain Accumulation")
 #             plt.xlabel(datetime.fromtimestamp(int(self.mapWindTimes[index]), timezone.utc))
 #             graphs up to 10 m/s, ~20 knots
-            plt.colorbar(
+            roundColorbarTicks(plt.colorbar(
                 ScalarMappable(norm=contourset.norm, cmap=contourset.cmap),
 #                 Increase vmax by factor of length of time to fit accumulation
                 ticks=range(vmin, vmaxAccumulation+5, 50),
@@ -2654,8 +2745,8 @@ class Grapher:
                 values=(levelBoundariesAccumulation[:-1] + levelBoundariesAccumulation[1:]) / 2,
                 label="Millimeters",
                 ax=plt.gca()
-            )
-            plt.savefig(graph_directory + 'map_rain_accumulation.png')
+            ))
+            plt.savefig(graph_directory + 'map_rain_accumulation.png', bbox_inches="tight", dpi=MAP_DPI)
             plt.close()
             gc.collect()
         if(len(self.mapElevation) > 0):
@@ -2682,20 +2773,20 @@ class Grapher:
 #             for index in range(len(self.datapointsElevation)):
 #                 ax.annotate(str(round(self.datapointsElevation[index], 2)), (self.elevationLongitudes[index], self.elevationLatitudes[index]))
             plt.axis(plotAxis)
-            plt.title("Elevation Map")
+            self.styleMapAxes(plt.gca(), "Elevation Map")
 #             plt.title("Map Elevation - " + "surf distance: " + self.runupSurfDistance[index] + " offshore distance: " + self.runupOffshoreDistance[index] + " slope: " + self.runupAverageSlope[index])
 #             ax.legend(loc="upper right")
 #             plt.xlabel(datetime.fromtimestamp(int(self.mapWindTimes[index]), timezone.utc))
 #             graphs up to 10 m/s, ~20 knots
-            plt.colorbar(
+            roundColorbarTicks(plt.colorbar(
                 ScalarMappable(norm=contourset.norm, cmap=contourset.cmap),
                 ticks=range(vmin, vmax+5, 10),
                 boundaries=levelBoundaries,
                 values=(levelBoundaries[:-1] + levelBoundaries[1:]) / 2,
                 label="Meters",
                 ax=plt.gca()
-            )        
-            plt.savefig(graph_directory + 'map_elevation.png')
+            ))        
+            plt.savefig(graph_directory + 'map_elevation.png', dpi=MAP_DPI)
             plt.close()
             gc.collect()
         if(len(self.mapEtaTimes) > 0):
@@ -2714,18 +2805,17 @@ class Grapher:
 #               Todo: Fix triangulation errors
 #                 contourset = ax.tripcolor(self.mapWaterPointsLongitudes, self.mapWaterPointsLatitudes, self.mapWaters[index], shading='gouraud', cmap="jet", vmin=vmin, vmax=vmax, zorder=1)
                 plt.axis(plotAxis)
-                plt.title("Eta Elevation")
-                plt.xlabel(datetime.fromtimestamp(int(self.mapEtaTimes[index]),timezone.utc))
+                self.styleMapAxes(plt.gca(), "Eta Elevation", self.mapEtaTimes[index])
     #             plt.gca().invert_yaxis()
-                plt.colorbar(
+                roundColorbarTicks(plt.colorbar(
                     ScalarMappable(norm=contourset.norm, cmap=contourset.cmap),
                     ticks=range(vmin, vmax+5, 2),
                     boundaries=levelBoundaries,
                     values=(levelBoundaries[:-1] + levelBoundaries[1:]) / 2,
                     label="Meters",
                     ax=plt.gca()
-                )
-                plt.savefig(graph_directory + 'map_eta_' + str(index) + '.png')
+                ))
+                plt.savefig(graph_directory + 'map_eta_' + str(index) + '.png', dpi=MAP_DPI)
                 plt.close()
                 gc.collect()
             writeMapAnimation(graph_directory, "map_eta_", len(self.mapEtaTimes), "eta")
@@ -2735,42 +2825,32 @@ class Grapher:
             plt.imshow(img, alpha=0.5, extent=self.backgroundAxis, aspect=aspectRatio, zorder=2)
             contourset = ax.pcolormesh(self.mapEtaPointsLongitudes, self.mapEtaPointsLatitudes, swathEta, shading='gouraud', cmap="jet", vmin=vmin, vmax=vmax, zorder=1)
             plt.axis(plotAxis)
-            plt.title("Eta Swath")
+            self.styleMapAxes(plt.gca(), "Eta Swath")
 #             plt.xlabel(datetime.fromtimestamp(int(self.mapWindTimes[index]), timezone.utc))
 #             graphs up to 10 m/s, ~20 knots
-            plt.colorbar(
+            roundColorbarTicks(plt.colorbar(
                 ScalarMappable(norm=contourset.norm, cmap=contourset.cmap),
                 ticks=range(vmin, vmax+5, 2),
                 boundaries=levelBoundaries,
                 values=(levelBoundaries[:-1] + levelBoundaries[1:]) / 2,
                 label="Meters",
                 ax=plt.gca()
-            )
-            plt.savefig(graph_directory + 'map_eta_swath.png')
+            ))
+            plt.savefig(graph_directory + 'map_eta_swath.png', dpi=MAP_DPI)
             plt.close()
             gc.collect()
         if(len(self.mapWaterTimes) > 0):
             vmin = -1
-            vminSwath = 0
 #             vmax = math.ceil(self.maxWater)
             vmax = 3
 #             vmax = 20
             levels = 100
             levelBoundaries = np.linspace(vmin, vmax, levels + 1)
-            levelBoundariesSwath = np.linspace(vminSwath, vmax, levels + 1)
 
             # Diverging colormap centered on the datum (0 m) instead of the
             # rainbow "jet" map, which has no perceptual ordering for magnitude.
             waterCmap = plt.get_cmap("RdBu_r")
             waterNorm = mcolors.TwoSlopeNorm(vmin=vmin, vcenter=0, vmax=vmax)
-            # Swath is always >= 0 (max over the run), so a one-hue sequential
-            # ramp reads better than a diverging one with nothing below center.
-            swathCmap = plt.get_cmap("Blues")
-
-            assetColor = "#eb6834"       # orange
-            obsColor = "#256abf"         # blue
-            buoyColor = "#1baf7a"        # aqua
-            datapointColor = "#4a3aa7"   # violet
 
             # The mesh is turned into a pixel grid once and every frame reuses one
             # figure, so a frame costs one numpy gather and a redraw instead of a
@@ -2780,33 +2860,34 @@ class Grapher:
                                         self.mapWaterTriangles, self.mapWaterMaskedTriangles, plotAxis)
             self.writeWaterVideo(graph_directory, rasterizer, plotAxis, img)
             gc.collect()
-
-            swathWaters = np.max(self.mapWaters, axis=0)
-            print(len(swathWaters), len(self.mapWaterMaskedTriangles))
-            fig, ax = plt.subplots(figsize=(9,9), dpi=150)
-            plt.imshow(img, alpha=0.5, extent=self.backgroundAxis, aspect=aspectRatio, zorder=2)
-            # A node that never got wet keeps the -99999 fill in the max, so it stays blank
-            contourset = rasterizer.imshow(ax, swathWaters, cmap=swathCmap, vmin=vminSwath, vmax=vmax, aspect=aspectRatio, zorder=1)
-            ax.scatter(self.waterLongitudes, self.waterLatitudes, label="Datapoints", color=datapointColor, edgecolors="white", linewidths=0.5, s=30, zorder=3)
-            if(self.buoyExists):
-                    ax.scatter(self.buoyLongitudes, self.buoyLatitudes, label="Buoy", zorder=3, color=buoyColor, edgecolors="white", linewidths=0.5, s=30)
-            if(self.meshExists):
-                ax.scatter(self.assetLongitudes, self.assetLatitudes, label="Assets", zorder=4, alpha=0.85, marker="o", s=35, color=assetColor, edgecolors="white", linewidths=0.5)
-
-            plt.axis(plotAxis)
-            ax.set_title(self.titlePrefix + "Water Swath", fontsize=14, fontweight="bold")
-#             plt.xlabel(datetime.fromtimestamp(int(self.mapWindTimes[index]), timezone.utc))
-#             graphs up to 10 m/s, ~20 knots
-            ax.legend(loc="upper right", framealpha=0.9, fontsize=8)
-            plt.colorbar(
-                ScalarMappable(norm=mcolors.Normalize(vmin=vminSwath, vmax=vmax), cmap=swathCmap),
-                boundaries=levelBoundariesSwath,
-                values=(levelBoundariesSwath[:-1] + levelBoundariesSwath[1:]) / 2,
-                label="Max Water Elevation (m)",
-                ax=plt.gca()
-            )
-            plt.savefig(graph_directory + 'map_water_swath.png', bbox_inches="tight")
-            plt.close()
+        # Max water over the run. RICHAMP_max_inundation.png is drawn on every water run
+        # (the dashboard picks it up); map_water_swath.png, the same figure, only with --maps.
+        if(self.mapWaterMax is not None):
+            if(len(self.mapWaterTimes) == 0):
+                print("Rasterizing water mesh for the max water map", flush=True)
+                rasterizer = MeshRasterizer(self.mapWaterPointsLongitudes, self.mapWaterPointsLatitudes,
+                                            self.mapWaterTriangles, self.mapWaterMaskedTriangles, plotAxis)
+            if(len(self.mapWaterTimes) > 0):
+                self.drawWaterSwath(graph_directory + "map_water_swath.png", self.mapWaterMax, rasterizer, plotAxis, img, aspectRatio)
+            # RICHAMP_max_inundation.png keeps the colour bar of the old MATLAB plot_max_inundation.m:
+            # turbo, from the lowest to the highest max water level of the nodes inside the map
+            west, east, south, north = plotAxis
+            longitudes = np.asarray(self.mapWaterPointsLongitudes)
+            latitudes = np.asarray(self.mapWaterPointsLatitudes)
+            waterMax = np.asarray(self.mapWaterMax, dtype=np.float64)
+            inMap = ((longitudes >= west) & (longitudes <= east) & (latitudes >= south) & (latitudes <= north)
+                     & (waterMax != MeshRasterizer.DRY) & np.isfinite(waterMax))
+            if(inMap.any()):
+                inundationMin = float(waterMax[inMap].min())
+                inundationMax = float(waterMax[inMap].max())
+                if(inundationMax <= inundationMin):   # flat field (e.g. a zero placeholder run)
+                    inundationMax = inundationMin + 0.01
+                self.drawWaterSwath(graph_directory + "RICHAMP_max_inundation.png", self.mapWaterMax, rasterizer, plotAxis, img,
+                                    aspectRatio, cmapName="turbo", vminSwath=inundationMin, vmax=inundationMax,
+                                    colorbarLabel="SSH [m]", matlabColorbar=True)
+            else:
+                print("No wet node inside the map; RICHAMP_max_inundation.png not drawn", flush=True)
+            del rasterizer
             gc.collect()
         if(len(self.mapVelocityTimes) > 0):
             vmin = 0
@@ -2820,7 +2901,7 @@ class Grapher:
             datapointColor = "#4a3aa7"   # violet
 
             for index in range(len(self.mapVelocityTimes)):
-                fig, ax = plt.subplots(figsize=(9,9), dpi=150)
+                fig, ax = plt.subplots(figsize=(9,9), dpi=MAP_DPI)
                 plt.imshow(img, extent=self.backgroundAxis, alpha=0.6, aspect=aspectRatio, zorder=2)
                 currentMaskedTriangles = self.mapVelocityMaskedTriangles.copy()
                 for triangleIndex, triangle in enumerate(self.mapVelocityTriangles):
@@ -2835,16 +2916,15 @@ class Grapher:
                 ax.scatter(self.velocityLongitudes, self.velocityLatitudes, label="Datapoints", color=datapointColor, edgecolors="white", linewidths=0.5, s=30, zorder=3)
 
                 plt.axis(plotAxis)
-                ax.set_title(self.titlePrefix + "Water Velocity", fontsize=14, fontweight="bold")
-                ax.set_xlabel(datetime.fromtimestamp(self.mapVelocityTimes[index], timezone.utc).strftime("%Y-%m-%d %H:%M UTC"), fontsize=10)
+                self.styleMapAxes(ax, "Water Velocity", self.mapVelocityTimes[index])
                 ax.legend(loc="upper right", framealpha=0.9, fontsize=8)
-                plt.colorbar(
+                roundColorbarTicks(plt.colorbar(
                     ScalarMappable(norm=mcolors.Normalize(vmin=vmin, vmax=vmax), cmap=velocityCmap),
                     boundaries=levelBoundaries,
                     values=(levelBoundaries[:-1] + levelBoundaries[1:]) / 2,
                     label="Velocity (m/s)",
                     ax=plt.gca()
-                )
+                ))
                 plt.savefig(graph_directory + 'map_velocity_' + str(index) + '.png', bbox_inches="tight")
                 plt.close()
                 gc.collect()
@@ -2859,20 +2939,20 @@ class Grapher:
                         swathMaskedTriangles[index] = True
                         break
             velocityTriangulation = Triangulation(self.mapVelocityPointsLongitudes, self.mapVelocityPointsLatitudes, triangles=self.mapVelocityTriangles, mask=swathMaskedTriangles)
-            fig, ax = plt.subplots(figsize=(9,9), dpi=150)
+            fig, ax = plt.subplots(figsize=(9,9), dpi=MAP_DPI)
             plt.imshow(img, alpha=0.5, extent=self.backgroundAxis, aspect=aspectRatio, zorder=2)
             ax.tripcolor(velocityTriangulation, swathVelocity, shading='gouraud', cmap=velocityCmap, vmin=vmin, vmax=vmax, zorder=1)
             ax.scatter(self.velocityLongitudes, self.velocityLatitudes, label="Datapoints", color=datapointColor, edgecolors="white", linewidths=0.5, s=30, zorder=3)
             plt.axis(plotAxis)
-            ax.set_title(self.titlePrefix + "Water Velocity Swath", fontsize=14, fontweight="bold")
+            self.styleMapAxes(ax, "Water Velocity Swath")
             ax.legend(loc="upper right", framealpha=0.9, fontsize=8)
-            plt.colorbar(
+            roundColorbarTicks(plt.colorbar(
                 ScalarMappable(norm=mcolors.Normalize(vmin=vmin, vmax=vmax), cmap=velocityCmap),
                 boundaries=levelBoundaries,
                 values=(levelBoundaries[:-1] + levelBoundaries[1:]) / 2,
                 label="Max Velocity (m/s)",
                 ax=plt.gca()
-            )
+            ))
             plt.savefig(graph_directory + 'map_velocity_swath.png', bbox_inches="tight")
             plt.close()
             gc.collect()
@@ -2884,7 +2964,7 @@ class Grapher:
             levelBoundaries = np.linspace(vmin, vmax, levels + 1)
             # waveTriangulation = Triangulation(self.mapWavePointsLongitudes, self.mapWavePointsLatitudes, triangles=self.mapWaveTriangles, mask=self.mapWaveMaskedTriangles)
             for index in range(len(self.mapWaveTimes)):
-                fig, ax = plt.subplots()
+                fig, ax = plt.subplots(figsize=mapFigureSize)
     #             print(self.endWavePointsLongitudes)
     #             print(self.endWavePointsLatitudes)
     #             print(self.endSWH)
@@ -2905,18 +2985,17 @@ class Grapher:
                 plt.imshow(img, extent=self.backgroundAxis, aspect=aspectRatio)
                 contourset = ax.tricontourf(waveTriangulation, self.mapSWH[index], levelBoundaries, alpha=0.5, vmin=vmin, vmax=vmax)
                 plt.axis(plotAxis)
-                plt.title("Significant Wave Height")
-                plt.xlabel(datetime.fromtimestamp(int(self.mapWaveTimes[index]),timezone.utc))
+                self.styleMapAxes(plt.gca(), "Significant Wave Height", self.mapWaveTimes[index])
     #             plt.gca().invert_yaxis()
-                plt.colorbar(
+                roundColorbarTicks(plt.colorbar(
                     ScalarMappable(norm=contourset.norm, cmap=contourset.cmap),
                     ticks=range(vmin, vmax+5, 5),
                     boundaries=levelBoundaries,
                     values=(levelBoundaries[:-1] + levelBoundaries[1:]) / 2,
                     label="Meters",
                     ax=plt.gca()
-                )                
-                plt.savefig(graph_directory + 'map_swh_' + str(index) + '.png')
+                ))                
+                plt.savefig(graph_directory + 'map_swh_' + str(index) + '.png', bbox_inches="tight", dpi=MAP_DPI)
                 plt.close()
                 gc.collect()
             writeMapAnimation(graph_directory, "map_swh_", len(self.mapWaveTimes), "wave")
@@ -2932,25 +3011,25 @@ class Grapher:
                         self.mapWaveMaskedTriangles[index] = True
                         break
             waveTriangulation = Triangulation(self.mapWavePointsLongitudes, self.mapWavePointsLatitudes, triangles=self.mapWaveTriangles, mask=self.mapWaveMaskedTriangles)
-            fig, ax = plt.subplots()
+            fig, ax = plt.subplots(figsize=mapFigureSize)
             plt.imshow(img, alpha=0.5, extent=self.backgroundAxis, aspect=aspectRatio, zorder=2)
             contourset = ax.tricontourf(waveTriangulation, swathSWH, levelBoundaries, alpha=0.5, vmin=vmin, vmax=vmax, zorder=1)
             ax.scatter(self.waveLongitudes, self.waveLatitudes, label="Datapoints")
             if(self.tideExists):
                     ax.scatter(self.tideLongitudes, self.tideLatitudes, label="Tide", zorder=3)
             plt.axis(plotAxis)
-            plt.title("Wave Significant Wave Height Swath")
+            self.styleMapAxes(plt.gca(), "Wave Significant Wave Height Swath")
 #             plt.xlabel(datetime.fromtimestamp(int(self.mapWindTimes[index]), timezone.utc))
 #             graphs up to 10 m/s, ~20 knots
-            plt.colorbar(
+            roundColorbarTicks(plt.colorbar(
                 ScalarMappable(norm=contourset.norm, cmap=contourset.cmap),
                 ticks=range(vmin, vmax+5, 5),
                 boundaries=levelBoundaries,
                 values=(levelBoundaries[:-1] + levelBoundaries[1:]) / 2,
                 label="Meters",
                 ax=plt.gca()
-            )        
-            plt.savefig(graph_directory + 'map_swh_swath.png')
+            ))        
+            plt.savefig(graph_directory + 'map_swh_swath.png', bbox_inches="tight", dpi=MAP_DPI)
             plt.close()
             gc.collect()
         # Plot wind speed over time

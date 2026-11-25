@@ -161,6 +161,11 @@ if [[ $GRAPH_WATER == "True" ]]; then
 fi
 echo python3 $postprocessdir/generateGraphs.py --tempDir $POST_TEMP_DIR/ --backgroundChoice $BACKGROUND_CHOICE --stations $WIND_STATIONS $graphAdcirc $graphGfs $graphRain $graphPost $graphObs $graphWaves $graphWater
 python3 $postprocessdir/generateGraphs.py --tempDir $POST_TEMP_DIR/ --backgroundChoice $BACKGROUND_CHOICE --stations $WIND_STATIONS $graphAdcirc $graphGfs $graphRain $graphPost $graphObs $graphWaves $graphWater
+# generateGraphs.py draws the max inundation map into graphs/; it goes to the top of $RICHAMP_OUTDIR, not graphs/
+rm -f RICHAMP_max_inundation.png
+if [ -f graphs/RICHAMP_max_inundation.png ]; then
+    mv graphs/RICHAMP_max_inundation.png RICHAMP_max_inundation.png
+fi
 
 
 # richamp_scale_and_subset.scr
@@ -177,25 +182,23 @@ if [[ $TC_FORCING == "True" ]]; then
    forcing=NHC
 fi
 
-# call Matlab scripts to trim depth data to RICHAMP region of interest and to generate a simple max inundation plot
+# call Matlab script to trim depth data to RICHAMP region of interest
+# (the max inundation plot, RICHAMP_max_inundation.png, is drawn by generateGraphs.py above
+#  whenever GRAPH_WATER is True; Plot_Eonly_asgs.m's TS1.png and subsetmaxE.png are no longer made)
 indir=$RICHAMP_INDIR/
 #indir=/project/pi_iginis_uri_edu/pranav_sai_uri_edu/ecflow_output/ricv1/forecast_ensemble/forecast_base/ADCIRC/simulation/  # Matlab script expects trailing slashes
 outdir=./
 postprocessdir=$POSTHOME
-nc_rough=$postprocessdir/NLCD_z0_RICHAMP_Reg_Grid.nc
-module load matlab/r2021b
 if [[ "$SCENARIO_WIND" != "" ]]; then
     cp $RICHAMP_INDIR/fort.63.nc $POSTHOME/RICHAMP_fort63.nc
-    matlab -nodesktop -nodisplay -nosplash -r "addpath $postprocessdir, try, plot_max_inundation $indir $outdir $nc_rough $track $forcing, catch me, fprintf('%s / %s\n',me.identifier,me.message), end, exit"
 else
-    echo matlab -nodesktop -nodisplay -nosplash -r "addpath $postprocessdir, try, subset_fort63_richamp $indir $outdir, plot_max_inundation $indir $outdir $nc_rough $track $forcing, catch me, fprintf('%s / %s\n',me.identifier,me.message), end, exit"
-    matlab -nodesktop -nodisplay -nosplash -r "addpath $postprocessdir, try, subset_fort63_richamp $indir $outdir, plot_max_inundation $indir $outdir $nc_rough $track $forcing, catch me, fprintf('%s / %s\n',me.identifier,me.message), end, exit"
+    module load matlab/r2021b
+    echo matlab -nodesktop -nodisplay -nosplash -r "addpath $postprocessdir, try, subset_fort63_richamp $indir $outdir, catch me, fprintf('%s / %s\n',me.identifier,me.message), end, exit"
+    matlab -nodesktop -nodisplay -nosplash -r "addpath $postprocessdir, try, subset_fort63_richamp $indir $outdir, catch me, fprintf('%s / %s\n',me.identifier,me.message), end, exit"
+    module purge
 fi
-module purge
-module load matlab/r2021a
-matlab -nodisplay -nosplash -nodesktop -singleCompThread -r "run('Plot_Eonly_asgs.m');exit;"
 
-# move files to a consistent location for dashboarding team 
+# move files to a consistent location for dashboarding team
 water_output=RICHAMP_fort63.nc
 max_inund_plot=RICHAMP_max_inundation.png
 wind_output=$output.nc

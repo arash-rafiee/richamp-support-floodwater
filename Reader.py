@@ -535,6 +535,14 @@ class Reader:
         array per kept timestep (matching the shape getValues() used to
         return for a full-domain read).
         """
+        resultsPerVar = [[] for _ in varNames]
+        for blocks in self.iterVariableBlocksAtNodes(dataset, varNames, globalNodeIndices, numTimesteps, timeSparseness, chunkSize):
+            for varIndex, block in enumerate(blocks):
+                resultsPerVar[varIndex].extend(block)
+        return resultsPerVar
+
+    def iterVariableBlocksAtNodes(self, dataset, varNames, globalNodeIndices, numTimesteps, timeSparseness, chunkSize=None):
+        """Yield, per chunk of kept timesteps, one float32 (chunk, len(globalNodeIndices)) array per varName."""
         if(chunkSize is None):
             chunkSize = self.MAP_TIME_CHUNK_SIZE
         # Read one contiguous time x node block per chunk and pick the nodes in
@@ -546,17 +554,17 @@ class Reader:
         nodeStop = int(nodeIndices.max()) + 1
         localNodeIndices = nodeIndices - nodeStart
         keptTimeIndices = list(range(0, numTimesteps, timeSparseness))
-        resultsPerVar = [[] for _ in varNames]
         for chunkStart in range(0, len(keptTimeIndices), chunkSize):
             chunkTimeIndices = keptTimeIndices[chunkStart:chunkStart + chunkSize]
             timeStart = chunkTimeIndices[0]
             timeStop = chunkTimeIndices[-1] + 1
-            for varIndex, varName in enumerate(varNames):
+            blocks = []
+            for varName in varNames:
                 block = dataset.variables[varName][timeStart:timeStop, nodeStart:nodeStop][::timeSparseness]
                 # float32 halves memory; the -99999 dry fill value is exact in float32
-                resultsPerVar[varIndex].extend(np.asarray(block)[:, localNodeIndices].astype(np.float32))
+                blocks.append(np.asarray(block)[:, localNodeIndices].astype(np.float32))
             print("  map read timesteps", timeStart, "to", timeStop - 1, "of", numTimesteps, flush=True)
-        return resultsPerVar
+            yield blocks
 
     def getCroppedMapData(self, dataset, dataType, times, timeSparseness, chunkSize=None):
         """
@@ -579,6 +587,33 @@ class Reader:
         nodes = (latitudes[globalNodeIndices], longitudes[globalNodeIndices])
         nodesIndex = list(range(len(globalNodeIndices)))
         return value, nodes, nodesIndex, localTriangles, maskedTriangles
+
+    def getWaterMaxMap(self, dataset, times, data, chunkSize=None):
+        """map_data with only the max water level over all timesteps at each node of the
+        background-cropped mesh (the same field Grapher's map_water_swath.png shows).
+
+        Built for every --waterExists run, also without --maps, for RICHAMP_max_inundation.png.
+        Only one value per node is kept, so this costs one pass over zeta and little memory.
+        A node that is dry at every timestep keeps the -99999 fill value and is drawn blank.
+        """
+        print("getting max water map", flush=True)
+        longitudes = np.asarray(dataset.variables["x"][:])
+        latitudes = np.asarray(dataset.variables["y"][:])
+        triangles = np.array(dataset.variables["element"][:]) - 1
+        localTriangles, globalNodeIndices, maskedTriangles = self.cropTrianglesToBackground(triangles, longitudes, latitudes)
+        waterMax = np.full(len(globalNodeIndices), -np.inf, dtype=np.float32)
+        for (block,) in self.iterVariableBlocksAtNodes(dataset, self.MAP_VARIABLE_NAMES["water"], globalNodeIndices, len(times), 1, chunkSize):
+            waterMax = np.maximum(waterMax, block.max(axis=0))
+        data["map_data"] = {
+            "map_times": [],
+            "map_points": list(range(len(globalNodeIndices))),
+            "map_pointsLatitudes": latitudes[globalNodeIndices],
+            "map_pointsLongitude": longitudes[globalNodeIndices],
+            "map_triangles": localTriangles,
+            "map_maskedTriangles": maskedTriangles,
+            "map_water_max": waterMax,
+        }
+        return data
 
     def getMap(self, dataset, dataType, times, spaceSparseness, timeSparseness, data):
         print("getting map", dataType, flush=True)
@@ -1119,6 +1154,9 @@ class Reader:
         if(self.GENERATE_MAPS and dataType in self.MAP_DATA_TYPES):
 
             data = self.getMap(dataset, dataType, times, spaceSparseness, timeSparseness, data)
+        elif(dataType == "water" and self.format == "FORT"):
+            # No --maps: still build the max water map for RICHAMP_max_inundation.png
+            data = self.getWaterMaxMap(dataset, times, data)
 
         print("Interpolating", dataType, flush=True)
         nodesIndex = []
@@ -1220,6 +1258,7 @@ class Reader:
     # map_data keys moved out of the JSON into .npy files, with the dtype to store them as
     MAP_ARRAY_DTYPES = {
         "map_water": np.float32,
+        "map_water_max": np.float32,
         "map_triangles": np.int32,
         "map_pointsLatitudes": np.float64,
         "map_pointsLongitude": np.float64,
