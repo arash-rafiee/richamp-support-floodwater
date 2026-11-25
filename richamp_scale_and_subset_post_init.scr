@@ -139,7 +139,7 @@ graphWaves=""
 graphWater=""
 
 if [[ $GRAPH_ADCIRC == "True" ]]; then
-    graphAdcirc="--adcircExists true --wind $RICHAMP_INDIR/fort.74.nc"
+    graphAdcirc="--fort74Exists true --wind $RICHAMP_INDIR/fort.74.nc"
 fi
 if [[ $GRAPH_GFS == "True" ]]; then
     graphGfs="--gfsExists true --wind $wind_filename.nc"
