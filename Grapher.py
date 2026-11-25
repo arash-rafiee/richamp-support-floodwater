@@ -1905,7 +1905,7 @@ class Grapher:
         if("FORT" in dataToGraph):
             self.windType = "FORT"
             with open(dataToGraph["FORT"]) as outfile:
-                windDataset = json.load(outfile)
+                windDataset = loadMapArrays(json.load(outfile))   # --maps keeps the mesh wind in .npy files
         if("GAUGE" in dataToGraph):
             with open(dataToGraph["GAUGE"]) as outfile:
                 gaugeDataset = json.load(outfile)
@@ -1934,19 +1934,13 @@ class Grapher:
                     if(self.windType == "FORT"):
                         self.mapWindTriangles = windDataset["map_data"]["map_triangles"]
                         self.mapWindMaskedTriangles = windDataset["map_data"]["map_maskedTriangles"]
-                        mapWindsX = windDataset["map_data"]["map_windsX"]
-                        mapWindsY = windDataset["map_data"]["map_windsY"]
-                        for index in range(len(self.mapWindTimes)):
-                            lineSpeed = []
-                            lineDirection = []
-                            for nodeIndex in range(len(mapWindsX[index])):
-                                pointSpeed = self.vectorSpeed(mapWindsX[index][nodeIndex], mapWindsY[index][nodeIndex])
-                                if(pointSpeed > self.maxWind):
-                                    self.maxWind = pointSpeed
-                                lineSpeed.append(pointSpeed)
-                                lineDirection.append(self.vectorDirection(mapWindsX[index][nodeIndex], mapWindsY[index][nodeIndex]))
-                            self.mapSpeeds.append(pointSpeeds)
-                            self.mapDirections.append(pointDirections)
+                        # (time, node) wind components of the cropped ADCIRC mesh; speed for every node at once
+                        mapWindsX = np.asarray(windDataset["map_data"]["map_windsX"], dtype=np.float32)
+                        mapWindsY = np.asarray(windDataset["map_data"]["map_windsY"], dtype=np.float32)
+                        self.mapSpeeds = np.hypot(mapWindsX, mapWindsY)
+                        self.mapDirections = np.mod(np.degrees(np.arctan2(-mapWindsY, mapWindsX)), 360)
+                        if(self.mapSpeeds.size):
+                            self.maxWind = max(self.maxWind, float(np.nanmax(self.mapSpeeds)))
                     elif(self.windType == "GFS"):
                         mapWindsX = windDataset["map_data"]["map_windsX"]
                         mapWindsY = windDataset["map_data"]["map_windsY"]
@@ -2670,7 +2664,10 @@ class Grapher:
             levels = 100
             levelBoundaries = np.linspace(vmin, vmax, levels + 1)
             if(self.windType == "FORT"):
-                windTriangulation = Triangulation(self.mapWindPointsLongitudes, self.mapWindPointsLatitudes, triangles=self.mapWindTriangles, mask=self.mapWindMaskedTriangles)
+                # the mesh is turned into a pixel grid once; each frame is then a gather, as for the water maps
+                print("Rasterizing wind mesh for the map frames", flush=True)
+                windRasterizer = MeshRasterizer(self.mapWindPointsLongitudes, self.mapWindPointsLatitudes,
+                                                self.mapWindTriangles, self.mapWindMaskedTriangles, plotAxis)
             for index in range(len(self.mapWindTimes)):
                 fig, ax = plt.subplots(figsize=mapFigureSize)
 #                 plt.figure(figsize=(6, 6))
@@ -2681,7 +2678,7 @@ class Grapher:
 #                 plt.imshow(img, alpha=0.5, extent=[-76.59179620444773, -63.41595750651321, 46.70943547053439, 36.92061410517965], zorder=2)
                 if(self.windType == "FORT"):
 #                     plt.scatter(self.mapWindPointsLongitudes, self.mapWindPointsLatitudes, c=self.mapSpeeds[index], alpha=0.5, label="Forecast", marker=".")
-                    contourset = ax.tricontourf(windTriangulation, self.mapSpeeds[index], levelBoundaries, alpha=0.5, vmin=vmin, vmax=vmax, zorder=1)
+                    contourset = windRasterizer.imshow(ax, self.mapSpeeds[index], cmap="jet", vmin=vmin, vmax=vmax, aspect=aspectRatio, zorder=1)
                 elif(self.windType == "POST"):
 #                     plt.scatter(self.mapWindPointsLongitudes, self.mapWindPointsLatitudes, c=self.mapSpeeds[index], alpha=0.3, label="Forecast", marker=".", s=100)
 #                     contourset = ax.tricontourf(self.mapWindPointsLongitudes, self.mapWindPointsLatitudes, self.mapSpeeds[index], levelBoundaries, alpha=0.5, vmin=vmin, vmax=vmax)
@@ -2713,7 +2710,7 @@ class Grapher:
             fig, ax = plt.subplots(figsize=mapFigureSize)
             plt.imshow(img, alpha=0.5, extent=self.backgroundAxis, aspect=aspectRatio, zorder=2)
             if(self.windType == "FORT"):
-                contourset = ax.tricontourf(windTriangulation, self.mapSpeeds[index], levelBoundaries, alpha=0.5, vmin=vmin, vmax=vmax, zorder=1)
+                contourset = windRasterizer.imshow(ax, swathWind, cmap="jet", vmin=vmin, vmax=vmax, aspect=aspectRatio, zorder=1)
             else:
                 contourset = ax.pcolormesh(self.mapWindPointsLongitudes, self.mapWindPointsLatitudes, swathWind, shading='gouraud', cmap="jet", vmin=vmin, vmax=vmax, zorder=1)
             plt.axis(plotAxis)

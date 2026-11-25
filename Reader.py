@@ -55,7 +55,7 @@ class Reader:
     MAP_TIME_CHUNK_SIZE = 24
     # Set from generateGraphs --maps; when on, map_data is added for these types
     GENERATE_MAPS = False
-    MAP_DATA_TYPES = ("water", "velocity", "swh", "gfs", "rain")
+    MAP_DATA_TYPES = ("water", "velocity", "swh", "gfs", "rain", "fort")
     def __init__(self, STATIONS_FILE="", STATION_TO_NODE_DISTANCES_FILE="", NODES_FILE="", BACKGROUND_AXIS=[], format=""):
         self.STATIONS_FILE = STATIONS_FILE
         self.STATION_TO_NODE_DISTANCES_FILE = STATION_TO_NODE_DISTANCES_FILE
@@ -1249,7 +1249,7 @@ class Reader:
             else:
                 data[stationKey][dataType] = interpolatedValues
 
-        if(dataType == "water"):
+        if(dataType in ("water", "fort")):   # mesh fields: big map arrays go to .npy files
             self.saveMapArrays(data, DATA_FILE)
         print("Writing data to", DATA_FILE, flush=True)
         with open(DATA_FILE, "w") as outfile:
@@ -1259,6 +1259,8 @@ class Reader:
     MAP_ARRAY_DTYPES = {
         "map_water": np.float32,
         "map_water_max": np.float32,
+        "map_windsX": np.float32,
+        "map_windsY": np.float32,
         "map_triangles": np.int32,
         "map_pointsLatitudes": np.float64,
         "map_pointsLongitude": np.float64,
