@@ -55,3 +55,19 @@ tools/adcirc_inputs/test/
 
 # downloads of tools/nest/get_nest_data.py
 nest_data*/
+
+# local meeting notes
+MeetingNotes/
+
+# local Obsidian vault and any other vault settings folders
+/obsidian/
+.obsidian/
+
+# Manning's n study: C-CAP rasters, scripts, figures and fort.13 outputs
+/ManningCoefficientStudy/
+
+# PDF files (papers in references/, reports)
+*.pdf
+
+# model meshes and setups (large; RICHAMP ADCIRC, HSOFS NE mesh, NOAA STOFS-2D-Global inputs)
+/Models/
