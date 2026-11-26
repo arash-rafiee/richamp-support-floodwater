@@ -198,43 +198,33 @@ else
     module purge
 fi
 
-# move files to a consistent location for dashboarding team
+# copy the run's files into its own subfolder of $RICHAMP_OUTDIR (nothing is written to the top level),
+# e.g. GFS_20261125_06Z or NHC_20260725_Advisory03; a rerun of the same cycle gets _V02, _V03, ...
 water_output=RICHAMP_fort63.nc
 max_inund_plot=RICHAMP_max_inundation.png
 wind_output=$output.nc
 rain_output=$rain_filename.nc
 output_dir=$RICHAMP_OUTDIR
-cp $wind_output $rain_output $water_output $max_inund_plot $output_dir
+run_name=$(python3 $postprocessdir/runFolderName.py properties/run.properties $output_dir)
+if [[ -z $run_name ]]; then
+    # no usable run.properties: still keep the files, under the time the job ran
+    run_name=RUN_$(date -u +%Y%m%d_%H%M)Z
+    echo "Run folder name could not be made from properties/run.properties; using $run_name"
+fi
+run_dir=$output_dir/$run_name
+mkdir -p $run_dir
+cp $wind_output $rain_output $water_output $max_inund_plot $run_dir
 #copy wave output
 if [[ $GRAPH_WAVES == "True" ]]; then
     wave_output=$RICHAMP_INDIR/swan_HS.63.nc
-    cp $wave_output $output_dir
-    mv $output_dir/$wave_output $output_dir/RICHAMP_wave.nc
+    cp $wave_output $run_dir/RICHAMP_wave.nc
 fi
-
-rm -rf $output_dir/properties $output_dir/graphs
-cp -r properties $output_dir
-cp -r graphs $output_dir
-
-# also keep this run in its own subfolder of $RICHAMP_OUTDIR, with the same files as above,
-# e.g. GFS_20261125_06Z or NHC_20260725_Advisory03; a rerun of the same cycle gets _V02, _V03, ...
-run_name=$(python3 $postprocessdir/runFolderName.py properties/run.properties $output_dir)
-if [[ -n $run_name ]]; then
-    run_dir=$output_dir/$run_name
-    mkdir -p $run_dir
-    cp $wind_output $rain_output $water_output $max_inund_plot $run_dir
-    if [[ $GRAPH_WAVES == "True" ]]; then
-        cp $wave_output $run_dir/RICHAMP_wave.nc
-    fi
-    cp -r properties graphs $run_dir
-    echo "Run archived in $run_dir"
-else
-    echo "Run folder name could not be made from properties/run.properties; run not archived"
-fi
+cp -r properties graphs $run_dir
+echo "Run files in $run_dir"
 #cp $indir/*.trk $output_dir
 
 #track="center"
-scontrol update JobId=$SLURM_JOBID Comment="Track: ${track}, Files ready at: ${RICHAMP_OUTDIR}"
+scontrol update JobId=$SLURM_JOBID Comment="Track: ${track}, Files ready at: ${run_dir}"
 
 echo "\"finish\" : \"[$(date +'%Y-%h-%d-T%H:%M:%S%z')]\", \"jobid\" : \"${SLURM_JOBID}\"" > $targetScript.finish # <-OVERWRITE
 echo "[$(date +'%Y-%h-%d-T%H:%M:%S%z')] The batch job for $targetScript has finished." >> $logfile
